@@ -85,6 +85,7 @@ a{color:var(--blue)}
 .map-note b{color:var(--ink-2);font-weight:600}
 .map-note .i{display:inline-flex;gap:6px;align-items:center}
 .map-note svg{width:14px;height:14px}
+.map-flag[hidden]{display:none}
 .map-flag{position:absolute;top:14px;left:14px;max-width:calc(100% - 28px);display:flex;gap:8px;align-items:center;font-size:12px;font-weight:600;color:var(--ink-2);background:rgba(255,255,255,.92);border:1px solid var(--line);padding:6px 10px;border-radius:999px;pointer-events:none}
 .map-flag svg{width:14px;height:14px;color:var(--amber);flex:none}
 .map-hint{position:absolute;left:50%;top:56px;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;box-shadow:var(--shadow-2);display:flex;gap:8px;align-items:center;pointer-events:none;white-space:nowrap;transition:opacity .25s}
@@ -399,7 +400,7 @@ code{font-family:var(--mono);font-size:12px;background:var(--surface-2);padding:
 .sug-c .go{color:var(--brand-orange);flex:none}
 .sug-c .go svg{width:20px;height:20px}
 .stats4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.stats4 div{background:var(--surface-2);border-radius:12px;padding:9px 12px}
+.stats4>div{background:var(--surface-2);border-radius:12px;padding:9px 12px}
 .stats4 .l{font-size:12px;color:var(--ink-3);font-weight:600}
 .stats4 .v{font-size:19px;font-weight:750;font-variant-numeric:tabular-nums}
 .stats4 .c{font-size:11.5px;color:var(--ink-3)}
@@ -428,193 +429,6 @@ code{font-family:var(--mono);font-size:12px;background:var(--surface-2);padding:
 .result .v{font-size:16px}
 .crit-note{font-size:13px;color:var(--ink-3);margin:-6px 0 0}
 @media (max-width:560px){ .map-tools{top:8px;right:8px} .tool{font-size:11.5px} .res-v{font-size:34px} }
-
-/* ---------- Modo apresentação ---------- */
-.pres-open{gap:7px}
-.pres-bar,.pres-nav{display:none}
-body.presenting .topbar,body.presenting .map-note,body.presenting .skip{display:none}
-body.presenting{overflow:hidden}
-body.presenting .pres-bar{display:flex;align-items:center;gap:18px;height:60px;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--line)}
-.pres-bar .brand-name{font-size:22px}
-.pres-title{font-size:19px;font-weight:700;letter-spacing:-.015em;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pres-actions{display:flex;gap:8px}
-body.presenting .pres-nav{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;height:68px;padding:0 24px;background:var(--surface);border-top:1px solid var(--line);position:fixed;left:0;right:0;bottom:0;z-index:20}
-.pres-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:5px}
-.pres-steps button{width:100%;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:5px 8px;text-align:left;line-height:1.15;color:var(--ink-3);font-size:12.5px;font-weight:600;min-width:0}
-.pres-steps button .tm{display:block;font-size:11px;font-weight:500;font-variant-numeric:tabular-nums}
-.pres-steps button .lb{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pres-steps button[aria-current="step"]{border-color:var(--brand-green);background:var(--brand-green);color:#fff}
-.pres-steps button.done{color:var(--ink-2)}
-.pres-nav .btn{padding:11px 18px;font-size:15px}
-body.presenting .app{max-width:none;height:calc(100vh - 60px - 68px);padding:14px 24px;gap:18px;grid-template-columns:minmax(0,1fr) 460px;grid-template-rows:minmax(0,1fr)}
-body.presenting .map-col{min-height:0}
-body.presenting .app.pres-cmp{grid-template-columns:minmax(0,1fr) minmax(560px,48%)}
-body.presenting .map-card{height:100%;min-height:0;flex:1}
-body.presenting .panel{height:100%;min-height:0;position:static}
-body.presenting .panel-inner{padding:20px 22px 22px;gap:14px}
-body.presenting .legend{font-size:12.5px}
-.pres-stage{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand-orange)}
-.pres-h{font-size:28px;font-weight:750;letter-spacing:-.025em;line-height:1.15;margin:2px 0 0}
-.pres-lead{font-size:17px;line-height:1.45;color:var(--ink-2);margin:0}
-.pres-svc{display:flex;gap:12px;align-items:center;background:var(--surface-2);border-radius:14px;padding:12px 14px;font-size:14.5px;line-height:1.35}
-.pres-svc b{font-size:16px}
-.pres-guide{font-size:21px;font-weight:700;color:var(--brand-green);letter-spacing:-.01em;border-left:4px solid var(--brand-orange);padding:4px 0 4px 14px}
-.pres-alts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.pres-alt{border:2px solid var(--line);border-radius:16px;padding:14px 16px;background:var(--surface);display:flex;flex-direction:column;gap:6px;min-width:0}
-.pres-alt .rg{font-size:21px;font-weight:750;letter-spacing:-.02em}
-.pres-alt .ln{font-size:14px;color:var(--ink-2);line-height:1.35}
-.pres-alt .ln b{color:var(--ink);font-size:16px}
-.pres-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--surface-3);border-radius:14px;padding:5px}
-.pres-toggle button{border:0;background:transparent;border-radius:10px;padding:14px 10px;font-size:19px;font-weight:750;color:var(--ink-2)}
-.pres-toggle button[aria-pressed="true"]{background:var(--brand-green);color:#fff;box-shadow:var(--shadow-1)}
-.pres-toggle button[aria-pressed="true"]::before{content:"✓ "}
-.pres-big{background:var(--blue-soft);border-radius:16px;padding:16px 18px}
-.pres-big .l{font-size:15px;font-weight:650;color:var(--blue-ink)}
-.pres-big .v{font-size:48px;font-weight:800;letter-spacing:-.03em;color:var(--blue-ink);line-height:1.05;margin-top:4px;font-variant-numeric:tabular-nums}
-.pres-big .s{font-size:14px;color:var(--ink-2);margin-top:4px}
-.pres-big.off{background:var(--surface-2)}
-.pres-big.off .l,.pres-big.off .v{color:var(--ink-2)}
-.pres-row{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:12px 16px;font-size:14.5px}
-.pres-row .vv{font-size:22px;font-weight:750;font-variant-numeric:tabular-nums;color:var(--ink-3)}
-.pres-row .vv.on{color:var(--ink)}
-.pres-row .vv small{display:block;font-size:11px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
-.pres-note{font-size:13px;color:var(--ink-3);margin:0}
-.pres-crit{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.pres-crit button{border:2px solid var(--line-2);background:var(--surface);border-radius:12px;padding:12px 12px;font-size:17px;font-weight:750;color:var(--ink-2);text-align:center}
-.pres-crit button[aria-pressed="true"]{border-color:var(--brand-green);background:var(--brand-green);color:#fff}
-.pres-crit button[aria-pressed="true"]::before{content:"✓ "}
-.pres-crit button.nudge{border-color:var(--brand-orange);box-shadow:0 0 0 4px rgba(200,115,76,.22)}
-.pres-def{font-size:14.5px;color:var(--ink-2);margin:0}
-.pres-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.pres-card{border:2px solid var(--line);border-radius:16px;padding:12px 14px;background:var(--surface);display:flex;flex-direction:column;gap:6px;min-width:0;cursor:pointer;transition:border-color .25s,box-shadow .25s}
-.pres-card.lead{border-color:var(--brand-green);box-shadow:0 0 0 3px rgba(31,69,61,.14)}
-.pres-card.active{outline:3px solid var(--brand-orange);outline-offset:2px}
-.pres-card .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.pres-card .rk{font-size:15px;font-weight:800;color:var(--ink-3);font-variant-numeric:tabular-nums}
-.pres-card .rg{font-size:21px;font-weight:750;letter-spacing:-.02em}
-.pres-card .tag{font-size:11.5px;font-weight:750;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--green-soft);color:var(--green-ink)}
-.pres-card .tag.tie{background:var(--amber-soft);color:var(--amber-ink)}
-.pres-card .main .v{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1.05;font-variant-numeric:tabular-nums}
-.pres-card .main .l{font-size:13px;color:var(--ink-3);font-weight:600}
-.pres-card.lead .main .v{color:var(--brand-green)}
-.pres-card dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:13.5px;border-top:1px solid var(--line);padding-top:8px}
-.pres-card dt{color:var(--ink-3)}
-.pres-card dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
-.pres-card dt.cur,.pres-card dd.cur{color:var(--ink);font-weight:750}
-.pres-card dt.cur::before{content:"▸ ";color:var(--brand-orange)}
-.pres-why{background:var(--surface-2);border-radius:14px;padding:13px 16px;font-size:15px;line-height:1.45}
-.pres-why h3{font-size:12.5px;color:var(--brand-orange);margin-bottom:5px}
-.pres-why p{margin:0}
-.pres-why p+p{margin-top:6px;color:var(--ink-2);font-size:14px}
-.pres-cap{display:grid;grid-template-columns:auto 1fr 1fr;gap:10px 14px;align-items:center}
-.pres-cap .rg{font-size:18px;font-weight:750}
-.pres-cap .cell{border-radius:12px;padding:10px 12px;background:var(--surface-2)}
-.pres-cap .cell b{display:block;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.pres-cap .cell span{font-size:12.5px;color:var(--ink-3);font-weight:600}
-.pres-cap .cell.prox{background:var(--blue-soft)}
-.pres-cap .cell.prox b{color:var(--blue-ink)}
-.pres-tabs{display:flex;gap:6px}
-.pres-tabs button{border:1.5px solid var(--line-2);background:var(--surface);border-radius:999px;padding:6px 14px;font-weight:650;font-size:14px}
-.pres-tabs button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
-.pres-checks .restr-row{padding:6px 0;grid-template-columns:1fr 160px}
-.pres-close{font-size:20px;font-weight:750;color:var(--brand-green);border-left:4px solid var(--brand-orange);padding:6px 0 6px 14px;margin:0}
-.pres-gen{font-size:19px;padding:16px 20px}
-#presSummary{width:min(860px,calc(100vw - 24px))}
-.sum-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.sum-alt{border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px}
-.sum-alt h4{margin:0 0 6px;font-size:17px}
-.sum-alt dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:3px 10px}
-.sum-alt dt{color:var(--ink-3)} .sum-alt dd{margin:0;text-align:right;font-weight:650}
-.sum-k{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:0 0 4px}
-@media (max-height:800px){
-  body.presenting .panel-inner{gap:9px;padding:14px 18px}
-  .pres-stage{font-size:12px}
-  .pres-h{font-size:23px}
-  .pres-big .v{font-size:40px}
-  .pres-big{padding:12px 16px}
-  .pres-card .main .v{font-size:32px}
-  .pres-card dl{font-size:13px}
-  .pres-lead{font-size:15.5px}
-  .pres-guide{font-size:19px}
-  .pres-crit button{padding:9px 10px;font-size:16px}
-  .pres-def{font-size:13.5px}
-  .pres-why{padding:10px 14px;font-size:14px}
-  .pres-why p+p{font-size:13px}
-  .pres-toggle button{padding:11px 10px}
-  .pres-cap .cell{padding:8px 12px}
-  .pres-cap .cell b{font-size:21px}
-  .pres-checks .restr-row{padding:3px 0}
-  .pres-checks .restr-row select{padding:5px 8px}
-}
-@media (max-width:1100px){
-  body.presenting{overflow:auto}
-  body.presenting .app,body.presenting .app.pres-cmp{grid-template-columns:minmax(0,1fr);height:auto;padding-bottom:90px}
-  body.presenting .map-card{height:60vh}
-  .pres-title{white-space:normal;font-size:16px}
-  body.presenting .pres-bar{height:auto;flex-wrap:wrap;padding:10px 16px}
-  .pres-steps button .tm{display:none}
-}
-@media (max-width:640px){ .pres-cards,.pres-alts,.sum-grid{grid-template-columns:1fr} .pres-steps button .lb{display:none} .pres-steps button{text-align:center} .pres-actions .btn .lbl{display:none} }
-
-/* ---------- Modo apresentação: versão enxuta ---------- */
-.pres-steps button{display:flex;align-items:center;gap:7px;padding:8px 9px;font-size:13px}
-.pres-steps button .tm{display:grid!important;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--surface-3);color:var(--ink-2);font-size:12px;font-weight:750;flex:none}
-.pres-steps button[aria-current="step"] .tm{background:#fff;color:var(--brand-green)}
-.pres-steps button.done .tm{background:var(--green-soft);color:var(--green-ink)}
-.pres-alt .big{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1.05;color:var(--brand-orange);font-variant-numeric:tabular-nums}
-.pres-card .sub{font-size:14px;color:var(--ink-3)}
-.pres-card .sub b{color:var(--ink);font-weight:700}
-.pres-why{font-size:16px}
-.pres-chip{display:inline-flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:999px;padding:5px 12px 5px 6px;font-size:14px;font-weight:650;align-self:flex-start}
-.pres-chip .svc-badge{width:24px;height:24px;border-radius:7px}
-.pres-chip .svc-badge svg{width:14px;height:14px}
-.vgroup{display:grid;gap:7px}
-.vgroup .vl{font-size:12px;font-weight:750;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);display:flex;gap:8px;align-items:baseline}
-.vgroup .vl span{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--brand-orange)}
-.vchips{display:flex;flex-wrap:wrap;gap:6px}
-.vchip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:13.5px;font-weight:600;color:var(--ink-3)}
-.vchip .svc-badge{width:20px;height:20px;border-radius:6px}
-.vchip .svc-badge svg{width:12px;height:12px}
-.vchip.on{border-color:var(--brand-green);background:var(--brand-green);color:#fff}
-.vchip.on::before{content:"✓"}
-button.vchip{cursor:pointer}
-button.vchip:hover{border-color:var(--ink-3)}
-button.vchip.on:hover{border-color:var(--brand-green)}
-@media (max-height:800px){ .pres-alt .big{font-size:32px} .vchip{padding:4px 10px;font-size:13px} .vgroup{gap:5px} .pres-why{font-size:15px} }
-
-/* ---------- Modo apresentação: acompanhar, encerramento, mapa limpo ---------- */
-body.presenting #map .region-label{opacity:1!important}
-.pres-steps button{padding:8px 7px;font-size:12.5px;gap:6px}
-.pres-data{font-size:14px;font-weight:650;color:var(--amber-ink);background:var(--amber-soft);border-radius:10px;padding:8px 12px;margin:0}
-.cap-ratio{font-size:14.5px;line-height:1.4;margin:0;color:var(--ink-2)}
-.cap-ratio b{color:var(--ink)}
-.mon-ind{background:var(--surface-2);border-radius:14px;padding:12px 14px}
-.mon-ind .k{font-size:12px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
-.mon-ind .v{font-size:16.5px;font-weight:700;line-height:1.35;margin-top:3px}
-.mon-chart{border:1px solid var(--line);border-radius:14px;padding:8px 10px 4px;background:var(--surface)}
-.mon-chart svg{display:block;width:100%;height:auto}
-.mon-chart .ax{stroke:var(--line-2);stroke-width:1}
-.mon-chart .grid{stroke:var(--line);stroke-width:1}
-.mon-chart .meta{stroke:var(--brand-orange);stroke-width:2;stroke-dasharray:6 5}
-.mon-chart .base{fill:var(--brand-green)}
-.mon-chart .slot{fill:none;stroke:var(--ink-3);stroke-width:1.5;stroke-dasharray:3 3}
-.mon-chart text{font-family:var(--font);fill:var(--ink-3);font-size:12px}
-.mon-chart .tb{fill:var(--brand-green);font-weight:750;font-size:13px}
-.mon-chart .tm{fill:var(--blue-ink);font-weight:750;font-size:13px}
-.mon-vals{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
-.mon-vals>div{border-radius:12px;padding:9px 12px;background:var(--surface-2)}
-.mon-vals .l{font-size:12px;font-weight:650;color:var(--ink-3)}
-.mon-vals .n{font-size:26px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.mon-vals>.goal{background:var(--blue-soft)} .mon-vals .goal .n{color:var(--blue-ink)}
-.mon-vals>.ar{background:none;padding:0;color:var(--ink-3)} .mon-vals .ar svg{width:22px;height:22px}
-.pres-end{display:flex;flex-direction:column;justify-content:center;gap:22px;height:100%;padding:10px 6px}
-.pres-end .mk{width:64px;height:71px}
-.pres-end .q{font-size:30px;font-weight:750;letter-spacing:-.02em;line-height:1.25;color:var(--ink);margin:0;text-wrap:balance}
-.pres-end .q b{color:var(--brand-green)}
-.pres-end .s{font-size:16px;color:var(--ink-3);margin:0;border-left:4px solid var(--brand-orange);padding-left:12px}
-@media (max-height:800px){ .mon-vals .n{font-size:21px} .mon-vals>div{padding:6px 12px} .pres-end .q{font-size:26px} .mon-ind{padding:9px 12px} .mon-ind .v{font-size:15px} .mon-chart svg{max-height:128px} .pres-data{padding:6px 10px;font-size:13px} }
-@media (max-width:1500px){ .pres-steps button .tm{display:none!important} .pres-steps button{justify-content:center;padding:8px 4px} body.presenting .pres-nav .btn{padding:11px 14px} }
-@media (max-width:640px){ .pres-steps{display:none} body.presenting .pres-nav{grid-template-columns:1fr 1fr} .mon-vals{grid-template-columns:1fr} .mon-vals .ar{display:none} .pres-end .q{font-size:22px} }
 
 /* ---------- Responsividade ---------- */
 @media (max-width:1200px){ .app{grid-template-columns:minmax(0,1fr) 400px} .brand-name span{display:none} }
@@ -684,29 +498,11 @@ body.presenting #map .region-label{opacity:1!important}
   </nav>
   <div class="top-right">
     <button class="data-badge demo" id="dataBadge" type="button" aria-haspopup="dialog" title="Ver origem dos dados"><span class="dot" aria-hidden="true"></span><span id="dataBadgeText"></span></button>
-    <button class="btn small pres-open" id="presEnter" type="button" title="Modo apresentação para a banca">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8M10 8.5v4l3.5-2z"/></svg>
-      <span class="lbl">Modo apresentação</span>
-    </button>
     <button class="btn small help-btn" id="openHelp" type="button" aria-label="Como usar" title="Como usar">?</button>
     <button class="btn small" id="openData" type="button" aria-haspopup="dialog">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>
       <span class="lbl">Dados e fontes</span>
     </button>
-  </div>
-</header>
-
-<header class="pres-bar" id="presBar" aria-label="Modo apresentação">
-  <span class="brand" aria-label="Revano">
-    <svg class="brand-mark" viewBox="0 0 180 200" aria-hidden="true"><rect x="10" y="37" width="58" height="53" rx="3" fill="#C8734C"/><path d="M80 10H115C145 10 168 34 168 64V132C150 113 116 96 95 74C85 63 80 52 80 40Z" fill="#1F453D"/><path d="M13 104H60C108 104 146 141 151 190H113C109 171 93 158 71 158H13A3 3 0 0 1 10 155V107A3 3 0 0 1 13 104Z" fill="#1F453D"/></svg>
-    <span class="brand-name">Revano</span>
-  </span>
-  <div class="pres-title" id="presTitle">Onde ampliar primeiro a educação infantil?</div>
-  <span class="data-badge demo"><span class="dot" aria-hidden="true"></span>Demonstração com dados simulados</span>
-  <div class="pres-actions">
-    <button class="btn small" type="button" id="presFull"><span class="lbl">Tela cheia</span><span aria-hidden="true">⤢</span></button>
-    <button class="btn small" type="button" id="presRestart"><span class="lbl">Reiniciar demo</span><span aria-hidden="true">↺</span></button>
-    <button class="btn small" type="button" id="presExit"><span class="lbl">Sair da apresentação</span><span aria-hidden="true">✕</span></button>
   </div>
 </header>
 
@@ -788,26 +584,6 @@ body.presenting #map .region-label{opacity:1!important}
     <div class="dlg-foot">
       <button class="btn small" type="button" data-close>Fechar</button>
       <button class="btn small primary" type="button" id="printReport">Imprimir / salvar PDF</button>
-    </div>
-  </div>
-</dialog>
-
-<!-- Modo apresentação: navegação das etapas -->
-<nav class="pres-nav" id="presNav" aria-label="Etapas da demonstração">
-  <button class="btn" type="button" id="presPrev">← Anterior</button>
-  <ol class="pres-steps" id="presSteps"></ol>
-  <button class="btn primary" type="button" id="presNext">Próximo →</button>
-</nav>
-
-<!-- Modo apresentação: resumo da justificativa -->
-<dialog id="presSummary" aria-labelledby="presSumTitle">
-  <div class="dlg">
-    <div class="dlg-head"><div><div class="eyebrow">Justificativa · resumo</div><h2 id="presSumTitle">Onde ampliar primeiro a educação infantil?</h2></div><button class="btn ghost small x" type="button" data-close aria-label="Fechar">✕</button></div>
-    <div class="dlg-body"><div class="report" id="presSumBody"></div></div>
-    <div class="dlg-foot">
-      <button class="btn small" type="button" id="presFullReport">Ver relatório completo</button>
-      <button class="btn small" type="button" id="presPrintSum">Imprimir / salvar PDF</button>
-      <button class="btn small primary" type="button" data-close>Fechar</button>
     </div>
   </div>
 </dialog>
@@ -3621,7 +3397,6 @@ function updateMap() {
   else if (state.step === 2 && !state.point) { hint.hidden = false; hint.innerHTML = `${ICON.pin}Toque no mapa para posicionar`; }
   else hint.hidden = true;
   renderLegend(sim, sid);
-  if (PRES.on) presDecorateMap();
 }
 function renderLegend(sim, sid) {
   let h = "";
@@ -3640,7 +3415,7 @@ function renderLegend(sim, sid) {
   }
   $("#legendBody").innerHTML = h;
   // ferramentas do mapa (etapa 1)
-  const tools = $("#mapTools"); tools.hidden = state.step !== 1 || PRES.on;
+  const tools = $("#mapTools"); tools.hidden = state.step !== 1;
   if (!tools.hidden) {
     const sel = $("#indSel");
     const opts = Object.entries(INDICATORS).map(([k, I]) => `<option value="${k}" ${state.indicator === k ? "selected" : ""}>${esc(I.nome)}</option>`).join("");
@@ -3670,17 +3445,17 @@ function renderAll() { renderHeader(); renderMapChrome(); renderPanel(); updateM
 function renderHeader() {
   $$(".step-btn").forEach(b => +b.dataset.step === state.step ? b.setAttribute("aria-current", "step") : b.removeAttribute("aria-current"));
   const b = $("#dataBadge"); b.classList.toggle("demo", state.mode === "demo"); b.classList.toggle("imported", state.mode !== "demo");
-  $("#dataBadgeText").innerHTML = state.mode === "demo" ? 'Demonstração<span class="long"> — dados simulados</span>' : 'Dados importados<span class="long"> — não verificados</span>';
+  $("#dataBadgeText").innerHTML = state.mode === "demo" ? 'Dados simulados' : 'Dados importados<span class="long"> · não verificados</span>';
 }
 function renderMapChrome() {
   const m = state.model;
-  $("#mapFlag").innerHTML = state.mode === "demo" ? `${ICON.warn}<span>Dados simulados</span>`
+  $("#mapFlag").hidden = state.mode === "demo";
+  $("#mapFlag").innerHTML = state.mode === "demo" ? ""
     : `${ICON.info}<span>${m.sys === "geografico_wgs84" ? "Posições relativas das coordenadas importadas · sem mapa de fundo" : "Representação esquemática das coordenadas importadas"}</span>`;
   $("#mapNote").innerHTML = `<span class="i">${ICON.info}<span><b>Acesso estimado por distância em linha reta</b> até o equipamento (raio por serviço). Não representa percurso real de caminhada.</span></span><span>${m.sys === "geografico_wgs84" ? "Distância de Haversine." : "Distância euclidiana em metros."} População de cada setor representada por seu centroide.</span><span class="hide-sm">Atalhos: <code>1</code> <code>2</code> <code>3</code></span>`;
 }
 function renderPanel() {
   const host = $("#panelInner");
-  if (PRES.on) { host.innerHTML = presPanelHTML(); host.style.animation = "none"; void host.offsetWidth; host.style.animation = ""; animateNumbers(host); bindPresPanel(host); return; }
   host.innerHTML = state.step === 1 ? (state.region ? viewRegion() : viewTerritory()) : state.step === 2 ? viewSimulate() : viewCompare();
   host.style.animation = "none"; void host.offsetWidth; host.style.animation = "";
   animateNumbers(host); bindPanel(host);
@@ -3710,7 +3485,7 @@ function compareTxt(v, ref) {
 function sugCard(sg, showRegion) {
   const S = sg.S, can = sg.best && sg.best.newT > 0;
   return `<button type="button" class="sug-c" ${can ? `data-sim-sug="${esc(sg.sid)}|${esc(sg.rid)}"` : "disabled"} aria-label="Simular ${esc(S.nome)} na ${esc(sg.region.nome)}">${badge(S, true)}<span class="body">
-    <span class="t" style="display:block">${esc(S.nome)}${showRegion ? ` · ${esc(sg.region.nome)}` : ""}${sg.level === "alta" ? '<span class="level alta">Alta</span>' : ""}</span>
+    <span class="t" style="display:block">${esc(S.nome)}${showRegion ? ` · ${esc(sg.region.nome)}` : ""}</span>
     <span class="r" style="display:block">${fmtPct(sg.pctU)} sem acesso · ≈ ${fmtInt(sg.unc)} ${esc(S.publico_nome)}</span></span>
     ${can ? `<span class="go" aria-hidden="true">${ICON.arrow}</span>` : ""}</button>`;
 }
@@ -3724,11 +3499,11 @@ function viewTerritory() {
   const sugs = computeSuggestions();
   return `
     <div><h1>Onde estão as maiores necessidades?</h1>
-      <p class="lead">Toque em uma região do mapa ou comece por uma sugestão.</p></div>
+      <p class="lead">Toque em uma região do mapa ou escolha uma sugestão para simular.</p></div>
     <div class="stack"><h3>Principais necessidades</h3>
       ${sugs.length ? topDistinct(sugs, 3).map(s => sugCard(s, true)).join("") : `<div class="callout">${ICON.info}<div>Nenhuma necessidade atende às regras de sugestão com os dados atuais.</div></div>`}
     </div>
-    <p class="small muted" style="margin:0">Clique em uma sugestão para simular o serviço no melhor local da região. <button class="linkbtn" type="button" data-open-method>Como calculamos</button></p>`;
+`;
 }
 function topDistinct(sugs, n) {
   const seen = new Set(), out = [];
@@ -3757,7 +3532,7 @@ function viewRegion() {
   const bairros = Array.isArray(r.bairros_referencia) && r.bairros_referencia.length ? `<div class="bairros">${esc(r.bairros_referencia.join(" · "))}</div>` : "";
   return `
     <button class="btn small ghost back" type="button" data-region-clear>${ICON.back} Voltar</button>
-    <div><h1>${esc(r.nome)}</h1><p class="lead" style="margin-bottom:2px">≈ ${fmtInt(r.pop)} moradores · ${fmtInt(r.dens)} hab/km²</p>${bairros}</div>
+    <div><h1>${esc(r.nome)}</h1><p class="lead">≈ ${fmtInt(r.pop)} moradores</p></div>
     <div class="stats4">
       <div><div class="l">Pobreza</div><div class="v">${fmtPct(r.pobreza)}</div><div class="c">${cmpW(r.pobreza, T.pobreza)}</div></div>
       <div><div class="l">Densidade</div><div class="v">${fmtInt(r.dens)}</div><div class="c">${cmpW(r.dens, T.dens)}</div></div>
@@ -3766,7 +3541,6 @@ function viewRegion() {
     </div>
     <div class="stack"><h3>O que esta região mais precisa</h3>
       ${sugs.length ? sugs.slice(0, 3).map(s => sugCard(s, false)).join("") : `<div class="callout green">${ICON.check}<div>Nenhum serviço atende às regras de sugestão nesta região.</div></div>`}</div>
-    <details class="more"><summary>Acesso atual a cada serviço</summary><div class="body">${accRows}</div></details>
     <button class="linkbtn" type="button" data-sim-region="${esc(r.id)}">${ICON.pin} Simular outro serviço nesta região</button>`;
 }
 
@@ -3785,7 +3559,7 @@ function viewSimulate() {
   return `
     <div><h2>Qual serviço simular?</h2></div>
     <div class="svc-icons" role="group" aria-label="Serviço">${tiles}</div>
-    <p class="small muted" style="margin:-4px 0 0">${esc(S.nome)} · ${esc(S.publico_nome)} · raio ${fmtDist(S.raio)} · hoje ${A.insufficient ? "—" : fmtPct(A.pct)} têm acesso</p>
+    <p class="small muted" style="margin:-4px 0 0"><b>${esc(S.nome)}</b> · ${esc(S.publico_nome)} · até ${fmtDist(S.raio)}</p>
     ${body}
     ${premisesBox(S)}`;
 }
@@ -3818,19 +3592,16 @@ function simResults(sim) {
       <dt>Acesso em toda a cidade<span>${esc(S.publico_nome)}</span></dt><dd>${fmtPct(sim.pctBefore)} → ${fmtPct(sim.pctAfter)}</dd>
       <dt>Distância média<span>para quem passa a ter acesso</span></dt><dd>${sim.noPrev ? "—" : fmtDist(sim.distBefore)} → ${fmtDist(sim.distAfter)}</dd>
       <dt>Focalização<span>beneficiados em áreas mais pobres que a média</span></dt><dd>${fmtPct(sim.focalPct)}</dd>
-      <dt>Redução da carência na região<span>do público sem acesso na ${esc(reg ? reg.nome : "região")}</span></dt><dd>${fmtPct(sim.propReduction)}</dd>
-      ${sim.cap != null ? `<dt>Demanda ÷ capacidade<span>${fmtInt(sim.cap)} ${esc(S.capacidade_unidade || "")} de referência</span></dt><dd>${fmtPct(sim.ocupacao)}</dd>` : ""}
       <dt>Custo por pessoa${il}<span>implantação ÷ novo acesso</span></dt><dd>${Number.isFinite(sim.custoPessoa) ? "R$ " + fmtInt(sim.custoPessoa) : "—"}</dd>
-    </dl>${sim.alreadyT >= 1 ? `<p class="small muted" style="margin:0">≈ ${fmtInt(sim.alreadyT)} pessoas no raio já tinham acesso e não foram contadas de novo.</p>` : ""}`;
+    </dl>`;
   else if (tab === "impactos") panel = `<ul class="impacts">${impactsFor(sim).map((x, i) => `<li><span class="b">${i + 1}</span><span>${esc(x)}</span></li>`).join("")}</ul>
       <p class="small muted" style="margin:0">Efeitos sociais são hipóteses a confirmar com monitoramento.</p>`;
   else panel = `<ul class="checks">${S.verificar.map(v => `<li>${STATUS_ICON.nao_informado.replace("<svg", '<svg style="width:15px;height:15px;color:var(--ink-3)"')}${esc(v)}</li>`).join("")}</ul>
-      <h3 style="margin-top:4px">Beneficiados por região</h3>
-      ${sim.byRegion.length ? sim.byRegion.map(([rid, v]) => { const r = m.regions.find(x => x.id === rid); return `<div class="acc-row" style="grid-template-columns:1fr 70px"><div><div class="nm">${esc(r ? r.nome : rid)}</div><div class="bar"><span class="b" style="width:${v / maxR * 100}%"></span></div></div><div class="v">+≈ ${fmtInt(v)}</div></div>`; }).join("") : `<p class="small muted" style="margin:0">Ninguém do público-alvo sem acesso está no raio.</p>`}`;
+`;
   const warn = sim.cap != null && sim.newT > sim.cap * 1.05 ? `<div class="res-warn">Demanda próxima ≈ ${nf1.format(sim.newT / sim.cap)}× a capacidade de referência (${fmtInt(sim.cap)} ${esc(S.capacidade_unidade || "")}).</div>` : "";
   return `
     <div class="res" role="status">
-      <div class="res-top"><span>Local: <b>${esc(reg ? reg.nome : "—")}</b> · toque no mapa para mover</span><button class="linkbtn" type="button" id="clearPoint">Remover</button></div>
+      <div class="res-top"><span>${esc(reg ? reg.nome : "—")} · toque no mapa para mover</span><button class="linkbtn" type="button" id="clearPoint">Remover</button></div>
       <div class="res-v">${sim.newT < 0.5 ? "0" : "+ " + numSpan("s-n", sim.newT, "int")}</div>
       <div class="res-l">${sim.newT < 0.5 ? "Neste ponto ninguém do público-alvo sem acesso seria alcançado. Experimente outro local." : `${esc(S.publico_nome)} passam a ter ${esc(lc(S.nome))} a até ${fmtDist(S.raio)}`}</div>
       <div class="res-row"><span>Com acesso na ${esc(reg ? reg.nome : "região")}:</span><b>${fmtPct(sim.hostBefore)} → ${fmtPct(sim.hostAfter)}</b></div>
@@ -3877,8 +3648,7 @@ function viewCompare() {
         <span class="cmp-name">${esc(S.nome)}${isL ? ` <span class="leader-badge">Lidera</span>` : ""}<span>${esc(reg ? reg.nome : "—")}</span></span>
         <span class="cmp-val">${it.ok ? fmtV(crit, it.v) : "Dados insuficientes"}<span>${crit === "publico" ? esc(S.publico_nome) : crit === "custo" ? "por pessoa" : "da carência local"}</span></span></div>
       <div class="cmp-bar" aria-hidden="true"><span style="width:${it.ok ? (asc ? (valid[0].v / it.v) : (it.v / maxV)) * 100 : 0}%"></span></div>
-      <div class="cmp-sub">${others.map(k => `<span>${LBL[k]}: <b>${fmtV(k, val(sim, k))}</b></span>`).join("")}</div>
-      <div class="cmp-act"><span class="st">${STATUS_ICON[pend ? (st.ni ? "nao_informado" : "pendente") : "verificado"]}${pend ? `${pend} verificação(ões) pendente(s)` : "Verificações registradas"}</span>
+      <div class="cmp-act"><span class="st">${STATUS_ICON[pend ? (st.ni ? "nao_informado" : "pendente") : "verificado"]}${pend ? `${pend} pendências` : "Verificado"}</span>
         <span class="row" style="gap:4px"><button class="btn small ghost" type="button" data-scn-open="${esc(s.id)}">Detalhes</button><button class="btn small ghost" type="button" data-scn-del="${esc(s.id)}" aria-label="Remover cenário">${ICON.trash}</button></span></div>
     </div>`;
   }).join("");
@@ -3976,7 +3746,6 @@ function bindEvents() {
   svg.addEventListener("click", e => {
     tip.classList.remove("show");
     const t = e.target.closest("[data-kind]");
-    if (PRES.on) { if (t && t.dataset.kind === "scn" && PRES.stage >= 3) presSetActive(t.dataset.id); return; }
     if (state.step === 1) {
       let rid = null;
       if (t && t.dataset.kind === "area") rid = (state.model.areas.find(a => a.id === t.dataset.id) || {}).regiao;
@@ -3999,18 +3768,16 @@ function bindEvents() {
   svg.addEventListener("keydown", e => {
     const t = e.target.closest("[data-kind]"); if (!t || (e.key !== "Enter" && e.key !== " ")) return;
     e.preventDefault();
-    if (PRES.on) { if (t.dataset.kind === "scn" && PRES.stage >= 3) presSetActive(t.dataset.id); return; }
     if (t.dataset.kind === "scn") { state.activeScenario = t.dataset.id; renderPanel(); updateMap(); }
     else if (t.dataset.kind === "eq" && state.step === 1) { state.region = regionOfPoint(state.model.eqs.find(x => x.id === t.dataset.id)); renderPanel(); updateMap(); }
   });
   document.addEventListener("keydown", e => {
     if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest("input,textarea,select") || document.querySelector("dialog[open]")) return;
-    if (PRES.on) { presKey(e); return; }
     if (["1", "2", "3"].includes(e.key)) goStep(+e.key);
     if (e.key === "Escape" && state.step === 1 && state.region) { state.region = null; renderPanel(); updateMap(); }
   });
   $$("dialog").forEach(d => d.addEventListener("click", e => { if (e.target === d || e.target.closest("[data-close]")) closeDialog(d); }));
-  $("#scnDialog").addEventListener("close", () => { if (state.step === 3 || PRES.on) renderPanel(); });
+  $("#scnDialog").addEventListener("close", () => { if (state.step === 3) renderPanel(); });
   $("#scnBody").addEventListener("change", e => {
     const sel = e.target.closest("select[data-chk]"); const s = state.scenarios.find(x => x.id === scnOpen); if (!sel || !s) return;
     s.checks[sel.dataset.chk] = sel.value; renderScenarioDialog();
@@ -4033,7 +3800,6 @@ function bindEvents() {
   $("#openHelp").addEventListener("click", () => openDialog($("#welcomeDialog")));
   $("#toggleEq").addEventListener("click", () => { state.showEq = !state.showEq; updateMap(); });
   $("#indSel").addEventListener("change", e => { state.indicator = e.target.value; updateMap(); if (state.region) renderPanel(); });
-  bindPresentation();
   $("#welcomeStart").addEventListener("click", () => {
     closeDialog($("#welcomeDialog"));
     const top = computeSuggestions()[0];
@@ -4233,396 +3999,7 @@ function printReport() {
 }
 
 
-/* =====================================================================
-   15. MODO APRESENTAÇÃO — demonstração guiada de 2 minutos (Creche/CMEI)
-   Usa o mesmo motor (access, bestSite, simulate). Estado próprio: ao
-   entrar, o estado do modo normal é guardado e restaurado ao sair.
-   ===================================================================== */
-const PRES = { on: false, stage: 1, view: "depois", crit: "quantidade", userActive: null, checksFor: null, showChecks: false, saved: null, err: null };
-const PRES_SID = "creche";
-const PRES_REGIONS = ["Zona Sul", "Zona Leste"];
-const PRES_STAGES = [
-  { id: "decisao", t: "A decisão", c: "Decisão" },
-  { id: "variaveis", t: "O que dá para escolher", c: "Variáveis" },
-  { id: "simular", t: "Simular uma unidade", c: "Simular" },
-  { id: "quantidade", t: "Comparar: mais crianças próximas", c: "Quantidade" },
-  { id: "proporcao", t: "Comparar: maior redução local", c: "Proporção" },
-  { id: "capacidade", t: "Capacidade e verificações", c: "Capacidade" },
-  { id: "acompanhar", t: "Acompanhar o resultado", c: "Acompanhar" },
-  { id: "justificativa", t: "Justificativa", c: "Justificativa" },
-  { id: "encerramento", t: "Encerramento", c: "Fim" }
-];
-const presId = () => PRES_STAGES[PRES.stage - 1].id;
-const PRES_CRIT = {
-  quantidade: { nome: "Mais crianças próximas", def: "Compara quantas crianças adicionais passam a estar dentro do raio da unidade simulada." },
-  proporcional: { nome: "Maior redução local", def: "Compara a proporção da carência de proximidade reduzida dentro de cada região." }
-};
-const PRES_SAVE_KEYS = ["raw", "mode", "fileName", "model", "step", "indicator", "showEq", "region", "service", "point", "view", "premises", "scenarios", "activeScenario", "criterion", "svcCat", "_premOpen"];
-const naReg = n => (/^(zona|região|regiao)/i.test(n) ? "na " : "no ") + n;
-
-function enterPresentation() {
-  if (PRES.on) return;
-  $$("dialog[open]").forEach(d => d.close());
-  PRES.saved = { scnSeq };
-  PRES_SAVE_KEYS.forEach(k => { PRES.saved[k] = state[k]; });
-  PRES.on = true;
-  document.body.classList.add("presenting");
-  setupPresentation();
-  setTimeout(() => { const b = $("#presNext"); if (b) b.focus(); }, 30);
-}
-function exitPresentation() {
-  if (!PRES.on) return;
-  $$("dialog[open]").forEach(d => d.close());
-  if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
-  PRES_SAVE_KEYS.forEach(k => { state[k] = PRES.saved[k]; });
-  scnSeq = PRES.saved.scnSeq;
-  PRES.on = false; PRES.saved = null;
-  document.body.classList.remove("presenting");
-  $(".app").className = "app";
-  prevNumbers.clear();
-  buildMap(); renderAll();
-  const b = $("#presEnter"); if (b) b.focus();
-}
-/** Prepara (ou reinicia) a demonstração: dados de demonstração, premissas padrão e dois cenários. */
-function setupPresentation() {
-  const v = validateDataset(DEMO_DATA);
-  state.raw = v.data; state.mode = "demo"; state.fileName = null;
-  state.model = buildModel(v.data);
-  state.premises = {}; state.service = PRES_SID; state.region = null; state.showEq = false;
-  state.indicator = "criancas"; state.view = "depois"; state.point = null; state.criterion = "publico";
-  state.scenarios = []; state.activeScenario = null;
-  Object.assign(PRES, { stage: 1, view: "depois", crit: "quantidade", ind: "criancas", monFor: null, userActive: null, checksFor: null, showChecks: false, err: null });
-  const S = svc(PRES_SID);
-  if (!S) { PRES.err = "O serviço Creche / CMEI não está no catálogo de dados."; }
-  else if (access(PRES_SID).insufficient) { PRES.err = "Dados insuficientes: os setores não informam o percentual de crianças de 0 a 5 anos."; }
-  else PRES_REGIONS.forEach(nome => {
-    const r = state.model.regions.find(x => x.nome === nome);
-    if (!r) { PRES.err = `A região “${nome}” não existe nos dados atuais.`; return; }
-    const b = bestSite(PRES_SID, r.id);
-    if (!b) { PRES.err = `Não foi possível calcular um local na ${nome}.`; return; }
-    const pt = makePoint(b.area.px, b.area.py);
-    const s = { id: "pres-" + r.id, sid: PRES_SID, pt: { ...pt }, label: `${S.nome} · ${r.nome}`, short: r.nome, rid: r.id, site: b.area.nome, checks: {} };
-    S.verificar.forEach((_, i) => { s.checks[i] = "nao_informado"; });
-    // Exemplo ilustrativo da demonstração: um item verificado e um pendente (não é aprovação)
-    const k = state.scenarios.length;
-    if (S.verificar.length >= 2) { s.checks[k % 2 === 0 ? 0 : 1] = "verificado"; s.checks[k % 2 === 0 ? 1 : 0] = "pendente"; }
-    state.scenarios.push(s);
-  });
-  prevNumbers.clear();
-  buildMap();
-  presApply();
-}
-function presScen() { return state.scenarios.map(s => ({ s, sim: simulate(s.sid, s.pt) })); }
-function presMetric(sim, crit) { return crit === "quantidade" ? sim.newT : sim.propReduction; }
-/** Ordena as alternativas pelo critério; trata empate (no valor exibido) e dados insuficientes. */
-function presRank(crit) {
-  const items = presScen().map(x => ({ ...x, v: presMetric(x.sim, crit) })).map(x => ({ ...x, ok: Number.isFinite(x.v) }));
-  const valid = items.filter(x => x.ok).sort((a, b) => b.v - a.v);
-  const key = v => crit === "quantidade" ? Math.round(v) : Math.round(v * 10) / 10;
-  const tie = valid.length >= 2 && key(valid[0].v) === key(valid[1].v);
-  const insufficient = valid.length < 2;
-  return { order: [...valid, ...items.filter(x => !x.ok)], valid, tie, insufficient, leader: !insufficient && !tie ? valid[0] : null };
-}
-const presFmt = (crit, v) => crit === "quantidade" ? "≈ " + fmtInt(v) : fmtPct(v);
-/** Explicação gerada a partir dos resultados atuais (sem IA, sem texto fixo de vencedor). */
-function presExplain(crit) {
-  const rk = presRank(crit), other = crit === "quantidade" ? "proporcional" : "quantidade", ro = presRank(other);
-  if (rk.insufficient) {
-    const miss = rk.order.filter(x => !x.ok).map(x => `${x.s.short}: ${x.sim.propReason || "valor indisponível"}`).join(" ");
-    return [`Dados insuficientes para comparar neste critério. ${miss}`.trim(), ""];
-  }
-  const [a, b] = rk.valid;
-  if (rk.tie) return [`As duas alternativas empatam neste critério: ${presFmt(crit, a.v)} ${naReg(a.s.short)} e ${presFmt(crit, b.v)} ${naReg(b.s.short)}.`, "Nenhuma alternativa aparece à frente; outros fatores precisam ser considerados."];
-  const main = crit === "quantidade"
-    ? `A alternativa ${naReg(a.s.short)} lidera neste critério porque acrescenta mais crianças ao raio de proximidade da unidade simulada: ${presFmt(crit, a.v)}, contra ${presFmt(crit, b.v)} ${naReg(b.s.short)}.`
-    : `A alternativa ${naReg(a.s.short)} lidera neste critério porque reduz uma parcela maior da carência de proximidade da própria região: ${presFmt(crit, a.v)}, contra ${presFmt(crit, b.v)} ${naReg(b.s.short)}.`;
-  let second = "";
-  if (ro.leader && ro.leader.s.id !== a.s.id) {
-    second = crit === "proporcional"
-      ? `No critério “${PRES_CRIT.quantidade.nome}”, a liderança é ${naReg(ro.leader.s.short).replace(/^n/, "d")}. A ordem muda porque a ${a.s.short} tinha menos crianças fora do raio antes (≈ ${fmtInt(a.sim.hostUnc)}, contra ≈ ${fmtInt(b.sim.hostUnc)} ${naReg(b.s.short)}): a unidade resolve uma parte maior da carência local.`
-      : `No critério “${PRES_CRIT.proporcional.nome}”, a liderança é ${naReg(ro.leader.s.short).replace(/^n/, "d")}.`;
-  } else if (ro.leader && ro.leader.s.id === a.s.id) {
-    second = `A mesma alternativa também lidera em “${PRES_CRIT[other].nome}”: a liderança permanece nos dois critérios comparados.`;
-  }
-  return [main, second + (second ? " " : "") + "Isso não indica a melhor escolha geral nem substitui a decisão do gestor."];
-}
-function presSetActive(id) { PRES.userActive = id; state.activeScenario = id; renderPanel(); updateMap(); }
-/** Sincroniza o estado do mapa com a etapa atual. */
-function presApply() {
-  const id = presId(), s0 = state.scenarios[0];
-  if (id === "simular" && s0) { state.step = 2; state.service = PRES_SID; state.point = { ...s0.pt }; state.view = PRES.view; }
-  else if (id === "variaveis") { state.step = 1; state.point = null; state.region = null; state.showEq = false; state.indicator = PRES.ind; }
-  else {
-    state.step = 3; state.point = null; state.service = PRES_SID;
-    if (id === "decisao") state.activeScenario = null;
-    else if (id === "acompanhar") state.activeScenario = presMonScenario().s.id;
-    else { const rk = presRank(PRES.crit); state.activeScenario = PRES.userActive || (rk.valid[0] ? rk.valid[0].s.id : (s0 ? s0.id : null)); }
-  }
-  if (!PRES.checksFor && s0) PRES.checksFor = s0.id;
-  $(".app").className = "app " + (["decisao", "simular"].includes(id) ? "pres-map" : "pres-cmp");
-  renderPresNav();
-  renderPanel(); updateMap();
-}
-function presGo(n) {
-  n = Math.max(1, Math.min(PRES_STAGES.length, n)); if (n === PRES.stage) return;
-  PRES.stage = n; PRES.userActive = null; PRES.showChecks = false;
-  if (presId() === "quantidade") PRES.crit = "quantidade";
-  if (presId() === "proporcao") PRES.crit = "proporcional";
-  presApply();
-  $("#panel").scrollTop = 0;
-}
-function renderPresNav() {
-  $("#presSteps").innerHTML = PRES_STAGES.map((s, i) => `<li><button type="button" data-pstage="${i + 1}" ${PRES.stage === i + 1 ? 'aria-current="step"' : ""} class="${i + 1 < PRES.stage ? "done" : ""}" aria-label="Etapa ${i + 1}: ${esc(s.t)}"><span class="tm">${i + 1}</span><span class="lb">${esc(s.c)}</span></button></li>`).join("");
-  $("#presPrev").disabled = PRES.stage === 1;
-  $("#presNext").disabled = PRES.stage === PRES_STAGES.length;
-}
-/** Ajustes visuais do mapa na apresentação: regiões candidatas, rótulos e controles. */
-function presDecorateMap() {
-  $("#baToggle").hidden = true; $("#mapHint").hidden = true;
-  const id = presId(), cand = new Set(state.scenarios.map(s => s.rid)), s0 = state.scenarios[0];
-  refs.regions.forEach((el, rid) => {
-    el.classList.toggle("sel", cand.has(rid) && (id === "decisao" || id === "variaveis" || (id === "simular" && s0 && s0.rid === rid)));
-  });
-  $$("#map .pin").forEach(g => {
-    const s = state.scenarios.find(x => x.id === g.dataset.id) || (g.dataset.kind === "pin" ? s0 : null);
-    const tx = $("text", g); if (tx) tx.textContent = "";            // o nome da região já aparece no mapa
-    if (s) g.setAttribute("aria-label", `Unidade simulada: ${s.short}`);
-  });
-  if (!["decisao", "variaveis", "simular"].includes(id)) {         // comparação em diante: só as duas alternativas
-    refs.eqs.forEach(g => { g.style.display = "none"; });
-    refs.covU.innerHTML = ""; refs.covR.innerHTML = "";
-  }
-}
-function presHead(title) {
-  return `<div><div class="pres-stage">Etapa ${PRES.stage} de ${PRES_STAGES.length}</div><h2 class="pres-h">${esc(title || PRES_STAGES[PRES.stage - 1].t)}</h2></div>`;
-}
-/** Alternativa acompanhada: escolhida pelo apresentador ou a líder do critério selecionado. */
-function presMonScenario() {
-  const items = presScen(), rk = presRank(PRES.crit);
-  let x = PRES.monFor ? items.find(i => i.s.id === PRES.monFor) : null, note;
-  if (x) note = "Alternativa escolhida pelo apresentador.";
-  else if (rk.leader) { x = items.find(i => i.s.id === rk.leader.s.id); note = `Líder em “${PRES_CRIT[PRES.crit].nome}”.`; }
-  else { x = items[0]; note = rk.tie ? "Empate no critério: escolha a alternativa." : "Dados insuficientes no critério: escolha a alternativa."; }
-  return { ...x, note };
-}
-function monIndicator(regiao, S) { return `% de crianças de 0 a 5 anos a até ${fmtDist(S.raio)} de uma creche na ${regiao}`; }
-/** Relação capacidade × crianças no raio (aritmética simples, não previsão de matrículas). */
-function capRatioText(regiao, sim, S) {
-  if (!isNum(S.cap) || !(sim.newT >= 1)) return `${esc(regiao)}: capacidade não definida ou nenhuma criança adicional no raio.`;
-  if (sim.cap >= sim.newT) return `<b>${esc(regiao)}:</b> ≈ ${fmtInt(sim.newT)} crianças no raio para ${fmtInt(S.cap)} vagas — as vagas bastariam para todas.`;
-  const share = S.cap / sim.newT * 100, n = Math.max(2, Math.round(sim.newT / S.cap));
-  return `<b>${esc(regiao)}:</b> ≈ ${fmtInt(sim.newT)} crianças no raio para ${fmtInt(S.cap)} vagas — uma unidade atenderia ≈ ${fmtPct(share)} delas (cerca de 1 em cada ${n}).`;
-}
-/** Gráfico SVG: linha de base (hoje), meta e espaços vazios para medições futuras. */
-function monChart(base, meta) {
-  if (!Number.isFinite(base) || !Number.isFinite(meta)) return `<p class="small muted" style="margin:8px">Dados insuficientes para o gráfico.</p>`;
-  const W = 520, H = 170, L = 44, R = 96, T = 14, B = 34;
-  const lo = Math.max(0, Math.floor(Math.min(base, meta) / 10) * 10 - 10), hi = 100;
-  const y = v => T + (hi - v) / (hi - lo) * (H - T - B);
-  const cols = ["Hoje", "Medição 1", "Medição 2", "Medição 3"], x = i => L + 18 + i * ((W - L - R - 18) / (cols.length - 1));
-  const ticks = []; for (let v = lo; v <= hi; v += (hi - lo) / 4) ticks.push(v);
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Linha de base ${fmtPct(base)} hoje; meta ${fmtPct(meta)}; medições futuras ainda não registradas">
-    ${ticks.map(v => `<line class="grid" x1="${L}" x2="${W - R + 10}" y1="${y(v)}" y2="${y(v)}"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${Math.round(v)}%</text>`).join("")}
-    <line class="meta" x1="${L}" x2="${W - R + 10}" y1="${y(meta)}" y2="${y(meta)}"/>
-    <text class="tm" x="${W - R + 16}" y="${y(meta) + 4}">Meta ${fmtPct(meta)}</text>
-    ${cols.map((c, i) => `<text x="${x(i)}" y="${H - 10}" text-anchor="middle">${c}</text>`).join("")}
-    ${cols.slice(1).map((_, i) => `<line class="ax" x1="${x(i + 1)}" x2="${x(i + 1)}" y1="${T}" y2="${H - B}" stroke-dasharray="2 4"/><circle class="slot" cx="${x(i + 1)}" cy="${(H - B + T) / 2}" r="7"/><text x="${x(i + 1)}" y="${(H - B + T) / 2 + 22}" text-anchor="middle" font-size="11">a registrar</text>`).join("")}
-    <circle class="base" cx="${x(0)}" cy="${y(base)}" r="7"/>
-    <text class="tb" x="${x(0) + 12}" y="${y(base) - 8}">Hoje ${fmtPct(base)}</text>
-  </svg>`;
-}
-function presPanelHTML() {
-  if (PRES.err) return `${presHead()}<div class="callout danger">${ICON.warn}<div><b>Não foi possível preparar a demonstração.</b> ${esc(PRES.err)}</div></div>`;
-  const S = svc(PRES_SID), R = fmtDist(S.raio), id = presId(), items = presScen();
-  const chip = `<span class="pres-chip">${badge(S, true)}${esc(S.nome)} · até ${R}</span>`;
-
-  if (id === "decisao") return `${presHead()}
-    ${chip}
-    <div class="pres-guide">Compare o que cada alternativa melhora.</div>
-    <div class="pres-alts">${items.map(({ s, sim }) => `<div class="pres-alt"><div class="rg">${esc(s.short)}</div>
-      <div class="big">≈ ${fmtInt(sim.hostUnc)}</div><div class="ln">crianças de 0 a 5 anos a mais de ${R} de uma creche</div></div>`).join("")}</div>
-    <p class="pres-note">Só uma unidade seria implantada.</p>
-    <p class="pres-data">Nomes reais das zonas de Londrina; números simulados para demonstração.</p>`;
-
-  if (id === "variaveis") {
-    const m = state.model, used = new Set(state.scenarios.map(s => s.rid));
-    const g = (label, note, chips) => `<div class="vgroup"><div class="vl">${label}${note ? `<span>${note}</span>` : ""}</div><div class="vchips">${chips}</div></div>`;
-    const svcs = m.services.map(s0 => { const s = svc(s0.id); return `<span class="vchip ${s.id === PRES_SID ? "on" : ""}">${badge(s, true)}${esc(s.nome_curto || s.nome)}</span>`; }).join("");
-    const inds = Object.entries(INDICATORS).map(([k, I]) => `<button type="button" class="vchip ${PRES.ind === k ? "on" : ""}" data-pind="${k}" aria-pressed="${PRES.ind === k}">${esc(I.nome)}</button>`).join("");
-    const regs = m.regions.filter(r => r.n).map(r => `<span class="vchip ${used.has(r.id) ? "on" : ""}">${esc(r.nome)}</span>`).join("");
-    const crits = ["Mais crianças próximas", "Maior redução local", "Custo por pessoa"].map((c, i) => `<span class="vchip ${i < 2 ? "on" : ""}">${c}</span>`).join("");
-    const prem = [`Raio: ${R}`, `Capacidade: ${isNum(S.cap) ? fmtInt(S.cap) + " " + esc(S.capacidade_unidade || "vagas") : "—"}`, "Custo de implantação"].map((c, i) => `<span class="vchip ${i < 2 ? "on" : ""}">${c}</span>`).join("");
-    return `${presHead()}
-      <p class="pres-note" style="font-size:14px">Em destaque, as escolhas deste exemplo. No uso normal, qualquer combinação.</p>
-      ${g("Serviço", "11 opções", svcs)}
-      ${g("Indicador do mapa", "toque para trocar", inds)}
-      ${g("Região", "6 regiões", regs)}
-      ${g("Critério de comparação", "", crits)}
-      ${g("Premissas ajustáveis", "", prem)}`;
-  }
-
-  if (id === "simular") {
-    const { s, sim } = items[0], dep = PRES.view === "depois";
-    return `${presHead("Simular uma unidade na " + s.short)}
-      <div class="pres-toggle" role="group" aria-label="Antes ou depois da nova unidade">
-        <button type="button" data-pview="antes" aria-pressed="${!dep}">Antes</button>
-        <button type="button" data-pview="depois" aria-pressed="${dep}">Depois</button>
-      </div>
-      <div class="pres-big ${dep ? "" : "off"}" role="status">
-        <div class="l">Crianças adicionais no raio</div>
-        <div class="v">${dep ? "+ " + numSpan("p-new", sim.newT, "int") : numSpan("p-new", 0, "int")}</div>
-      </div>
-      <div class="pres-row"><span>Crianças com creche a até ${R} na ${esc(s.short)}</span>
-        <span class="vv ${dep ? "" : "on"}"><small>Antes</small>${fmtPct(sim.hostBefore)}</span>
-        <span class="vv ${dep ? "on" : ""}"><small>Depois</small>${fmtPct(sim.hostAfter)}</span></div>
-      <p class="pres-note">Laranja no mapa: setores que passam a ter creche por perto.</p>`;
-  }
-
-  if (id === "quantidade" || id === "proporcao") {
-    const crit = PRES.crit, rk = presRank(crit), ro = presRank(crit === "quantidade" ? "proporcional" : "quantidade");
-    const cards = rk.order.map((x, i) => {
-      const isLead = rk.leader && rk.leader.s.id === x.s.id;
-      const tag = rk.insufficient ? "" : rk.tie ? '<span class="tag tie">Empate</span>' : isLead ? '<span class="tag">Lidera</span>' : "";
-      const mainV = x.ok ? (crit === "quantidade" ? "+ " + fmtInt(x.v) : fmtPct(x.v)) : "Dados insuficientes";
-      const sub = crit === "quantidade" ? `Redução local: <b>${fmtPct(x.sim.propReduction)}</b>` : `Crianças no raio: <b>≈ ${fmtInt(x.sim.newT)}</b>`;
-      return `<div class="pres-card ${isLead ? "lead" : ""} ${x.s.id === state.activeScenario ? "active" : ""}" role="button" tabindex="0" data-pcard="${esc(x.s.id)}" aria-label="${esc(x.s.short)}: mostrar no mapa">
-        <div class="hd"><span class="rk">${x.ok && !rk.insufficient ? (rk.tie ? "=" : (i + 1) + "º") : "—"}</span><span class="rg">${esc(x.s.short)}</span>${tag}</div>
-        <div class="main"><div class="l">${crit === "quantidade" ? "Crianças adicionais no raio" : "Carência local reduzida"}</div><div class="v">${mainV}</div></div>
-        <div class="sub">${sub}</div></div>`;
-    }).join("");
-    let why;
-    if (rk.insufficient) why = presExplain(crit)[0];
-    else if (rk.tie) why = presExplain(crit)[0];
-    else {
-      const [a, b] = rk.valid;
-      why = crit === "quantidade"
-        ? `A ${a.s.short} coloca mais crianças perto de uma creche: ≈ ${fmtInt(a.v)}, contra ≈ ${fmtInt(b.v)}.`
-        : `A ${a.s.short} resolve uma parte maior da sua própria carência: ${fmtPct(a.v)}, contra ${fmtPct(b.v)}.`;
-      if (crit === "proporcional" && ro.leader && ro.leader.s.id !== a.s.id) why += ` A ordem muda porque a ${a.s.short} tinha menos crianças longe de creche (≈ ${fmtInt(a.sim.hostUnc)}, contra ≈ ${fmtInt(b.sim.hostUnc)}).`;
-      if (ro.leader && ro.leader.s.id === a.s.id) why += " A liderança é a mesma nos dois critérios.";
-    }
-    return `${presHead()}
-      <div class="pres-crit" role="group" aria-label="Critério de comparação">
-        <button type="button" data-pcrit="quantidade" aria-pressed="${crit === "quantidade"}">${PRES_CRIT.quantidade.nome}</button>
-        <button type="button" data-pcrit="proporcional" aria-pressed="${crit === "proporcional"}">${PRES_CRIT.proporcional.nome}</button>
-      </div>
-      <div class="pres-cards">${cards}</div>
-      <div class="pres-why" role="status" aria-live="polite"><h3>Por que essa alternativa aparece primeiro?</h3><p>${esc(why)}</p></div>`;
-  }
-
-  if (id === "capacidade") {
-    const capRows = items.map(({ s, sim }) => `<div class="rg">${esc(s.short)}</div>
-      <div class="cell prox"><b>≈ ${fmtInt(sim.newT)}</b><span>crianças no raio</span></div>
-      <div class="cell"><b>${isNum(S.cap) ? fmtInt(S.cap) : "—"}</b><span>${isNum(S.cap) ? esc(S.capacidade_unidade || "vagas") + " (ilustrativo)" : "capacidade não definida"}</span></div>`).join("");
-    const cur = state.scenarios.find(x => x.id === PRES.checksFor) || state.scenarios[0];
-    const checks = cur ? `<div class="pres-tabs" role="group" aria-label="Alternativa">${state.scenarios.map(s => `<button type="button" data-pchk="${esc(s.id)}" aria-pressed="${s.id === cur.id}">${esc(s.short)}</button>`).join("")}</div>
-      <div class="pres-checks">${S.verificar.map((v, i) => `<div class="restr-row"><div class="lbl">${pill(cur.checks[i], STATUS[cur.checks[i]])}<span>${esc(v)}</span></div><select data-pchkv="${i}" aria-label="Status: ${esc(v)} (${esc(cur.short)})">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}" ${cur.checks[i] === k ? "selected" : ""}>${l}</option>`).join("")}</select></div>`).join("")}</div>
-      <p class="pres-note"><b>Status de exemplo, ilustrativos.</b> Verificar não é aprovar: não equivale a aprovação técnica, legal ou orçamentária.</p>` : "";
-    return `${presHead()}
-      <div class="pres-cap">${capRows}</div>
-      ${PRES.showChecks ? "" : items.map(({ s, sim }) => `<p class="cap-ratio">${capRatioText(s.short, sim, S)}</p>`).join("")}
-      <p class="pres-lead" style="font-size:16px">Crianças por perto não são vagas: o atendimento depende de vagas e das condições de operação.</p>
-      ${PRES.showChecks ? checks : `<button class="btn block" type="button" id="pShowChecks" style="font-size:16px;padding:13px">${ICON.doc} Ver o que ainda precisa ser verificado</button>`}`;
-  }
-
-  if (id === "acompanhar") {
-    const { s, sim, note } = presMonScenario();
-    return `${presHead()}
-      <div class="row wrap" style="gap:10px"><div class="pres-tabs" role="group" aria-label="Alternativa acompanhada">${state.scenarios.map(x => `<button type="button" data-pmon="${esc(x.id)}" aria-pressed="${x.id === s.id}">${esc(x.short)}</button>`).join("")}</div><span class="small muted">${esc(note)}</span></div>
-      <div class="mon-ind"><div class="k">Indicador proposto</div><div class="v">${esc(monIndicator(s.short, S))}</div></div>
-      <div class="mon-vals">
-        <div><div class="l">Linha de base (hoje)</div><div class="n">${fmtPct(sim.hostBefore)}</div></div>
-        <div class="ar">${ICON.arrow}</div>
-        <div class="goal"><div class="l">Meta (após a unidade)</div><div class="n">${fmtPct(sim.hostAfter)}</div></div>
-      </div>
-      <div class="mon-chart">${monChart(sim.hostBefore, sim.hostAfter)}</div>
-      <p class="pres-data">Intervenção hipotética: ainda não há medições. Os valores serão registrados após a implantação.</p>
-      <p class="pres-close" style="font-size:17px;padding:2px 0 2px 12px">A Revano não termina na escolha: ela define como o resultado será monitorado.</p>`;
-  }
-  if (id === "encerramento") {
-    return `<div class="pres-end">
-      <svg class="mk" viewBox="0 0 180 200" aria-hidden="true"><rect x="10" y="37" width="58" height="53" rx="3" fill="#C8734C"/><path d="M80 10H115C145 10 168 34 168 64V132C150 113 116 96 95 74C85 63 80 52 80 40Z" fill="#1F453D"/><path d="M13 104H60C108 104 146 141 151 190H113C109 171 93 158 71 158H13A3 3 0 0 1 10 155V107A3 3 0 0 1 13 104Z" fill="#1F453D"/></svg>
-      <p class="q"><b>A Revano não decide pela prefeitura.</b> Ela mostra quem pode ser beneficiado, quais alternativas merecem atenção e o que ainda precisa ser verificado.</p>
-      <p class="s">Subsídio para avaliação técnica. A decisão permanece com o gestor.</p>
-    </div>`;
-  }
-
-  // justificativa
-  return `${presHead()}
-    <button class="btn primary block pres-gen" type="button" id="pGenSum">${ICON.doc} Gerar justificativa</button>
-    <p class="pres-close">Subsídio para avaliação técnica. A decisão permanece com o gestor.</p>
-    <p class="pres-note">Demonstração com dados simulados.</p>`;
-}
-function bindPresPanel(host) {
-  const on = (sel, ev, fn) => $$(sel, host).forEach(el => el.addEventListener(ev, fn));
-  on("[data-pview]", "click", e => { PRES.view = e.currentTarget.dataset.pview; presApply(); const b = $(`[data-pview="${PRES.view}"]`); if (b) b.focus(); });
-  on("[data-pcrit]", "click", e => { const c = e.currentTarget.dataset.pcrit; if (c === PRES.crit) return; PRES.crit = c; PRES.userActive = null; presApply(); const b = $(`[data-pcrit="${c}"]`); if (b) b.focus(); });
-  on("[data-pcard]", "click", e => { if (e.target.closest("button")) return; presSetActive(e.currentTarget.dataset.pcard); });
-  on("[data-pcard]", "keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target === e.currentTarget) { e.preventDefault(); presSetActive(e.currentTarget.dataset.pcard); } });
-  on("[data-pdetail]", "click", e => { e.stopPropagation(); openScenario(e.currentTarget.dataset.pdetail); });
-  on("#pShowChecks", "click", () => { PRES.showChecks = true; renderPanel(); const f = $("[data-pchkv]"); if (f) f.focus(); });
-  on("[data-pchk]", "click", e => { PRES.checksFor = e.currentTarget.dataset.pchk; renderPanel(); });
-  on("[data-pchkv]", "change", e => {
-    const s = state.scenarios.find(x => x.id === PRES.checksFor) || state.scenarios[0]; if (!s) return;
-    const i = e.currentTarget.dataset.pchkv; s.checks[i] = e.currentTarget.value; renderPanel();
-    const f = $(`[data-pchkv="${i}"]`); if (f) f.focus();
-  });
-  on("#pGenSum", "click", openPresSummary);
-  on("[data-pmon]", "click", e => { PRES.monFor = e.currentTarget.dataset.pmon; presApply(); const b = $(`[data-pmon="${PRES.monFor}"]`); if (b) b.focus(); });
-  on("[data-pind]", "click", e => { PRES.ind = e.currentTarget.dataset.pind; presApply(); const b = $(`[data-pind="${PRES.ind}"]`); if (b) b.focus(); });
-}
-function presKey(e) {
-  const k = e.key;
-  if (k === "ArrowRight" || k === "PageDown") { e.preventDefault(); presGo(PRES.stage + 1); }
-  else if (k === "ArrowLeft" || k === "PageUp") { e.preventDefault(); presGo(PRES.stage - 1); }
-  else if (/^[1-9]$/.test(k)) presGo(+k);
-}
-/** Primeira tela da justificativa: curta e com os mesmos valores mostrados na tela. */
-function presSummaryHTML() {
-  const S = svc(PRES_SID), crit = PRES.crit, [why1] = presExplain(crit);
-  const when = new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
-  const alts = presScen().map(({ s, sim }) => {
-    const pend = S.verificar.filter((_, i) => s.checks[i] !== "verificado");
-    return `<div class="sum-alt"><h4>${esc(s.short)}</h4><dl>
-      <dt>Crianças adicionais no raio</dt><dd>≈ ${fmtInt(sim.newT)}</dd>
-      <dt>Redução local da carência</dt><dd>${fmtPct(sim.propReduction)}</dd>
-      <dt>Capacidade ilustrativa</dt><dd>${isNum(S.cap) ? fmtInt(S.cap) + " " + esc(S.capacidade_unidade || "vagas") : "—"}</dd>
-      <dt>Acompanhamento: base → meta</dt><dd>${fmtPct(sim.hostBefore)} → ${fmtPct(sim.hostAfter)}</dd></dl>
-      <p class="meta" style="margin:6px 0 0"><b>Verificações pendentes (${pend.length} de ${S.verificar.length}):</b> ${pend.length ? esc(pend.join("; ")) : "nenhuma registrada como pendente (não constitui aprovação)"}.</p></div>`;
-  }).join("");
-  return `<p class="meta" style="margin:0 0 8px">Revano · gerado em ${esc(when)} · <b>demonstração com dados simulados</b> (${esc((state.raw.fontes[0] || {}).nome || "sem fonte registrada")}); os números não representam a situação real de Londrina.</p>
-    <p style="margin:0 0 8px"><b>Serviço:</b> ${esc(S.nome)}, crianças de 0 a 5 anos (população estimada). <b>Alternativas:</b> uma unidade na ${esc(state.scenarios.map(s => s.short).join(" ou uma unidade na "))} — os ganhos não se somam.</p>
-    <div class="warn" style="margin:8px 0"><b>Critério: ${esc(PRES_CRIT[crit].nome)}.</b> ${esc(why1)}</div>
-    <div class="sum-grid">${alts}</div>
-    <p class="meta" style="margin:10px 0 0"><b>Indicador de acompanhamento:</b> ${esc(monIndicator("região", S))}. Linha de base = hoje; meta = valor estimado após a unidade. Intervenção hipotética: ainda não há medições; os valores serão registrados após a implantação.</p>
-    <p class="meta" style="margin:6px 0 0"><b>Premissas:</b> raio ilustrativo de ${fmtDist(S.raio)} em linha reta (não é percurso de caminhada); crianças de cada setor = população × % de 0 a 5 anos, no centro do setor, sem recontar quem já tinha creche no raio; capacidade ilustrativa por unidade. Proximidade não é demanda registrada nem matrícula.</p>
-    <p class="closing-r" style="margin-top:12px">Subsídio para avaliação técnica. A decisão permanece com o gestor.</p>`;
-}
-function openPresSummary() { $("#presSumBody").innerHTML = presSummaryHTML(); openDialog($("#presSummary")); }
-function bindPresentation() {
-  $("#presEnter").addEventListener("click", enterPresentation);
-  $("#presExit").addEventListener("click", exitPresentation);
-  $("#presRestart").addEventListener("click", () => { $$("dialog[open]").forEach(d => d.close()); setupPresentation(); toast("Demonstração reiniciada."); $("#presNext").focus(); });
-  $("#presPrev").addEventListener("click", () => presGo(PRES.stage - 1));
-  $("#presNext").addEventListener("click", () => presGo(PRES.stage + 1));
-  $("#presSteps").addEventListener("click", e => { const b = e.target.closest("[data-pstage]"); if (b) presGo(+b.dataset.pstage); });
-  $("#presFull").addEventListener("click", () => {
-    try {
-      if (document.fullscreenElement) document.exitFullscreen();
-      else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => toast("Tela cheia indisponível neste navegador."));
-      else toast("Tela cheia indisponível neste navegador.");
-    } catch (_) { toast("Tela cheia indisponível neste navegador."); }
-  });
-  document.addEventListener("fullscreenchange", () => { $("#presFull .lbl").textContent = document.fullscreenElement ? "Sair da tela cheia" : "Tela cheia"; });
-  $("#presFullReport").addEventListener("click", () => { closeDialog($("#presSummary")); openReport(); });
-  $("#presPrintSum").addEventListener("click", () => {
-    $("#printArea").innerHTML = `<div class="report">${$("#presSumBody").innerHTML}</div>`;
-    closeDialog($("#presSummary"));
-    setTimeout(() => { try { window.print(); } catch (_) { toast("Impressão indisponível neste navegador."); } }, 60);
-  });
-}
-
-/* 14. ERROS GLOBAIS — a apresentação não pode parar */
+/* 14. ERROS GLOBAIS — uma falha secundária não interrompe o uso */
 window.addEventListener("error", () => { try { toast("Ocorreu um erro inesperado; os dados foram preservados."); } catch (_) {} });
 document.addEventListener("DOMContentLoaded", init);
 </script>
