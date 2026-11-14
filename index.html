@@ -439,7 +439,7 @@ body.presenting .pres-bar{display:flex;align-items:center;gap:18px;height:60px;p
 .pres-title{font-size:19px;font-weight:700;letter-spacing:-.015em;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pres-actions{display:flex;gap:8px}
 body.presenting .pres-nav{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;height:68px;padding:0 24px;background:var(--surface);border-top:1px solid var(--line);position:fixed;left:0;right:0;bottom:0;z-index:20}
-.pres-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.pres-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
 .pres-steps button{width:100%;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:5px 8px;text-align:left;line-height:1.15;color:var(--ink-3);font-size:12.5px;font-weight:600;min-width:0}
 .pres-steps button .tm{display:block;font-size:11px;font-weight:500;font-variant-numeric:tabular-nums}
 .pres-steps button .lb{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -555,6 +555,32 @@ body.presenting .legend{font-size:12.5px}
   .pres-steps button .tm{display:none}
 }
 @media (max-width:640px){ .pres-cards,.pres-alts,.sum-grid{grid-template-columns:1fr} .pres-steps button .lb{display:none} .pres-steps button{text-align:center} .pres-actions .btn .lbl{display:none} }
+
+/* ---------- Modo apresentação: versão enxuta ---------- */
+.pres-steps button{display:flex;align-items:center;gap:7px;padding:8px 9px;font-size:13px}
+.pres-steps button .tm{display:grid!important;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--surface-3);color:var(--ink-2);font-size:12px;font-weight:750;flex:none}
+.pres-steps button[aria-current="step"] .tm{background:#fff;color:var(--brand-green)}
+.pres-steps button.done .tm{background:var(--green-soft);color:var(--green-ink)}
+.pres-alt .big{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1.05;color:var(--brand-orange);font-variant-numeric:tabular-nums}
+.pres-card .sub{font-size:14px;color:var(--ink-3)}
+.pres-card .sub b{color:var(--ink);font-weight:700}
+.pres-why{font-size:16px}
+.pres-chip{display:inline-flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:999px;padding:5px 12px 5px 6px;font-size:14px;font-weight:650;align-self:flex-start}
+.pres-chip .svc-badge{width:24px;height:24px;border-radius:7px}
+.pres-chip .svc-badge svg{width:14px;height:14px}
+.vgroup{display:grid;gap:7px}
+.vgroup .vl{font-size:12px;font-weight:750;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);display:flex;gap:8px;align-items:baseline}
+.vgroup .vl span{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--brand-orange)}
+.vchips{display:flex;flex-wrap:wrap;gap:6px}
+.vchip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:13.5px;font-weight:600;color:var(--ink-3)}
+.vchip .svc-badge{width:20px;height:20px;border-radius:6px}
+.vchip .svc-badge svg{width:12px;height:12px}
+.vchip.on{border-color:var(--brand-green);background:var(--brand-green);color:#fff}
+.vchip.on::before{content:"✓"}
+button.vchip{cursor:pointer}
+button.vchip:hover{border-color:var(--ink-3)}
+button.vchip.on:hover{border-color:var(--brand-green)}
+@media (max-height:800px){ .pres-alt .big{font-size:32px} .vchip{padding:4px 10px;font-size:13px} .vgroup{gap:5px} .pres-why{font-size:15px} }
 
 /* ---------- Responsividade ---------- */
 @media (max-width:1200px){ .app{grid-template-columns:minmax(0,1fr) 400px} .brand-name span{display:none} }
@@ -4182,13 +4208,15 @@ const PRES = { on: false, stage: 1, view: "depois", crit: "quantidade", userActi
 const PRES_SID = "creche";
 const PRES_REGIONS = ["Zona Sul", "Zona Leste"];
 const PRES_STAGES = [
-  { t: "A decisão", tm: "0:00–0:15" },
-  { t: "Simular uma unidade", tm: "0:15–0:35" },
-  { t: "Comparar pela quantidade", tm: "0:35–0:55" },
-  { t: "Comparar pela proporção local", tm: "0:55–1:20" },
-  { t: "Capacidade e verificações", tm: "1:20–1:53" },
-  { t: "Justificativa", tm: "1:53–2:00" }
+  { id: "decisao", t: "A decisão", c: "Decisão" },
+  { id: "variaveis", t: "O que dá para escolher", c: "Variáveis" },
+  { id: "simular", t: "Simular uma unidade", c: "Simular" },
+  { id: "quantidade", t: "Comparar: mais crianças próximas", c: "Quantidade" },
+  { id: "proporcao", t: "Comparar: maior redução local", c: "Proporção" },
+  { id: "capacidade", t: "Capacidade e verificações", c: "Capacidade" },
+  { id: "justificativa", t: "Justificativa", c: "Justificativa" }
 ];
+const presId = () => PRES_STAGES[PRES.stage - 1].id;
 const PRES_CRIT = {
   quantidade: { nome: "Mais crianças próximas", def: "Compara quantas crianças adicionais passam a estar dentro do raio da unidade simulada." },
   proporcional: { nome: "Maior redução local", def: "Compara a proporção da carência de proximidade reduzida dentro de cada região." }
@@ -4227,7 +4255,7 @@ function setupPresentation() {
   state.premises = {}; state.service = PRES_SID; state.region = null; state.showEq = false;
   state.indicator = "criancas"; state.view = "depois"; state.point = null; state.criterion = "publico";
   state.scenarios = []; state.activeScenario = null;
-  Object.assign(PRES, { stage: 1, view: "depois", crit: "quantidade", userActive: null, checksFor: null, showChecks: false, err: null });
+  Object.assign(PRES, { stage: 1, view: "depois", crit: "quantidade", ind: "criancas", userActive: null, checksFor: null, showChecks: false, err: null });
   const S = svc(PRES_SID);
   if (!S) { PRES.err = "O serviço Creche / CMEI não está no catálogo de dados."; }
   else if (access(PRES_SID).insufficient) { PRES.err = "Dados insuficientes: os setores não informam o percentual de crianças de 0 a 5 anos."; }
@@ -4282,68 +4310,80 @@ function presExplain(crit) {
 function presSetActive(id) { PRES.userActive = id; state.activeScenario = id; renderPanel(); updateMap(); }
 /** Sincroniza o estado do mapa com a etapa atual. */
 function presApply() {
-  const st = PRES.stage, s0 = state.scenarios[0];
-  if (st === 2 && s0) { state.step = 2; state.service = PRES_SID; state.point = { ...s0.pt }; state.view = PRES.view; }
+  const id = presId(), s0 = state.scenarios[0];
+  if (id === "simular" && s0) { state.step = 2; state.service = PRES_SID; state.point = { ...s0.pt }; state.view = PRES.view; }
+  else if (id === "variaveis") { state.step = 1; state.point = null; state.region = null; state.showEq = false; state.indicator = PRES.ind; }
   else {
-    state.step = 3; state.point = null;
-    if (st === 1) state.activeScenario = null;
+    state.step = 3; state.point = null; state.service = PRES_SID;
+    if (id === "decisao") state.activeScenario = null;
     else { const rk = presRank(PRES.crit); state.activeScenario = PRES.userActive || (rk.valid[0] ? rk.valid[0].s.id : (s0 ? s0.id : null)); }
   }
   if (!PRES.checksFor && s0) PRES.checksFor = s0.id;
-  $(".app").className = "app " + (st <= 2 ? "pres-map" : "pres-cmp");
+  $(".app").className = "app " + (["decisao", "simular"].includes(id) ? "pres-map" : "pres-cmp");
   renderPresNav();
   renderPanel(); updateMap();
 }
 function presGo(n) {
-  n = Math.max(1, Math.min(6, n)); if (n === PRES.stage) return;
-  PRES.stage = n; PRES.userActive = null;
+  n = Math.max(1, Math.min(PRES_STAGES.length, n)); if (n === PRES.stage) return;
+  PRES.stage = n; PRES.userActive = null; PRES.showChecks = false;
+  if (presId() === "quantidade") PRES.crit = "quantidade";
+  if (presId() === "proporcao") PRES.crit = "proporcional";
   presApply();
   $("#panel").scrollTop = 0;
 }
 function renderPresNav() {
-  $("#presSteps").innerHTML = PRES_STAGES.map((s, i) => `<li><button type="button" data-pstage="${i + 1}" ${PRES.stage === i + 1 ? 'aria-current="step"' : ""} class="${i + 1 < PRES.stage ? "done" : ""}" aria-label="Etapa ${i + 1}: ${esc(s.t)}"><span class="tm">Etapa ${i + 1}</span><span class="lb">${esc(s.t)}</span></button></li>`).join("");
+  $("#presSteps").innerHTML = PRES_STAGES.map((s, i) => `<li><button type="button" data-pstage="${i + 1}" ${PRES.stage === i + 1 ? 'aria-current="step"' : ""} class="${i + 1 < PRES.stage ? "done" : ""}" aria-label="Etapa ${i + 1}: ${esc(s.t)}"><span class="tm">${i + 1}</span><span class="lb">${esc(s.c)}</span></button></li>`).join("");
   $("#presPrev").disabled = PRES.stage === 1;
-  $("#presNext").disabled = PRES.stage === 6;
+  $("#presNext").disabled = PRES.stage === PRES_STAGES.length;
 }
 /** Ajustes visuais do mapa na apresentação: regiões candidatas, rótulos e controles. */
 function presDecorateMap() {
   $("#baToggle").hidden = true; $("#mapHint").hidden = true;
-  const cand = new Set(state.scenarios.map(s => s.rid));
-  refs.regions.forEach((el, id) => {
-    el.classList.toggle("sel", cand.has(id) && (PRES.stage === 1 || (PRES.stage === 2 && state.scenarios[0] && state.scenarios[0].rid === id)));
+  const id = presId(), cand = new Set(state.scenarios.map(s => s.rid)), s0 = state.scenarios[0];
+  refs.regions.forEach((el, rid) => {
+    el.classList.toggle("sel", cand.has(rid) && (id === "decisao" || id === "variaveis" || (id === "simular" && s0 && s0.rid === rid)));
   });
   $$("#map .pin").forEach(g => {
-    const s = state.scenarios.find(x => x.id === g.dataset.id) || (g.dataset.kind === "pin" ? state.scenarios[0] : null);
+    const s = state.scenarios.find(x => x.id === g.dataset.id) || (g.dataset.kind === "pin" ? s0 : null);
     const tx = $("text", g); if (s && tx) tx.textContent = s.short;
     if (s) g.setAttribute("aria-label", `Unidade simulada: ${s.short}`);
   });
 }
-function presHead() {
-  const s = PRES_STAGES[PRES.stage - 1];
-  return `<div><div class="pres-stage">Etapa ${PRES.stage} de 6</div><h2 class="pres-h">${esc(s.t)}</h2></div>`;
+function presHead(title) {
+  return `<div><div class="pres-stage">Etapa ${PRES.stage} de ${PRES_STAGES.length}</div><h2 class="pres-h">${esc(title || PRES_STAGES[PRES.stage - 1].t)}</h2></div>`;
 }
 function presPanelHTML() {
   if (PRES.err) return `${presHead()}<div class="callout danger">${ICON.warn}<div><b>Não foi possível preparar a demonstração.</b> ${esc(PRES.err)}</div></div>`;
-  const S = svc(PRES_SID), R = fmtDist(S.raio);
-  const cap = isNum(S.cap) ? `${fmtInt(S.cap)} ${esc(S.capacidade_unidade || "vagas")}` : "não definida";
-  const items = presScen();
-  const st = PRES.stage;
-  if (st === 1) {
+  const S = svc(PRES_SID), R = fmtDist(S.raio), id = presId(), items = presScen();
+  const chip = `<span class="pres-chip">${badge(S, true)}${esc(S.nome)} · até ${R}</span>`;
+
+  if (id === "decisao") return `${presHead()}
+    ${chip}
+    <div class="pres-guide">Compare o que cada alternativa melhora.</div>
+    <div class="pres-alts">${items.map(({ s, sim }) => `<div class="pres-alt"><div class="rg">${esc(s.short)}</div>
+      <div class="big">≈ ${fmtInt(sim.hostUnc)}</div><div class="ln">crianças de 0 a 5 anos a mais de ${R} de uma creche</div></div>`).join("")}</div>
+    <p class="pres-note">Só uma unidade seria implantada. Dados simulados.</p>`;
+
+  if (id === "variaveis") {
+    const m = state.model, used = new Set(state.scenarios.map(s => s.rid));
+    const g = (label, note, chips) => `<div class="vgroup"><div class="vl">${label}${note ? `<span>${note}</span>` : ""}</div><div class="vchips">${chips}</div></div>`;
+    const svcs = m.services.map(s0 => { const s = svc(s0.id); return `<span class="vchip ${s.id === PRES_SID ? "on" : ""}">${badge(s, true)}${esc(s.nome_curto || s.nome)}</span>`; }).join("");
+    const inds = Object.entries(INDICATORS).map(([k, I]) => `<button type="button" class="vchip ${PRES.ind === k ? "on" : ""}" data-pind="${k}" aria-pressed="${PRES.ind === k}">${esc(I.nome)}</button>`).join("");
+    const regs = m.regions.filter(r => r.n).map(r => `<span class="vchip ${used.has(r.id) ? "on" : ""}">${esc(r.nome)}</span>`).join("");
+    const crits = ["Mais crianças próximas", "Maior redução local", "Custo por pessoa"].map((c, i) => `<span class="vchip ${i < 2 ? "on" : ""}">${c}</span>`).join("");
+    const prem = [`Raio: ${R}`, `Capacidade: ${isNum(S.cap) ? fmtInt(S.cap) + " " + esc(S.capacidade_unidade || "vagas") : "—"}`, "Custo de implantação"].map((c, i) => `<span class="vchip ${i < 2 ? "on" : ""}">${c}</span>`).join("");
     return `${presHead()}
-      <p class="pres-lead">Se a Prefeitura puder implantar <b>uma</b> nova creche, em qual região ela ampliaria mais a proximidade das crianças de 0 a 5 anos?</p>
-      <div class="pres-svc">${badge(S)}<div><b>${esc(S.nome)}</b><br>Público: crianças de 0 a 5 anos (população estimada) · raio ilustrativo de ${R} em linha reta</div></div>
-      <div class="pres-alts">${items.map(({ s, sim }) => `
-        <div class="pres-alt"><div class="rg">${esc(s.short)}</div>
-          <div class="ln">Hoje, <b>${fmtPct(sim.hostBefore)}</b> das crianças de 0 a 5 anos da região estão a até ${R} de uma creche.</div>
-          <div class="ln"><b>≈ ${fmtInt(sim.hostUnc)}</b> crianças da região estão fora desse raio.</div>
-          </div>`).join("")}</div>
-      <div class="pres-guide">Compare o que cada alternativa melhora.</div>
-      <p class="pres-note">Duas alternativas de investimento: só uma seria implantada e os ganhos não se somam. Cada unidade fica no local da região que inclui mais crianças sem creche no raio.</p>`;
+      <p class="pres-note" style="font-size:14px">Em destaque, as escolhas deste exemplo. No uso normal, qualquer combinação.</p>
+      ${g("Serviço", "11 opções", svcs)}
+      ${g("Indicador do mapa", "toque para trocar", inds)}
+      ${g("Região", "6 regiões", regs)}
+      ${g("Critério de comparação", "", crits)}
+      ${g("Premissas ajustáveis", "", prem)}`;
   }
-  if (st === 2) {
+
+  if (id === "simular") {
     const { s, sim } = items[0], dep = PRES.view === "depois";
-    return `${presHead()}
-      <p class="pres-lead">Uma unidade de ${esc(S.nome)} simulada na <b>${esc(s.short)}</b>.</p>
+    return `${presHead("Simular uma unidade na " + s.short)}
       <div class="pres-toggle" role="group" aria-label="Antes ou depois da nova unidade">
         <button type="button" data-pview="antes" aria-pressed="${!dep}">Antes</button>
         <button type="button" data-pview="depois" aria-pressed="${dep}">Depois</button>
@@ -4351,61 +4391,64 @@ function presPanelHTML() {
       <div class="pres-big ${dep ? "" : "off"}" role="status">
         <div class="l">Crianças adicionais no raio</div>
         <div class="v">${dep ? "+ " + numSpan("p-new", sim.newT, "int") : numSpan("p-new", 0, "int")}</div>
-        <div class="s">${dep ? `crianças de 0 a 5 anos que estavam a mais de ${R} de uma creche e passam a estar no raio da nova unidade` : "situação atual, sem a nova unidade"}</div>
       </div>
-      <div class="pres-row"><span><b>${esc(s.short)}</b>: crianças de 0 a 5 anos a até ${R} de uma creche</span>
+      <div class="pres-row"><span>Crianças com creche a até ${R} na ${esc(s.short)}</span>
         <span class="vv ${dep ? "" : "on"}"><small>Antes</small>${fmtPct(sim.hostBefore)}</span>
         <span class="vv ${dep ? "on" : ""}"><small>Depois</small>${fmtPct(sim.hostAfter)}</span></div>
-      <p class="pres-note">No mapa: <b style="color:var(--blue-ink)">laranja com ponto</b> = setores que entram no raio da nova unidade; <b style="color:var(--green-ink)">verde</b> = já tinham creche a até ${R}. Raio é premissa ilustrativa; linha reta não é percurso de caminhada.</p>`;
+      <p class="pres-note">Laranja no mapa: setores que passam a ter creche por perto.</p>`;
   }
-  if (st === 3 || st === 4) {
-    const crit = PRES.crit, rk = presRank(crit), [why1, why2] = presExplain(crit);
+
+  if (id === "quantidade" || id === "proporcao") {
+    const crit = PRES.crit, rk = presRank(crit), ro = presRank(crit === "quantidade" ? "proporcional" : "quantidade");
     const cards = rk.order.map((x, i) => {
       const isLead = rk.leader && rk.leader.s.id === x.s.id;
-      const tag = rk.insufficient ? "" : rk.tie ? '<span class="tag tie">Empate</span>' : isLead ? '<span class="tag">Lidera neste critério</span>' : "";
+      const tag = rk.insufficient ? "" : rk.tie ? '<span class="tag tie">Empate</span>' : isLead ? '<span class="tag">Lidera</span>' : "";
       const mainV = x.ok ? (crit === "quantidade" ? "+ " + fmtInt(x.v) : fmtPct(x.v)) : "Dados insuficientes";
+      const sub = crit === "quantidade" ? `Redução local: <b>${fmtPct(x.sim.propReduction)}</b>` : `Crianças no raio: <b>≈ ${fmtInt(x.sim.newT)}</b>`;
       return `<div class="pres-card ${isLead ? "lead" : ""} ${x.s.id === state.activeScenario ? "active" : ""}" role="button" tabindex="0" data-pcard="${esc(x.s.id)}" aria-label="${esc(x.s.short)}: mostrar no mapa">
         <div class="hd"><span class="rk">${x.ok && !rk.insufficient ? (rk.tie ? "=" : (i + 1) + "º") : "—"}</span><span class="rg">${esc(x.s.short)}</span>${tag}</div>
-        <div class="main"><div class="l">${crit === "quantidade" ? "Crianças adicionais no raio" : "Redução da carência de proximidade local"}</div><div class="v">${mainV}</div></div>
-        <dl>
-          ${crit === "quantidade" ? `<dt>Redução local da carência</dt><dd>${fmtPct(x.sim.propReduction)}</dd>` : `<dt>Crianças adicionais no raio</dt><dd>≈ ${fmtInt(x.sim.newT)}</dd>`}
-          <dt>Capacidade ilustrativa</dt><dd>${cap}</dd>
-        </dl>
-        <button class="linkbtn" type="button" data-pdetail="${esc(x.s.id)}">Ver detalhes</button>
-      </div>`;
+        <div class="main"><div class="l">${crit === "quantidade" ? "Crianças adicionais no raio" : "Carência local reduzida"}</div><div class="v">${mainV}</div></div>
+        <div class="sub">${sub}</div></div>`;
     }).join("");
-    const nudge = st === 4 && crit === "quantidade";
+    let why;
+    if (rk.insufficient) why = presExplain(crit)[0];
+    else if (rk.tie) why = presExplain(crit)[0];
+    else {
+      const [a, b] = rk.valid;
+      why = crit === "quantidade"
+        ? `A ${a.s.short} coloca mais crianças perto de uma creche: ≈ ${fmtInt(a.v)}, contra ≈ ${fmtInt(b.v)}.`
+        : `A ${a.s.short} resolve uma parte maior da sua própria carência: ${fmtPct(a.v)}, contra ${fmtPct(b.v)}.`;
+      if (crit === "proporcional" && ro.leader && ro.leader.s.id !== a.s.id) why += ` A ordem muda porque a ${a.s.short} tinha menos crianças longe de creche (≈ ${fmtInt(a.sim.hostUnc)}, contra ≈ ${fmtInt(b.sim.hostUnc)}).`;
+      if (ro.leader && ro.leader.s.id === a.s.id) why += " A liderança é a mesma nos dois critérios.";
+    }
     return `${presHead()}
       <div class="pres-crit" role="group" aria-label="Critério de comparação">
         <button type="button" data-pcrit="quantidade" aria-pressed="${crit === "quantidade"}">${PRES_CRIT.quantidade.nome}</button>
-        <button type="button" data-pcrit="proporcional" aria-pressed="${crit === "proporcional"}" class="${nudge ? "nudge" : ""}">${PRES_CRIT.proporcional.nome}</button>
+        <button type="button" data-pcrit="proporcional" aria-pressed="${crit === "proporcional"}">${PRES_CRIT.proporcional.nome}</button>
       </div>
-      <p class="pres-def">${nudge ? "<b>Selecione “Maior redução local”.</b> " : ""}${esc(PRES_CRIT[crit].def)}${crit === "proporcional" ? " Cálculo: crianças adicionais da região ÷ crianças da mesma região fora do raio antes." : ""}</p>
       <div class="pres-cards">${cards}</div>
-      <div class="pres-why" role="status" aria-live="polite"><h3>Por que essa alternativa aparece primeiro?</h3><p>${esc(why1)}</p>${why2 ? `<p>${esc(why2)}</p>` : ""}</div>`;
+      <div class="pres-why" role="status" aria-live="polite"><h3>Por que essa alternativa aparece primeiro?</h3><p>${esc(why)}</p></div>`;
   }
-  if (st === 5) {
+
+  if (id === "capacidade") {
     const capRows = items.map(({ s, sim }) => `<div class="rg">${esc(s.short)}</div>
-      <div class="cell prox"><b>≈ ${fmtInt(sim.newT)}</b><span>crianças adicionais no raio</span></div>
-      <div class="cell"><b>${isNum(S.cap) ? fmtInt(S.cap) : "—"}</b><span>${isNum(S.cap) ? esc(S.capacidade_unidade || "vagas") + " de capacidade ilustrativa" : "capacidade não definida"}</span></div>`).join("");
+      <div class="cell prox"><b>≈ ${fmtInt(sim.newT)}</b><span>crianças no raio</span></div>
+      <div class="cell"><b>${isNum(S.cap) ? fmtInt(S.cap) : "—"}</b><span>${isNum(S.cap) ? esc(S.capacidade_unidade || "vagas") + " (ilustrativo)" : "capacidade não definida"}</span></div>`).join("");
     const cur = state.scenarios.find(x => x.id === PRES.checksFor) || state.scenarios[0];
-    const pend = cur ? Object.values(cur.checks).filter(v => v !== "verificado").length : 0;
-    const checks = cur ? `<div class="pres-tabs" role="group" aria-label="Alternativa">${state.scenarios.map(s => `<button type="button" data-pchk="${esc(s.id)}" aria-pressed="${s.id === cur.id}">${esc(s.short)}</button>`).join("")}<span class="small muted" style="align-self:center">${pend} de ${S.verificar.length} sem verificação</span></div>
+    const checks = cur ? `<div class="pres-tabs" role="group" aria-label="Alternativa">${state.scenarios.map(s => `<button type="button" data-pchk="${esc(s.id)}" aria-pressed="${s.id === cur.id}">${esc(s.short)}</button>`).join("")}</div>
       <div class="pres-checks">${S.verificar.map((v, i) => `<div class="restr-row"><div class="lbl">${pill(cur.checks[i], STATUS[cur.checks[i]])}<span>${esc(v)}</span></div><select data-pchkv="${i}" aria-label="Status: ${esc(v)} (${esc(cur.short)})">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}" ${cur.checks[i] === k ? "selected" : ""}>${l}</option>`).join("")}</select></div>`).join("")}</div>
-      <p class="pres-note"><b>Registrar uma verificação não equivale a aprovação técnica, legal ou orçamentária.</b> “Não informado” não significa inviável.</p>` : "";
+      <p class="pres-note"><b>Verificar não é aprovar:</b> não equivale a aprovação técnica, legal ou orçamentária.</p>` : "";
     return `${presHead()}
       <div class="pres-cap">${capRows}</div>
-      <p class="pres-lead" style="font-size:16px">O atendimento depende da disponibilidade de vagas e das condições de operação.</p>
-      ${PRES.showChecks ? "" : `<p class="pres-note">Crianças no raio = população estimada (população do setor × % de 0 a 5 anos), não demanda registrada em fila nem matrícula. A capacidade é uma premissa ilustrativa.</p>`}
-      ${PRES.showChecks ? checks : `<button class="btn block" type="button" id="pShowChecks" style="font-size:16px;padding:13px">${ICON.doc} Abrir verificações do cenário</button>`}`;
+      <p class="pres-lead" style="font-size:16px">Crianças por perto não são vagas: o atendimento depende de vagas e das condições de operação.</p>
+      ${PRES.showChecks ? checks : `<button class="btn block" type="button" id="pShowChecks" style="font-size:16px;padding:13px">${ICON.doc} Ver o que ainda precisa ser verificado</button>`}`;
   }
-  // st === 6
-  const rk = presRank(PRES.crit), [why1] = presExplain(PRES.crit);
+
+  // justificativa
   return `${presHead()}
-    <div class="pres-svc"><div><b>Critério selecionado: ${esc(PRES_CRIT[PRES.crit].nome)}</b><br>${esc(why1)}</div></div>
     <button class="btn primary block pres-gen" type="button" id="pGenSum">${ICON.doc} Gerar justificativa</button>
     <p class="pres-close">Subsídio para avaliação técnica. A decisão permanece com o gestor.</p>
-    <p class="pres-note">Demonstração com dados simulados. ${rk.insufficient ? "Há dados insuficientes para o critério selecionado." : ""}</p>`;
+    <p class="pres-note">Demonstração com dados simulados.</p>`;
 }
 function bindPresPanel(host) {
   const on = (sel, ev, fn) => $$(sel, host).forEach(el => el.addEventListener(ev, fn));
@@ -4422,12 +4465,13 @@ function bindPresPanel(host) {
     const f = $(`[data-pchkv="${i}"]`); if (f) f.focus();
   });
   on("#pGenSum", "click", openPresSummary);
+  on("[data-pind]", "click", e => { PRES.ind = e.currentTarget.dataset.pind; presApply(); const b = $(`[data-pind="${PRES.ind}"]`); if (b) b.focus(); });
 }
 function presKey(e) {
   const k = e.key;
   if (k === "ArrowRight" || k === "PageDown") { e.preventDefault(); presGo(PRES.stage + 1); }
   else if (k === "ArrowLeft" || k === "PageUp") { e.preventDefault(); presGo(PRES.stage - 1); }
-  else if (/^[1-6]$/.test(k)) presGo(+k);
+  else if (/^[1-7]$/.test(k)) presGo(+k);
 }
 /** Primeira tela da justificativa: curta e com os mesmos valores mostrados na tela. */
 function presSummaryHTML() {
