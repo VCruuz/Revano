@@ -423,6 +423,7 @@ code{font-family:var(--mono);font-size:12px;background:var(--surface-2);padding:
 .prio-map .pm-f{font-size:11px;color:var(--ink-3);line-height:1.3}
 @media (max-width:1500px){ .prio-map{width:206px;padding:10px 10px 8px;gap:6px} .prio-map .svc-badge{display:none} .prio-map .pm-f{display:none} }
 @media (max-width:960px){ .map-card .prio-map{position:static;width:auto;margin:0 10px 10px;box-shadow:none;order:2} }
+.sim-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .prio-n{width:24px;height:24px;border-radius:50%;background:var(--brand-green);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:750;flex:none}
 .reg-chips{display:flex;flex-wrap:wrap;gap:6px}
 .stats4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -4036,7 +4037,7 @@ function loadDataset(data, mode, fileName) {
   state.raw = data; state.mode = mode; state.fileName = fileName || null; state.model = model;
   state.premises = {}; state.scenarios = []; state.activeScenario = null; state.point = null;
   state.region = null; state.view = "depois";
-  state.service = model.services[0] ? model.services[0].id : null;
+  state.service = null;
   prevNumbers.clear();
   buildMap(); renderAll();
 }
@@ -4168,6 +4169,8 @@ function updateMap() {
       el.classList.remove("dim");
       refs.dots.get(a.id).classList.toggle("on", !!isNew);
     });
+  } else {
+    m.areas.forEach(a => { const el = refs.cells.get(a.id); el.style.fill = "var(--neutral-cell)"; el.style.fillOpacity = .55; el.classList.remove("dim"); refs.dots.get(a.id).classList.remove("on"); });
   }
   // regiões
   refs.regions.forEach((el, id) => el.classList.toggle("sel", state.step === 1 && state.region === id));
@@ -4210,6 +4213,7 @@ function updateMap() {
   $$("#baToggle button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === state.view)));
   const hint = $("#mapHint");
   if (state.step === 1 && !state.region) { hint.hidden = false; hint.innerHTML = `${ICON.pointer}Toque em uma região`; }
+  else if (state.step === 2 && !state.service) { hint.hidden = false; hint.innerHTML = `${ICON.pointer}Escolha um serviço ao lado`; }
   else if (state.step === 2 && !state.point) { hint.hidden = false; hint.innerHTML = `${ICON.pin}Toque no mapa para posicionar`; }
   else hint.hidden = true;
   renderLegend(sim, sid);
@@ -4265,6 +4269,7 @@ function renderLegend(sim, sid) {
       <li><svg class="sw16" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" fill="var(--blue)"/><circle cx="8" cy="8" r="2.2" fill="#fff"/></svg>Passa a ter acesso</li>
       <li><svg class="sw16" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" fill="var(--neutral-cell)"/></svg>Sem acesso</li></ul>`;
   }
+  if (!h) h = `<div class="muted" style="margin-top:6px">Escolha um serviço para ver o acesso.</div>`;
   $("#legendBody").innerHTML = h;
   // ferramentas do mapa (etapa 1)
   const tools = $("#mapTools"); tools.hidden = state.step !== 1;
@@ -4283,6 +4288,7 @@ function tooltipHTML(kind, id) {
     const r = m.regions.find(x => x.id === a.regiao);
     let extra = "";
     if (state.step === 1) extra = `${INDICATORS[state.indicator].nome}: ${fmtInd(state.indicator, indicatorValue(a, state.indicator))} · Pobreza ${fmtPct(a.pct_pobreza)}`;
+    else if (!(currentSim() || state.service)) extra = "Escolha um serviço para ver o acesso";
     else { const sim = currentSim(), sid = sim ? sim.sid : state.service, A = access(sid), S = svc(sid);
       extra = A.rede ? `≈ ${fmtInt(A.t[a.i])} ${S.publico_nome}${sim && sim.newSet.has(a.id) ? " · seriam atendidos pela obra" : ""}`
         : `≈ ${fmtInt(A.t[a.i])} ${S.publico_nome} · ${A.cov[a.i] ? "já tem acesso" : sim && sim.newSet.has(a.id) ? "passaria a ter acesso" : "sem acesso"} (mais próximo a ${fmtDist(A.near[a.i])})`; }
@@ -4418,9 +4424,14 @@ function viewRegion() {
 
 /* --- ETAPA 2 · SIMULAR --- */
 function viewSimulate() {
-  const m = state.model, sid = state.service, S = svc(sid), A = access(sid);
+  const m = state.model, sid = state.service;
   const tiles = m.services.map(s0 => { const s = svc(s0.id); return `<button class="svc-tile" type="button" data-svc="${esc(s.id)}" aria-pressed="${s.id === sid}" title="${esc(s.nome)}">${badge(s, true)}<span>${esc(s.nome_curto || s.nome)}</span></button>`; }).join("");
-  const regOpts = m.regions.filter(r => r.n).map(r => `<option value="${esc(r.id)}">${esc(r.nome)}</option>`).join("");
+  const head = `<div class="sim-head"><h2>Qual serviço simular?</h2><button class="btn small" type="button" id="clearSim" ${sid ? "" : "disabled"}>Limpar</button></div>
+    <div class="svc-icons" role="group" aria-label="Serviço">${tiles}</div>`;
+  if (!sid) return `${head}
+    <div class="callout">${ICON.pointer}<div>Escolha um serviço para ver onde ele mais falta e simular uma nova unidade.</div></div>`;
+  const S = svc(sid), A = access(sid);
+  const regOpts = m.regions.filter(r => r.n).map(r => `<option value="${esc(r.id)}" ${state.simRegion === r.id ? "selected" : ""}>${esc(r.nome)}</option>`).join("");
   let body;
   if (A.insufficient) body = `<div class="callout amber">${ICON.warn}<div><b>Dados insuficientes</b> para estimar ${esc(S.publico_nome)}.</div></div>`;
   else if (!state.point) body = `
@@ -4428,9 +4439,7 @@ function viewSimulate() {
     <div class="row"><select id="bestReg" aria-label="Região" style="flex:1;border:1px solid var(--line-2);border-radius:10px;padding:9px 10px;background:var(--surface)"><option value="">Toda a cidade</option>${regOpts}</select>
       <button class="btn accent" type="button" id="useBest">${ICON.spark} Melhor local</button></div>`;
   else body = simResults(simulate(sid, state.point));
-  return `
-    <div><h2>Qual serviço simular?</h2></div>
-    <div class="svc-icons" role="group" aria-label="Serviço">${tiles}</div>
+  return `${head}
     <p class="small muted" style="margin:-4px 0 0"><b>${esc(S.nome)}</b> · ${esc(S.publico_nome)} · até ${fmtDist(S.raio)}</p>
     ${body}
     ${premisesBox(S)}`;
@@ -4579,6 +4588,8 @@ function renderScenarioDialog() {
 }
 
 /* 11. INTERAÇÕES */
+/** Limpa a simulação: nenhum serviço nem local selecionado. */
+function clearSim() { state.service = null; state.point = null; state.view = "depois"; state.simTab = "efetividade"; }
 function goStep(n) {
   if (![1, 2, 3].includes(n)) return;
   state.step = n;
@@ -4598,7 +4609,7 @@ function svgPoint(e) {
   const p = pt.matrixTransform(svg.getScreenCTM().inverse()); return { x: p.x, y: -p.y };
 }
 function bindEvents() {
-  $$(".step-btn").forEach(b => b.addEventListener("click", () => goStep(+b.dataset.step)));
+  $$(".step-btn").forEach(b => b.addEventListener("click", () => { const n = +b.dataset.step; if (n === 2 && state.step !== 2) clearSim(); goStep(n); }));
   $("#brandHome").addEventListener("click", e => { e.preventDefault(); state.region = null; goStep(1); });
   $$("#baToggle button").forEach(b => b.addEventListener("click", () => { state.view = b.dataset.view; updateMap(); }));
   $("#openData").addEventListener("click", () => openDataDialog("fontes"));
@@ -4627,6 +4638,7 @@ function bindEvents() {
       return;
     }
     if (state.step === 2) {
+      if (!state.service) { toast("Escolha um serviço ao lado primeiro."); return; }
       if (access(state.service).insufficient) return;
       const p = svgPoint(e), b = refs.bounds;
       if (p.x < b.minX || p.x > b.maxX || p.y < b.minY || p.y > b.maxY) return;
@@ -4645,7 +4657,7 @@ function bindEvents() {
   });
   document.addEventListener("keydown", e => {
     if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest("input,textarea,select") || document.querySelector("dialog[open]")) return;
-    if (["1", "2", "3"].includes(e.key)) goStep(+e.key);
+    if (["1", "2", "3"].includes(e.key)) { if (e.key === "2" && state.step !== 2) clearSim(); goStep(+e.key); }
     if (e.key === "Escape" && state.step === 1 && state.region) { state.region = null; renderPanel(); updateMap(); }
   });
   $$("dialog").forEach(d => d.addEventListener("click", e => { if (e.target === d || e.target.closest("[data-close]")) closeDialog(d); }));
@@ -4693,13 +4705,14 @@ function bindEvents() {
 }
 function bindPanel(host) {
   const on = (sel, ev, fn) => $$(sel, host).forEach(el => el.addEventListener(ev, fn));
-  on("[data-go]", "click", e => goStep(+e.currentTarget.dataset.go));
+  on("[data-go]", "click", e => { const n = +e.currentTarget.dataset.go; if (n === 2) clearSim(); goStep(n); });
   on("[data-ind]", "click", e => { state.indicator = e.currentTarget.dataset.ind; renderPanel(); updateMap(); });
   on("[data-region]", "click", e => { state.region = e.currentTarget.dataset.region; renderPanel(); updateMap(); $("#panel").scrollTop = 0; });
   on("[data-region]", "keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.currentTarget.click(); } });
   on("[data-region-clear]", "click", () => { state.region = null; renderPanel(); updateMap(); });
   on("[data-sim-sug]", "click", e => { const [sid, rid] = e.currentTarget.dataset.simSug.split("|"); startSim(sid, rid); });
-  on("[data-sim-region]", "click", e => { state.point = null; state.service = state.service || state.model.services[0].id; goStep(2); const sel = $("#bestReg"); if (sel) sel.value = e.currentTarget.dataset.simRegion; });
+  on("[data-sim-region]", "click", e => { clearSim(); state.simRegion = e.currentTarget.dataset.simRegion; goStep(2); });
+  on("#clearSim", "click", () => { clearSim(); renderPanel(); updateMap(); const f = document.querySelector(".svc-tile"); if (f) f.focus(); });
   on("[data-svc]", "click", e => { const sid = e.currentTarget.dataset.svc; if (sid === state.service) return; state.service = sid; if (state.point) state.point = makePoint(state.point.px, state.point.py); renderPanel(); updateMap(); });
   on("#useBest", "click", () => { const rid = $("#bestReg", host).value || null; const b = bestSite(state.service, rid); if (!b || b.newT <= 0) { toast("Nenhum local nessa região ampliaria o acesso com as premissas atuais."); return; } state.point = makePoint(b.area.px, b.area.py); state.view = "depois"; renderPanel(); updateMap(); });
   on("#clearPoint", "click", () => { state.point = null; renderPanel(); updateMap(); });
