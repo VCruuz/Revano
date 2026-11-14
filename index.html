@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revano Prioriza · Alcance</title>
+<meta name="description" content="Revano Prioriza — módulo Alcance: apoio à decisão para comparar alternativas de implantação de espaços públicos de lazer.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231C1F23'/%3E%3Cpath d='M9 23V9h7a4.5 4.5 0 0 1 0 9h-7m7 0 5 5' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+/* =========================================================
+   1. TOKENS — paleta Civic Modernism (substituível)
+   ========================================================= */
+:root{
+  --bg:#F6F4EF;
+  --surface:#FFFFFF;
+  --surface-2:#F1EEE7;
+  --surface-3:#EAE6DD;
+  --ink:#1B1E22;
+  --ink-2:#464C54;
+  --ink-3:#6E747C;
+  --line:#E2DDD3;
+  --line-2:#D3CDC1;
+
+  --green:#2E7A55;
+  --green-ink:#1F5A3E;
+  --green-soft:#DDEEE4;
+  --blue:#2357A3;
+  --blue-ink:#1A4380;
+  --blue-soft:#DFE8F6;
+  --amber:#A86A12;
+  --amber-ink:#7A4C0A;
+  --amber-soft:#FBEFD7;
+  --neutral-cell:#CFC7B9;
+  --water:#C9DCEB;
+  --danger:#A23B2A;
+  --danger-soft:#F8E3DE;
+
+  --radius:14px;
+  --radius-sm:10px;
+  --shadow-1:0 1px 2px rgba(27,30,34,.05),0 1px 1px rgba(27,30,34,.03);
+  --shadow-2:0 10px 30px -12px rgba(27,30,34,.22),0 2px 6px rgba(27,30,34,.05);
+  --focus:0 0 0 3px rgba(35,87,163,.35);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --header-h:64px;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--blue)}
+:focus-visible{outline:none;box-shadow:var(--focus);border-radius:8px}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.num{font-variant-numeric:tabular-nums}
+.skip{position:absolute;left:12px;top:-60px;background:var(--ink);color:#fff;padding:8px 12px;border-radius:8px;z-index:100}
+.skip:focus{top:10px}
+
+/* =========================================================
+   2. CABEÇALHO
+   ========================================================= */
+.topbar{position:sticky;top:0;z-index:30;height:var(--header-h);display:flex;align-items:center;gap:20px;padding:0 24px;background:rgba(246,244,239,.86);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;text-decoration:none;color:inherit}
+.brand-mark{width:32px;height:32px;flex:none}
+.brand-name{font-weight:650;letter-spacing:-.01em;font-size:16px;white-space:nowrap}
+.brand-name span{font-weight:400;color:var(--ink-3)}
+.module-chip{font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--green-ink);background:var(--green-soft);padding:3px 9px;border-radius:999px;white-space:nowrap}
+.steps{display:flex;gap:4px;margin:0 auto;background:var(--surface-3);padding:4px;border-radius:12px}
+.step-btn{border:0;background:transparent;padding:7px 14px;border-radius:9px;font-size:14px;font-weight:550;color:var(--ink-2);display:flex;gap:8px;align-items:baseline;white-space:nowrap;transition:background .2s var(--ease),color .2s}
+.step-btn .n{font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums;font-weight:600}
+.step-btn:hover{color:var(--ink)}
+.step-btn[aria-current="step"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
+.step-btn[aria-current="step"] .n{color:var(--green)}
+.top-right{display:flex;align-items:center;gap:10px}
+.data-badge{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;padding:6px 11px;border-radius:999px;border:0;white-space:nowrap}
+.data-badge.demo{background:var(--amber-soft);color:var(--amber-ink)}
+.data-badge.imported{background:var(--blue-soft);color:var(--blue-ink)}
+.data-badge .dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);padding:9px 14px;border-radius:10px;font-weight:560;font-size:14px;transition:background .15s,border-color .15s,transform .1s;white-space:nowrap;text-decoration:none}
+.btn:hover{background:var(--surface-2)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.primary:hover{background:#2C3137}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--surface-3)}
+.btn.small{padding:6px 10px;font-size:13px;border-radius:8px}
+.btn svg{width:16px;height:16px;flex:none}
+.btn.block{width:100%}
+
+/* =========================================================
+   3. LAYOUT PRINCIPAL
+   ========================================================= */
+.app{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:20px;padding:20px 24px 24px;max-width:1680px;margin:0 auto}
+.map-col{display:flex;flex-direction:column;gap:10px;min-width:0}
+.map-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-1);overflow:hidden;height:calc(100vh - var(--header-h) - 92px);min-height:440px}
+#map{display:block;width:100%;height:100%;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.map-note{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:12.5px;color:var(--ink-3);padding:0 4px}
+.map-note b{color:var(--ink-2);font-weight:600}
+.map-note .i{display:inline-flex;gap:6px;align-items:center}
+.map-note svg{width:14px;height:14px}
+.kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:5px;padding:0 4px;color:var(--ink-2);background:var(--surface)}
+
+.map-flag{position:absolute;top:14px;left:14px;max-width:calc(100% - 28px);display:flex;gap:8px;align-items:center;font-size:12px;font-weight:600;color:var(--ink-2);background:rgba(255,255,255,.9);border:1px solid var(--line);padding:6px 10px;border-radius:999px;backdrop-filter:blur(6px);pointer-events:none}
+.map-flag svg{width:14px;height:14px;color:var(--amber);flex:none}
+.map-toggle{position:absolute;top:12px;right:12px;display:flex;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:11px;padding:3px;box-shadow:var(--shadow-1)}
+.map-toggle button{border:0;background:transparent;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600;color:var(--ink-3)}
+.map-toggle button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.map-toggle[hidden]{display:none}
+.legend{position:absolute;left:12px;bottom:12px;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;color:var(--ink-2);box-shadow:var(--shadow-1);max-width:calc(100% - 24px)}
+.legend summary{list-style:none;cursor:pointer;font-weight:650;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+.legend summary::-webkit-details-marker{display:none}
+.legend summary::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);margin-left:auto;transition:transform .2s}
+.legend[open] summary::after{transform:rotate(-135deg)}
+.legend ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.legend li{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.legend svg{width:16px;height:16px;flex:none}
+.tooltip{position:absolute;pointer-events:none;z-index:5;background:var(--ink);color:#fff;font-size:12.5px;line-height:1.35;padding:8px 10px;border-radius:9px;box-shadow:var(--shadow-2);max-width:240px;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s}
+.tooltip.show{opacity:1;transform:none}
+.tooltip b{font-weight:650}
+.tooltip .muted{color:#B9BEC5}
+
+/* ---- Mapa SVG ---- */
+#map .bg{fill:#FBFAF7}
+#map .gridline{stroke:#EEEAE2;stroke-width:1;vector-effect:non-scaling-stroke}
+#map .region{fill:none;stroke:#BDB6A9;stroke-width:1.2;stroke-dasharray:5 5;vector-effect:non-scaling-stroke;transition:stroke .3s}
+#map .region-label{fill:var(--ink-3);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+#map[data-step="3"] .region{stroke:#8F877A}
+#map .water{fill:none;stroke:var(--water);stroke-linecap:round;stroke-linejoin:round}
+#map .water-label{fill:#7C9CB5;font-style:italic}
+#map .cell{transition:fill .35s var(--ease),stroke .35s var(--ease)}
+#map .cell[data-s="cov"]{fill:var(--green)}
+#map .cell[data-s="unc"]{fill:var(--neutral-cell)}
+#map .cell[data-s="new"]{fill:var(--blue)}
+#map .cell.sel{stroke:var(--ink);stroke-width:2.5;vector-effect:non-scaling-stroke}
+#map .cell-dot{fill:#fff;opacity:0;transition:opacity .3s}
+#map .cell-dot.on{opacity:.95}
+#map .cov-union{fill:var(--green);opacity:.10}
+#map .cov-ring{fill:none;stroke:var(--green);stroke-width:1.2;stroke-dasharray:4 4;opacity:.55;vector-effect:non-scaling-stroke}
+#map .cand-area{fill:var(--blue);fill-opacity:.12;stroke:var(--blue);stroke-width:2;vector-effect:non-scaling-stroke;opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.6);transition:opacity .35s var(--ease),transform .45s var(--ease),fill-opacity .3s}
+#map .cand-area.on{opacity:1;transform:scale(1)}
+#map .cand-area.ghost{opacity:.55;transform:scale(1);fill-opacity:.03;stroke-dasharray:6 5}
+#map .eq{cursor:pointer}
+#map .eq rect{fill:var(--green-ink);stroke:#fff;vector-effect:non-scaling-stroke;stroke-width:2}
+#map .eq circle{fill:#fff}
+#map .eq.sel rect{fill:var(--ink)}
+#map .cand{cursor:pointer;transition:opacity .3s}
+#map .cand .pin{fill:#fff;stroke:var(--blue);stroke-width:2.2;vector-effect:non-scaling-stroke;transition:fill .25s}
+#map .cand text{fill:var(--blue);font-weight:750;transition:fill .25s;pointer-events:none}
+#map .cand .halo{fill:var(--blue);opacity:0}
+#map .cand.active .pin{fill:var(--blue)}
+#map .cand.active text{fill:#fff}
+#map .cand.active .halo{opacity:.18;animation:pulse 2.2s var(--ease) infinite;transform-box:fill-box;transform-origin:center}
+#map .cand.dim{opacity:.45}
+#map .cand-tag{fill:var(--ink-2);font-weight:600}
+#map .scale line{stroke:var(--ink-2);stroke-width:1.5;vector-effect:non-scaling-stroke}
+#map .scale text,#map .north text{fill:var(--ink-2);font-weight:600}
+#map .north path{fill:var(--ink-2)}
+#map [data-kind]:focus{outline:none}
+#map [data-kind]:focus-visible .pin,#map [data-kind]:focus-visible rect{stroke:var(--ink);stroke-width:3}
+@keyframes pulse{0%{transform:scale(1);opacity:.25}70%{transform:scale(1.9);opacity:0}100%{transform:scale(1.9);opacity:0}}
+
+/* =========================================================
+   4. PAINEL LATERAL
+   ========================================================= */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-1);height:calc(100vh - var(--header-h) - 44px);min-height:520px;overflow:auto;position:sticky;top:calc(var(--header-h) + 20px);scrollbar-width:thin}
+.panel-inner{padding:24px 24px 28px;display:flex;flex-direction:column;gap:18px;animation:fadeUp .35s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:12px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+h1,h2,h3{margin:0;letter-spacing:-.02em;line-height:1.15}
+.panel h1{font-size:28px;font-weight:700}
+.panel h2{font-size:24px;font-weight:700}
+.panel h3{font-size:13px;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3)}
+.lead{margin:6px 0 0;color:var(--ink-2);font-size:15px}
+.muted{color:var(--ink-3)}
+.small{font-size:12.5px}
+.stack{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:10px;align-items:center}
+.between{justify-content:space-between}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:var(--surface-2);border-radius:var(--radius);padding:14px 14px 12px;min-width:0}
+.kpi .label{font-size:12.5px;color:var(--ink-3);font-weight:550;line-height:1.3}
+.kpi .value{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kpi .value small{font-size:14px;font-weight:600;color:var(--ink-3);margin-right:2px}
+.kpi .sub{font-size:12px;color:var(--ink-3);margin-top:2px}
+.kpi.green .value{color:var(--green-ink)}
+.kpi.blue{background:var(--blue-soft)}
+.kpi.blue .value{color:var(--blue-ink)}
+.kpi.wide{grid-column:1/-1}
+.bar{height:10px;border-radius:99px;background:var(--surface-3);overflow:hidden;display:flex}
+.bar span{display:block;height:100%;transition:width .5s var(--ease)}
+.bar .g{background:var(--green)}
+.bar .b{background:var(--blue)}
+.bar-legend{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3);margin-top:6px;gap:8px;flex-wrap:wrap}
+.sw{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:0}
+.callout{border-radius:var(--radius);padding:14px 16px;background:var(--surface-2);font-size:14px;color:var(--ink-2);display:flex;gap:10px}
+.callout svg{width:18px;height:18px;flex:none;margin-top:1px}
+.callout.quote{background:transparent;border-left:3px solid var(--green);border-radius:0;padding:4px 0 4px 14px;font-size:15.5px;color:var(--ink);font-weight:550}
+.callout.amber{background:var(--amber-soft);color:var(--amber-ink)}
+.callout.blue{background:var(--blue-soft);color:var(--blue-ink)}
+.callout.green{background:var(--green-soft);color:var(--green-ink)}
+.callout.danger{background:var(--danger-soft);color:var(--danger)}
+.divider{height:1px;background:var(--line);margin:2px 0}
+.table{width:100%;border-collapse:collapse;font-size:13.5px}
+.table th{text-align:left;font-weight:600;color:var(--ink-3);font-size:12px;padding:6px 6px;border-bottom:1px solid var(--line)}
+.table td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.table td.r,.table th.r{text-align:right}
+.table tr:last-child td{border-bottom:0}
+.sel-card{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.sel-card dl{margin:8px 0 0;display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:13.5px}
+.sel-card dt{color:var(--ink-3)}
+.sel-card dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.empty-hint{display:flex;gap:10px;align-items:center;color:var(--ink-3);font-size:13.5px;border:1px dashed var(--line-2);border-radius:var(--radius);padding:12px 14px}
+.empty-hint svg{width:18px;height:18px;flex:none}
+
+/* ---- Seletor de candidatos ---- */
+.cand-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cand-opt{border:1.5px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:12px 10px 10px;text-align:left;display:flex;flex-direction:column;gap:6px;transition:border-color .2s,background .2s,box-shadow .2s;min-width:0}
+.cand-opt:hover{border-color:var(--line-2);background:#FCFBF8}
+.cand-opt[aria-pressed="true"]{border-color:var(--blue);background:var(--blue-soft);box-shadow:0 0 0 3px rgba(35,87,163,.10)}
+.cand-letter{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:750;font-size:14px;border:2px solid var(--blue);color:var(--blue);background:#fff}
+.cand-opt[aria-pressed="true"] .cand-letter{background:var(--blue);color:#fff}
+.cand-opt .nm{font-weight:650;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cand-opt .gain{font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.ba{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;background:var(--surface-2);border-radius:var(--radius);padding:16px}
+.ba .side{min-width:0}
+.ba .tag{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.ba .big{font-size:30px;font-weight:750;letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ba .after .big{color:var(--blue-ink)}
+.ba .arrow{color:var(--ink-3)}
+.ba .arrow svg{width:22px;height:22px}
+.ba .full{grid-column:1/-1}
+
+/* ---- Pills de status ---- */
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 8px 3px 6px;border-radius:999px;white-space:nowrap}
+.pill svg{width:13px;height:13px;flex:none}
+.pill.verificado{background:var(--green-soft);color:var(--green-ink)}
+.pill.pendente{background:var(--amber-soft);color:var(--amber-ink)}
+.pill.nao_informado{background:var(--surface-3);color:var(--ink-2)}
+.pill.info{background:var(--blue-soft);color:var(--blue-ink)}
+
+/* ---- Comparação ---- */
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-3);padding:4px;border-radius:12px;gap:4px}
+.seg button{border:0;background:transparent;padding:9px 8px;border-radius:9px;font-size:13.5px;font-weight:600;color:var(--ink-2);line-height:1.2}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
+.def{font-size:13px;color:var(--ink-2);background:var(--surface-2);border-radius:var(--radius-sm);padding:10px 12px}
+.def code{font-family:var(--mono);font-size:12px;background:var(--surface);padding:1px 5px;border-radius:5px;border:1px solid var(--line)}
+.cmp-list{display:flex;flex-direction:column;gap:10px}
+.cmp{border:1.5px solid var(--line);border-radius:var(--radius);padding:14px;transition:border-color .2s,box-shadow .2s;background:var(--surface);cursor:pointer;text-align:left;width:100%}
+.cmp:hover{border-color:var(--line-2)}
+.cmp.active{border-color:var(--blue);box-shadow:0 0 0 3px rgba(35,87,163,.10)}
+.cmp-head{display:flex;align-items:center;gap:10px}
+.cmp-rank{font-size:12px;font-weight:700;color:var(--ink-3);font-variant-numeric:tabular-nums;width:22px}
+.cmp-name{font-weight:650;font-size:15px;flex:1;min-width:0}
+.cmp-val{font-weight:750;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cmp-bar{height:8px;background:var(--surface-3);border-radius:99px;margin:10px 0 10px;overflow:hidden}
+.cmp-bar span{display:block;height:100%;background:var(--blue);border-radius:99px;transition:width .5s var(--ease)}
+.cmp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:12px;color:var(--ink-3)}
+.cmp-grid b{display:block;font-size:14px;color:var(--ink);font-weight:650;font-variant-numeric:tabular-nums;margin-top:1px;white-space:nowrap}
+.cmp-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.leader-badge{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--blue-ink);background:var(--blue-soft);padding:3px 8px;border-radius:999px}
+.result{border-radius:var(--radius);padding:16px;background:var(--ink);color:#fff}
+.result .k{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#AEB4BB;font-weight:650}
+.result .v{font-size:18px;font-weight:650;margin-top:4px;letter-spacing:-.01em}
+.result p{margin:8px 0 0;font-size:13.5px;color:#D5D9DE}
+.result .caveat{margin-top:10px;font-size:12.5px;color:#F2D9A8;display:flex;gap:8px}
+.result .caveat svg{width:15px;height:15px;flex:none;margin-top:1px}
+.form{display:grid;gap:10px}
+.field{display:grid;gap:5px}
+.field label{font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line-2);border-radius:10px;padding:9px 11px;background:var(--surface);font-size:14px}
+.field textarea{resize:vertical;min-height:62px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue);box-shadow:var(--focus)}
+.field .help{font-size:12px;color:var(--ink-3)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.monitor-item{border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;display:grid;gap:4px}
+.monitor-item .t{font-weight:650}
+details.more{border:1px solid var(--line);border-radius:var(--radius);padding:0 14px}
+details.more>summary{cursor:pointer;padding:12px 0;font-weight:650;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::after{content:"+";font-size:18px;color:var(--ink-3);font-weight:400}
+details.more[open]>summary::after{content:"–"}
+details.more>.body{padding:0 0 14px}
+.closing{font-size:15px;line-height:1.5;color:var(--ink);font-weight:550;border-top:1px solid var(--line);padding-top:16px}
+
+/* =========================================================
+   5. DIÁLOGOS
+   ========================================================= */
+dialog{border:0;padding:0;border-radius:20px;box-shadow:0 30px 80px -20px rgba(0,0,0,.35);width:min(720px,calc(100vw - 24px));max-height:calc(100vh - 40px);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(24,27,31,.42);backdrop-filter:blur(3px)}
+dialog[open]{animation:pop .25s var(--ease)}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+.dlg{display:flex;flex-direction:column;max-height:calc(100vh - 40px)}
+.dlg-head{display:flex;align-items:flex-start;gap:12px;padding:20px 22px 14px;border-bottom:1px solid var(--line)}
+.dlg-head h2{font-size:20px}
+.dlg-head .x{margin-left:auto}
+.dlg-body{padding:18px 22px 22px;overflow:auto;display:flex;flex-direction:column;gap:16px}
+.dlg-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.tabs{display:flex;gap:4px;padding:0 22px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{border:0;background:transparent;padding:11px 10px;font-weight:600;font-size:14px;color:var(--ink-3);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.restr-row{display:grid;grid-template-columns:1fr 170px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.restr-row:last-child{border-bottom:0}
+.restr-row .lbl{display:flex;gap:10px;align-items:center;font-weight:550}
+.restr-row select{border:1px solid var(--line-2);border-radius:9px;padding:7px 9px;background:var(--surface);width:100%}
+.restr-row .edited{font-size:11px;color:var(--amber-ink);font-weight:600}
+.drop{border:1.5px dashed var(--line-2);border-radius:var(--radius);padding:22px;text-align:center;background:var(--surface-2);transition:background .2s,border-color .2s}
+.drop.over{background:var(--blue-soft);border-color:var(--blue)}
+.drop svg{width:28px;height:28px;color:var(--ink-3)}
+.msg-list{margin:6px 0 0;padding-left:18px;font-size:13px}
+.msg-list li{margin:3px 0}
+pre.code{font-family:var(--mono);font-size:12px;line-height:1.5;background:#1E2227;color:#E6E8EB;border-radius:12px;padding:14px 16px;overflow:auto;margin:0;max-height:340px}
+.src{border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:13.5px}
+.src .t{font-weight:650}
+.src .meta{font-size:12px;color:var(--ink-3);margin-top:3px}
+
+/* ---- Relatório ---- */
+#reportDialog{width:min(860px,calc(100vw - 24px))}
+.report{font-size:13.5px;line-height:1.5;color:var(--ink)}
+.report h1{font-size:24px;margin:0 0 4px}
+.report h2{font-size:15px;margin:22px 0 8px;letter-spacing:-.01em;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.report p{margin:6px 0}
+.report .meta{color:var(--ink-3);font-size:12.5px}
+.report .warn{background:var(--amber-soft);color:var(--amber-ink);border-radius:10px;padding:10px 12px;font-weight:550;margin:12px 0}
+.report table{width:100%;border-collapse:collapse;font-size:12.5px;margin:6px 0}
+.report th,.report td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.report th{background:var(--surface-2);font-weight:650}
+.report td.r,.report th.r{text-align:right}
+.report ul{margin:6px 0;padding-left:18px}
+.report .rep-map{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:8px 0}
+.report .rep-map svg{display:block;width:100%;height:auto;max-height:380px}
+.report .brandline{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.report .brandline svg{width:28px;height:28px}
+.report .closing-r{font-weight:600;border-left:3px solid var(--green);padding-left:12px;margin-top:18px}
+#printArea{display:none}
+
+/* ---- Toast ---- */
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 16px;border-radius:12px;font-size:14px;box-shadow:var(--shadow-2);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:200;max-width:calc(100vw - 32px)}
+.toast.show{opacity:1;transform:translateX(-50%)}
+
+/* =========================================================
+   6. RESPONSIVIDADE
+   ========================================================= */
+@media (max-width:1180px){
+  .app{grid-template-columns:minmax(0,1fr) 380px}
+  .brand-name span{display:none}
+}
+@media (max-width:960px){
+  .topbar{flex-wrap:wrap;height:auto;padding:10px 16px;gap:10px}
+  .steps{order:3;width:100%;margin:0}
+  .step-btn{flex:1;justify-content:center;padding:8px 6px}
+  .top-right{margin-left:auto}
+  .app{grid-template-columns:1fr;padding:12px 16px 24px;gap:14px}
+  .map-card{height:auto;min-height:0;display:flex;flex-direction:column}
+  #map{height:auto;aspect-ratio:var(--map-ar,1.4);max-height:70vh}
+  .panel{height:auto;min-height:0;position:static;overflow:visible}
+}
+@media (max-width:560px){
+  .hide-sm{display:none}
+  body{font-size:14.5px}
+  .module-chip{display:none}
+  .data-badge .long{display:none}
+  .top-right .btn .lbl{display:none}
+  .step-btn{font-size:13px;gap:5px}
+  .map-card{border-radius:14px}
+  .map-card .legend{position:static;margin:0 10px 10px;max-width:none;box-shadow:none;order:3}
+  .map-card .map-flag{position:static;order:2;margin:0 10px 8px;max-width:none;border-radius:10px}
+  .panel{border-radius:14px}
+  .panel-inner{padding:18px 16px 22px}
+  .panel h1{font-size:24px}
+  .panel h2{font-size:21px}
+  .kpi .value{font-size:22px}
+  .ba .big{font-size:24px}
+  .cmp-grid{grid-template-columns:1fr 1fr}
+  .two{grid-template-columns:1fr}
+  .restr-row{grid-template-columns:1fr}
+  .legend{padding:8px 10px}
+  .legend:not([open]){padding:7px 10px}
+  .map-flag{font-size:11.5px;padding:6px 10px}
+  .map-toggle{top:10px;right:10px}
+  .cand-opt{padding:10px 8px 8px}
+  .cand-opt .gain{font-size:11.5px}
+  .dlg-head,.dlg-body,.dlg-foot{padding-left:16px;padding-right:16px}
+  .tabs{padding:0 12px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+
+/* =========================================================
+   7. IMPRESSÃO — somente o relatório
+   ========================================================= */
+@media print{
+  @page{margin:16mm}
+  body{background:#fff}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important}
+  .report{font-size:11pt}
+  .report h2{break-after:avoid}
+  .report table,.report .rep-map{break-inside:avoid}
+  .report .warn{border:1px solid #d9b56b}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#panel">Pular para o painel de análise</a>
+
+<!-- ===================== CABEÇALHO ===================== -->
+<header class="topbar" role="banner">
+  <a class="brand" href="#" id="brandHome" aria-label="Revano Prioriza — voltar ao diagnóstico">
+    <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+      <rect width="32" height="32" rx="9" fill="#1B1E22"/>
+      <path d="M10 23V9h6.6a4.6 4.6 0 0 1 0 9.2H10" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16.4 18.2 21.6 23" fill="none" stroke="#6FC59A" stroke-width="2.6" stroke-linecap="round"/>
+    </svg>
+    <span class="brand-name">Revano <span>Prioriza</span></span>
+  </a>
+  <span class="module-chip">Alcance</span>
+
+  <nav class="steps" aria-label="Etapas da análise">
+    <button class="step-btn" data-step="1" type="button"><span class="n">01</span>Diagnóstico</button>
+    <button class="step-btn" data-step="2" type="button"><span class="n">02</span>Simulação</button>
+    <button class="step-btn" data-step="3" type="button"><span class="n">03</span>Comparação</button>
+  </nav>
+
+  <div class="top-right">
+    <button class="data-badge demo" id="dataBadge" type="button" aria-haspopup="dialog" title="Ver origem dos dados">
+      <span class="dot" aria-hidden="true"></span><span id="dataBadgeText">Demonstração<span class="long"> — dados simulados</span></span>
+    </button>
+    <button class="btn small" id="openData" type="button" aria-haspopup="dialog">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>
+      <span class="lbl">Dados e fontes</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===================== APLICAÇÃO ===================== -->
+<main class="app" id="app">
+  <section class="map-col" aria-label="Mapa de cobertura">
+    <div class="map-card" id="mapCard">
+      <svg id="map" role="img" aria-labelledby="mapTitle mapDesc" data-step="1">
+        <title id="mapTitle">Mapa de cobertura de espaços públicos de lazer</title>
+        <desc id="mapDesc">Setores populacionais coloridos por situação de cobertura, praças existentes, raios de 400 metros e locais candidatos.</desc>
+      </svg>
+      <div class="map-flag" id="mapFlag"></div>
+      <div class="map-toggle" id="baToggle" role="group" aria-label="Comparar antes e depois" hidden>
+        <button type="button" data-view="antes" aria-pressed="false">Antes</button>
+        <button type="button" data-view="depois" aria-pressed="true">Depois</button>
+      </div>
+      <details class="legend" id="legend" open>
+        <summary>Legenda</summary>
+        <ul>
+          <li><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3" fill="var(--green)"/></svg>Setor coberto hoje</li>
+          <li><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3" fill="var(--neutral-cell)"/></svg>Setor sem cobertura</li>
+          <li><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3" fill="var(--blue)"/><circle cx="8" cy="8" r="2.2" fill="#fff"/></svg>Novo setor coberto (cenário)</li>
+          <li><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="3" width="10" height="10" rx="2.5" fill="var(--green-ink)"/><circle cx="8" cy="8" r="2" fill="#fff"/></svg>Praça existente</li>
+          <li><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="#fff" stroke="var(--blue)" stroke-width="2"/><text x="8" y="11" text-anchor="middle" font-size="8" font-weight="800" fill="var(--blue)">A</text></svg>Local candidato (hipotético)</li>
+          <li><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="var(--ink-3)" stroke-width="1.3" stroke-dasharray="2 2"/></svg><span id="legendRadius">Raio de 400 m (linha reta)</span></li>
+        </ul>
+      </details>
+      <div class="tooltip" id="tooltip" role="status" aria-live="off"></div>
+    </div>
+    <div class="map-note" id="mapNote"></div>
+  </section>
+
+  <aside class="panel" id="panel" tabindex="-1" aria-live="polite" aria-label="Painel de análise">
+    <div class="panel-inner" id="panelInner"></div>
+  </aside>
+</main>
+
+<!-- ===================== DIÁLOGO: DADOS E FONTES ===================== -->
+<dialog id="dataDialog" aria-labelledby="dataDlgTitle">
+  <div class="dlg">
+    <div class="dlg-head">
+      <div>
+        <div class="eyebrow">Dados</div>
+        <h2 id="dataDlgTitle">Dados, fontes e método</h2>
+      </div>
+      <button class="btn ghost small x" type="button" data-close aria-label="Fechar">✕</button>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Seções de dados">
+      <button role="tab" type="button" id="tab-fontes" aria-controls="pane-fontes" aria-selected="true">Fontes e método</button>
+      <button role="tab" type="button" id="tab-importar" aria-controls="pane-importar" aria-selected="false" tabindex="-1">Importar dados</button>
+      <button role="tab" type="button" id="tab-estrutura" aria-controls="pane-estrutura" aria-selected="false" tabindex="-1">Estrutura do arquivo</button>
+    </div>
+    <div class="dlg-body">
+      <div role="tabpanel" id="pane-fontes" aria-labelledby="tab-fontes"></div>
+      <div role="tabpanel" id="pane-importar" aria-labelledby="tab-importar" hidden>
+        <div class="stack">
+          <p class="lead" style="margin:0">Carregue um arquivo <b>JSON</b> com áreas populacionais, praças existentes e três locais candidatos. O arquivo é lido somente neste navegador — nada é enviado para servidores.</p>
+          <label class="drop" id="dropZone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m0 0-4.5 4.5M12 4l4.5 4.5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+            <div style="font-weight:650;margin-top:6px">Selecionar arquivo JSON</div>
+            <div class="muted small">ou arraste e solte aqui</div>
+            <input type="file" id="fileInput" accept=".json,application/json" class="sr-only">
+          </label>
+          <div id="importResult" aria-live="assertive"></div>
+          <div class="row" style="flex-wrap:wrap">
+            <button class="btn small" type="button" id="dlExample">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0-4.5-4.5M12 16l4.5-4.5M4 19h16"/></svg>
+              JSON de exemplo (métrico)
+            </button>
+            <button class="btn small" type="button" id="dlExampleGeo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0-4.5-4.5M12 16l4.5-4.5M4 19h16"/></svg>
+              JSON de exemplo (lat/lon)
+            </button>
+            <button class="btn small ghost" type="button" id="restoreDemo">Restaurar demonstração</button>
+          </div>
+          <p class="muted small" style="margin:0">Dados importados não são tratados como oficiais. A plataforma valida a estrutura, mas não verifica a origem nem a qualidade das informações.</p>
+        </div>
+      </div>
+      <div role="tabpanel" id="pane-estrutura" aria-labelledby="tab-estrutura" hidden></div>
+    </div>
+  </div>
+</dialog>
+
+<!-- ===================== DIÁLOGO: RESTRIÇÕES ===================== -->
+<dialog id="restrDialog" aria-labelledby="restrTitle">
+  <div class="dlg">
+    <div class="dlg-head">
+      <div>
+        <div class="eyebrow" style="color:var(--amber)">Análise de restrições</div>
+        <h2 id="restrTitle">Local</h2>
+      </div>
+      <button class="btn ghost small x" type="button" data-close aria-label="Fechar">✕</button>
+    </div>
+    <div class="dlg-body" id="restrBody"></div>
+    <div class="dlg-foot">
+      <button class="btn small ghost" type="button" id="restrReset">Restaurar status originais</button>
+      <button class="btn small primary" type="button" data-close>Concluir</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ===================== DIÁLOGO: RELATÓRIO ===================== -->
+<dialog id="reportDialog" aria-labelledby="reportTitle">
+  <div class="dlg">
+    <div class="dlg-head">
+      <div>
+        <div class="eyebrow">Justificativa</div>
+        <h2 id="reportTitle">Resumo da análise</h2>
+      </div>
+      <button class="btn ghost small x" type="button" data-close aria-label="Fechar">✕</button>
+    </div>
+    <div class="dlg-body"><div class="report" id="reportBody"></div></div>
+    <div class="dlg-foot">
+      <button class="btn small" type="button" data-close>Fechar</button>
+      <button class="btn small primary" type="button" id="printReport">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9V4h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v6H7z"/></svg>
+        Imprimir / salvar PDF
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<div id="printArea" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* =====================================================================
+   REVANO PRIORIZA · ALCANCE
+   Arquivo único: dados de demonstração, motor de cálculo, mapa SVG,
+   comparação, restrições, importação, relatório e acompanhamento.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   1. DADOS DE DEMONSTRAÇÃO (sintéticos — separados da lógica)
+   --------------------------------------------------------------------- */
+const DEMO_DATA = {
+  "metadados": {
+    "titulo": "Acesso a espaços públicos de lazer — território demonstrativo",
+    "territorio": "Território esquemático fictício (não representa Londrina)",
+    "descricao": "Conjunto sintético criado para demonstrar o funcionamento do Revano Alcance. Populações, setores, praças e locais candidatos são fictícios.",
+    "modo": "demonstracao",
+    "ano_referencia": 2026,
+    "versao": "1.0"
+  },
+  "parametros": {
+    "distancia_referencia_m": 400,
+    "sistema_coordenadas": "cartesiano_metros",
+    "metodo": "linha_reta",
+    "tamanho_celula_m": 200,
+    "fonte_metodologica": "Referência de 400 m inspirada nas metodologias de acesso a espaços públicos da ONU-Habitat (ODS 11.7.1) e do ITDP. Aqui aplicada como distância em linha reta, sem rede viária."
+  },
+  "fontes": [
+    { "id": "demo", "nome": "Conjunto sintético Revano (demonstração)", "descricao": "Dados simulados gerados para a demonstração. Não representam população, equipamentos ou terrenos reais.", "ano": 2026, "url": "" }
+  ],
+  "regioes": [
+    { "id": "R1", "nome": "Região Demonstrativa I", "area_km2": 2.2, "limite": [0, 0, 1000, 2200] },
+    { "id": "R2", "nome": "Região Demonstrativa II", "area_km2": 2.2, "limite": [1000, 0, 2000, 2200] },
+    { "id": "R3", "nome": "Região Demonstrativa III", "area_km2": 2.2, "limite": [2000, 0, 3000, 2200] }
+  ],
+  "contexto": [
+    { "tipo": "curso_dagua", "nome": "Fundo de vale (esquemático)", "pontos": [[-100, 235], [50, 332], [200, 429], [350, 522], [500, 608], [650, 687], [800, 755], [950, 812], [1100, 859], [1250, 894], [1400, 920], [1550, 938], [1700, 950], [1850, 958], [2000, 966], [2150, 976], [2300, 990], [2450, 1012], [2600, 1043], [2750, 1084], [2900, 1136], [3050, 1200]] }
+  ],
+  "areas": [
+    {"id": "S001", "nome": "Setor S-001", "populacao": 95, "x": 100.0, "y": 100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S002", "nome": "Setor S-002", "populacao": 120, "x": 300.0, "y": 100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S003", "nome": "Setor S-003", "populacao": 205, "x": 500.0, "y": 100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S004", "nome": "Setor S-004", "populacao": 175, "x": 700.0, "y": 100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S005", "nome": "Setor S-005", "populacao": 205, "x": 900.0, "y": 100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S006", "nome": "Setor S-006", "populacao": 160, "x": 1100.0, "y": 100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S007", "nome": "Setor S-007", "populacao": 110, "x": 1300.0, "y": 100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S008", "nome": "Setor S-008", "populacao": 115, "x": 1500.0, "y": 100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S009", "nome": "Setor S-009", "populacao": 90, "x": 1700.0, "y": 100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S010", "nome": "Setor S-010", "populacao": 120, "x": 1900.0, "y": 100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S011", "nome": "Setor S-011", "populacao": 115, "x": 2100.0, "y": 100.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S012", "nome": "Setor S-012", "populacao": 135, "x": 2300.0, "y": 100.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S013", "nome": "Setor S-013", "populacao": 165, "x": 2500.0, "y": 100.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S014", "nome": "Setor S-014", "populacao": 180, "x": 2700.0, "y": 100.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S015", "nome": "Setor S-015", "populacao": 105, "x": 2900.0, "y": 100.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S016", "nome": "Setor S-016", "populacao": 170, "x": 300.0, "y": 300.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S017", "nome": "Setor S-017", "populacao": 280, "x": 500.0, "y": 300.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S018", "nome": "Setor S-018", "populacao": 370, "x": 700.0, "y": 300.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S019", "nome": "Setor S-019", "populacao": 305, "x": 900.0, "y": 300.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S020", "nome": "Setor S-020", "populacao": 235, "x": 1100.0, "y": 300.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S021", "nome": "Setor S-021", "populacao": 245, "x": 1300.0, "y": 300.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S022", "nome": "Setor S-022", "populacao": 135, "x": 1500.0, "y": 300.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S023", "nome": "Setor S-023", "populacao": 200, "x": 1700.0, "y": 300.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S024", "nome": "Setor S-024", "populacao": 170, "x": 1900.0, "y": 300.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S025", "nome": "Setor S-025", "populacao": 180, "x": 2100.0, "y": 300.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S026", "nome": "Setor S-026", "populacao": 205, "x": 2300.0, "y": 300.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S027", "nome": "Setor S-027", "populacao": 235, "x": 2500.0, "y": 300.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S028", "nome": "Setor S-028", "populacao": 265, "x": 2700.0, "y": 300.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S029", "nome": "Setor S-029", "populacao": 150, "x": 2900.0, "y": 300.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S030", "nome": "Setor S-030", "populacao": 145, "x": 100.0, "y": 500.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S031", "nome": "Setor S-031", "populacao": 390, "x": 700.0, "y": 500.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S032", "nome": "Setor S-032", "populacao": 345, "x": 900.0, "y": 500.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S033", "nome": "Setor S-033", "populacao": 330, "x": 1100.0, "y": 500.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S034", "nome": "Setor S-034", "populacao": 225, "x": 1300.0, "y": 500.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S035", "nome": "Setor S-035", "populacao": 205, "x": 1500.0, "y": 500.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S036", "nome": "Setor S-036", "populacao": 220, "x": 1700.0, "y": 500.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S037", "nome": "Setor S-037", "populacao": 290, "x": 1900.0, "y": 500.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S038", "nome": "Setor S-038", "populacao": 295, "x": 2100.0, "y": 500.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S039", "nome": "Setor S-039", "populacao": 310, "x": 2300.0, "y": 500.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S040", "nome": "Setor S-040", "populacao": 360, "x": 2500.0, "y": 500.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S041", "nome": "Setor S-041", "populacao": 295, "x": 2700.0, "y": 500.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S042", "nome": "Setor S-042", "populacao": 210, "x": 2900.0, "y": 500.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S043", "nome": "Setor S-043", "populacao": 165, "x": 100.0, "y": 700.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S044", "nome": "Setor S-044", "populacao": 250, "x": 300.0, "y": 700.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S045", "nome": "Setor S-045", "populacao": 345, "x": 1100.0, "y": 700.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S046", "nome": "Setor S-046", "populacao": 385, "x": 1300.0, "y": 700.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S047", "nome": "Setor S-047", "populacao": 365, "x": 1500.0, "y": 700.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S048", "nome": "Setor S-048", "populacao": 420, "x": 1700.0, "y": 700.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S049", "nome": "Setor S-049", "populacao": 400, "x": 1900.0, "y": 700.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S050", "nome": "Setor S-050", "populacao": 340, "x": 2100.0, "y": 700.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S051", "nome": "Setor S-051", "populacao": 490, "x": 2300.0, "y": 700.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S052", "nome": "Setor S-052", "populacao": 325, "x": 2500.0, "y": 700.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S053", "nome": "Setor S-053", "populacao": 325, "x": 2700.0, "y": 700.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S054", "nome": "Setor S-054", "populacao": 280, "x": 2900.0, "y": 700.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S055", "nome": "Setor S-055", "populacao": 130, "x": 100.0, "y": 900.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S056", "nome": "Setor S-056", "populacao": 225, "x": 300.0, "y": 900.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S057", "nome": "Setor S-057", "populacao": 245, "x": 500.0, "y": 900.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S058", "nome": "Setor S-058", "populacao": 410, "x": 700.0, "y": 900.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S059", "nome": "Setor S-059", "populacao": 435, "x": 2500.0, "y": 900.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S060", "nome": "Setor S-060", "populacao": 335, "x": 2700.0, "y": 900.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S061", "nome": "Setor S-061", "populacao": 280, "x": 2900.0, "y": 900.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S062", "nome": "Setor S-062", "populacao": 165, "x": 100.0, "y": 1100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S063", "nome": "Setor S-063", "populacao": 275, "x": 300.0, "y": 1100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S064", "nome": "Setor S-064", "populacao": 345, "x": 500.0, "y": 1100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S065", "nome": "Setor S-065", "populacao": 410, "x": 700.0, "y": 1100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S066", "nome": "Setor S-066", "populacao": 445, "x": 900.0, "y": 1100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S067", "nome": "Setor S-067", "populacao": 585, "x": 1100.0, "y": 1100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S068", "nome": "Setor S-068", "populacao": 660, "x": 1300.0, "y": 1100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S069", "nome": "Setor S-069", "populacao": 555, "x": 1500.0, "y": 1100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S070", "nome": "Setor S-070", "populacao": 575, "x": 1700.0, "y": 1100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S071", "nome": "Setor S-071", "populacao": 385, "x": 1900.0, "y": 1100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S072", "nome": "Setor S-072", "populacao": 470, "x": 2100.0, "y": 1100.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S073", "nome": "Setor S-073", "populacao": 240, "x": 100.0, "y": 1300.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S074", "nome": "Setor S-074", "populacao": 375, "x": 300.0, "y": 1300.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S075", "nome": "Setor S-075", "populacao": 435, "x": 500.0, "y": 1300.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S076", "nome": "Setor S-076", "populacao": 395, "x": 700.0, "y": 1300.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S077", "nome": "Setor S-077", "populacao": 465, "x": 900.0, "y": 1300.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S078", "nome": "Setor S-078", "populacao": 585, "x": 1100.0, "y": 1300.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S079", "nome": "Setor S-079", "populacao": 455, "x": 1300.0, "y": 1300.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S080", "nome": "Setor S-080", "populacao": 585, "x": 1500.0, "y": 1300.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S081", "nome": "Setor S-081", "populacao": 470, "x": 1700.0, "y": 1300.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S082", "nome": "Setor S-082", "populacao": 400, "x": 1900.0, "y": 1300.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S083", "nome": "Setor S-083", "populacao": 330, "x": 2100.0, "y": 1300.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S084", "nome": "Setor S-084", "populacao": 400, "x": 2300.0, "y": 1300.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S085", "nome": "Setor S-085", "populacao": 260, "x": 2500.0, "y": 1300.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S086", "nome": "Setor S-086", "populacao": 225, "x": 2700.0, "y": 1300.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S087", "nome": "Setor S-087", "populacao": 180, "x": 2900.0, "y": 1300.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S088", "nome": "Setor S-088", "populacao": 315, "x": 100.0, "y": 1500.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S089", "nome": "Setor S-089", "populacao": 290, "x": 300.0, "y": 1500.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S090", "nome": "Setor S-090", "populacao": 420, "x": 500.0, "y": 1500.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S091", "nome": "Setor S-091", "populacao": 485, "x": 700.0, "y": 1500.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S092", "nome": "Setor S-092", "populacao": 595, "x": 900.0, "y": 1500.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S093", "nome": "Setor S-093", "populacao": 610, "x": 1100.0, "y": 1500.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S094", "nome": "Setor S-094", "populacao": 655, "x": 1300.0, "y": 1500.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S095", "nome": "Setor S-095", "populacao": 500, "x": 1500.0, "y": 1500.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S096", "nome": "Setor S-096", "populacao": 495, "x": 1700.0, "y": 1500.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S097", "nome": "Setor S-097", "populacao": 415, "x": 1900.0, "y": 1500.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S098", "nome": "Setor S-098", "populacao": 445, "x": 2100.0, "y": 1500.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S099", "nome": "Setor S-099", "populacao": 410, "x": 2300.0, "y": 1500.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S100", "nome": "Setor S-100", "populacao": 260, "x": 2500.0, "y": 1500.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S101", "nome": "Setor S-101", "populacao": 225, "x": 2700.0, "y": 1500.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S102", "nome": "Setor S-102", "populacao": 170, "x": 2900.0, "y": 1500.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S103", "nome": "Setor S-103", "populacao": 250, "x": 100.0, "y": 1700.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S104", "nome": "Setor S-104", "populacao": 375, "x": 300.0, "y": 1700.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S105", "nome": "Setor S-105", "populacao": 460, "x": 500.0, "y": 1700.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S106", "nome": "Setor S-106", "populacao": 415, "x": 700.0, "y": 1700.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S107", "nome": "Setor S-107", "populacao": 365, "x": 900.0, "y": 1700.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S108", "nome": "Setor S-108", "populacao": 455, "x": 1100.0, "y": 1700.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S109", "nome": "Setor S-109", "populacao": 445, "x": 1300.0, "y": 1700.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S110", "nome": "Setor S-110", "populacao": 480, "x": 1500.0, "y": 1700.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S111", "nome": "Setor S-111", "populacao": 515, "x": 1700.0, "y": 1700.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S112", "nome": "Setor S-112", "populacao": 405, "x": 1900.0, "y": 1700.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S113", "nome": "Setor S-113", "populacao": 335, "x": 2100.0, "y": 1700.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S114", "nome": "Setor S-114", "populacao": 335, "x": 2300.0, "y": 1700.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S115", "nome": "Setor S-115", "populacao": 340, "x": 2500.0, "y": 1700.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S116", "nome": "Setor S-116", "populacao": 220, "x": 2700.0, "y": 1700.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S117", "nome": "Setor S-117", "populacao": 250, "x": 2900.0, "y": 1700.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S118", "nome": "Setor S-118", "populacao": 295, "x": 100.0, "y": 1900.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S119", "nome": "Setor S-119", "populacao": 400, "x": 300.0, "y": 1900.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S120", "nome": "Setor S-120", "populacao": 445, "x": 500.0, "y": 1900.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S121", "nome": "Setor S-121", "populacao": 385, "x": 700.0, "y": 1900.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S122", "nome": "Setor S-122", "populacao": 370, "x": 900.0, "y": 1900.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S123", "nome": "Setor S-123", "populacao": 305, "x": 1100.0, "y": 1900.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S124", "nome": "Setor S-124", "populacao": 385, "x": 1300.0, "y": 1900.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S125", "nome": "Setor S-125", "populacao": 275, "x": 1500.0, "y": 1900.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S126", "nome": "Setor S-126", "populacao": 255, "x": 1700.0, "y": 1900.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S127", "nome": "Setor S-127", "populacao": 245, "x": 1900.0, "y": 1900.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S128", "nome": "Setor S-128", "populacao": 220, "x": 2100.0, "y": 1900.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S129", "nome": "Setor S-129", "populacao": 250, "x": 2300.0, "y": 1900.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S130", "nome": "Setor S-130", "populacao": 225, "x": 2500.0, "y": 1900.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S131", "nome": "Setor S-131", "populacao": 200, "x": 2700.0, "y": 1900.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S132", "nome": "Setor S-132", "populacao": 165, "x": 2900.0, "y": 1900.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S133", "nome": "Setor S-133", "populacao": 170, "x": 100.0, "y": 2100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S134", "nome": "Setor S-134", "populacao": 250, "x": 300.0, "y": 2100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S135", "nome": "Setor S-135", "populacao": 235, "x": 500.0, "y": 2100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S136", "nome": "Setor S-136", "populacao": 355, "x": 700.0, "y": 2100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S137", "nome": "Setor S-137", "populacao": 300, "x": 900.0, "y": 2100.0, "regiao": "R1", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S138", "nome": "Setor S-138", "populacao": 220, "x": 1100.0, "y": 2100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S139", "nome": "Setor S-139", "populacao": 220, "x": 1300.0, "y": 2100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S140", "nome": "Setor S-140", "populacao": 215, "x": 1500.0, "y": 2100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S141", "nome": "Setor S-141", "populacao": 200, "x": 1700.0, "y": 2100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S142", "nome": "Setor S-142", "populacao": 160, "x": 1900.0, "y": 2100.0, "regiao": "R2", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S143", "nome": "Setor S-143", "populacao": 220, "x": 2100.0, "y": 2100.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S144", "nome": "Setor S-144", "populacao": 245, "x": 2300.0, "y": 2100.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S145", "nome": "Setor S-145", "populacao": 210, "x": 2500.0, "y": 2100.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S146", "nome": "Setor S-146", "populacao": 200, "x": 2700.0, "y": 2100.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026},
+    {"id": "S147", "nome": "Setor S-147", "populacao": 125, "x": 2900.0, "y": 2100.0, "regiao": "R3", "fonte": "demo", "ano_referencia": 2026}
+  ],
+  "equipamentos": [
+    {"id": "E1", "nome": "Praça Demonstrativa 1", "tipo": "Praça / espaço de lazer", "x": 500, "y": 1100, "fonte": "demo"},
+    {"id": "E2", "nome": "Praça Demonstrativa 2", "tipo": "Praça / espaço de lazer", "x": 900, "y": 1850, "fonte": "demo"},
+    {"id": "E3", "nome": "Praça Demonstrativa 3", "tipo": "Praça / espaço de lazer", "x": 2250, "y": 1300, "fonte": "demo"},
+    {"id": "E4", "nome": "Praça Demonstrativa 4", "tipo": "Praça / espaço de lazer", "x": 2650, "y": 950, "fonte": "demo"},
+    {"id": "E5", "nome": "Praça Demonstrativa 5", "tipo": "Praça / espaço de lazer", "x": 2500, "y": 350, "fonte": "demo"},
+    {"id": "E6", "nome": "Praça Demonstrativa 6", "tipo": "Praça / espaço de lazer", "x": 1700, "y": 400, "fonte": "demo"}
+  ],
+  "candidatos": [
+    { "id": "A", "rotulo": "A", "nome": "Local A", "x": 1500, "y": 1350, "regiao": "R2",
+      "descricao": "Lote hipotético em área central de alta densidade e baixa oferta de praças.",
+      "custo_estimado": null,
+      "restricoes": { "terreno": "nao_informado", "urbanistica": "pendente", "custo": "nao_informado", "acessibilidade": "pendente", "documentacao": "nao_informado" },
+      "observacoes": "Verificações ilustrativas para demonstração." },
+    { "id": "B", "rotulo": "B", "nome": "Local B", "x": 650, "y": 1550, "regiao": "R1",
+      "descricao": "Área hipotética próxima a praças existentes; parte do raio se sobrepõe à cobertura atual.",
+      "custo_estimado": null,
+      "restricoes": { "terreno": "verificado", "urbanistica": "verificado", "custo": "pendente", "acessibilidade": "verificado", "documentacao": "pendente" },
+      "observacoes": "Verificações ilustrativas para demonstração." },
+    { "id": "C", "rotulo": "C", "nome": "Local C", "x": 2450, "y": 1800, "regiao": "R3",
+      "descricao": "Área hipotética em bolsão sem cobertura de uma região já parcialmente atendida.",
+      "custo_estimado": null,
+      "restricoes": { "terreno": "verificado", "urbanistica": "verificado", "custo": "pendente", "acessibilidade": "pendente", "documentacao": "verificado" },
+      "observacoes": "Verificações ilustrativas para demonstração." }
+  ]
+};
+
+/* ---------------------------------------------------------------------
+   2. CONSTANTES DE DOMÍNIO
+   --------------------------------------------------------------------- */
+const RESTR_KEYS = [
+  ["terreno", "Disponibilidade do terreno"],
+  ["urbanistica", "Viabilidade urbanística"],
+  ["custo", "Estimativa de custo"],
+  ["acessibilidade", "Acessibilidade física"],
+  ["documentacao", "Documentação necessária"]
+];
+const STATUS = {
+  verificado:    { label: "Verificado",    short: "Verificado" },
+  pendente:      { label: "Pendente",      short: "Pendente" },
+  nao_informado: { label: "Não informado", short: "Não informado" }
+};
+const STATUS_ICON = {
+  verificado: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  pendente: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 5v3.3l2 1.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  nao_informado: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2.2 2"/><path d="M8 7.2v3.6M8 5.2v.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>'
+};
+const COORD_SYSTEMS = ["cartesiano_metros", "geografico_wgs84"];
+const EARTH_R = 6371008.8; // raio médio da Terra (m)
+const REFERENCES = [
+  { nome: "IPPUL / SIPLAM — Londrina", url: "https://ippul.londrina.pr.gov.br/", uso: "Sistema municipal de planejamento e indicadores (referência; sem integração automática)." },
+  { nome: "SIGLON — Prefeitura de Londrina", url: "https://portal.londrina.pr.gov.br/downloads-siglon", uso: "Bases geográficas municipais para futura substituição dos dados simulados." },
+  { nome: "IBGE — Censo Demográfico 2022", url: "https://www.ibge.gov.br/", uso: "População por setor censitário (fonte potencial para áreas populacionais)." },
+  { nome: "ONU-Habitat — ODS 11.7.1", url: "https://unhabitat.org/", uso: "Metodologia de acesso a espaços públicos (referência de 400 m pela rede viária)." },
+  { nome: "ITDP — Pedestrians First", url: "https://pedestriansfirst.itdp.org/methods", uso: "Métodos de acessibilidade e proximidade urbana." }
+];
+const ICON = {
+  info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.8 19.5h18.4L12 4z"/><path d="M12 10v4.5M12 17v.01"/></svg>',
+  arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>',
+  pointer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l14 7-6 2-2 6z"/></svg>',
+  doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+};
+const MARK_SVG = '<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#1B1E22"/><path d="M10 23V9h6.6a4.6 4.6 0 0 1 0 9.2H10" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.4 18.2 21.6 23" fill="none" stroke="#6FC59A" stroke-width="2.6" stroke-linecap="round"/></svg>';
+
+/* ---------------------------------------------------------------------
+   3. ESTADO DA APLICAÇÃO
+   --------------------------------------------------------------------- */
+const state = {
+  raw: null,            // dataset validado (objeto)
+  mode: "demo",         // "demo" | "importado"
+  fileName: null,
+  model: null,          // modelo calculado (ver buildModel)
+  step: 1,
+  selectedCand: null,   // id do candidato selecionado
+  view: "depois",       // "antes" | "depois" (simulação)
+  criterion: "alcance", // "alcance" | "proporcional"
+  selection: null,      // {kind:"area"|"eq"|"cand", id}
+  restr: {},            // status de restrições (editáveis na sessão)
+  monitor: []           // registros de acompanhamento
+};
+const prevNumbers = new Map(); // para transições numéricas
+
+/* ---------------------------------------------------------------------
+   4. UTILITÁRIOS
+   --------------------------------------------------------------------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function esc(v) {
+  return String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+const nfInt = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+const nfPct = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+function fmtInt(n) { return Number.isFinite(n) ? nfInt.format(Math.round(n)) : "—"; }
+function fmtPct(p) { return Number.isFinite(p) ? nfPct.format(p) + "%" : "—"; }
+function fmtPP(p) { if (!Number.isFinite(p)) return "—"; const v = Math.round(p * 10) / 10; return (v > 0 ? "+" : v < 0 ? "−" : "") + nfPct.format(Math.abs(v)) + " p.p."; }
+function fmtDist(m) { if (!Number.isFinite(m)) return "—"; return m >= 1000 ? nfPct.format(m / 1000) + " km" : nfInt.format(Math.round(m)) + " m"; }
+function safePct(part, total) { return total > 0 ? (part / total) * 100 : NaN; }
+function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
+function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 3200);
+}
+const reduceMotion = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------------------------------------------------------------------
+   5. DISTÂNCIA E PROJEÇÃO
+   --------------------------------------------------------------------- */
+/** Distância euclidiana (coordenadas cartesianas em metros). */
+function distEuclid(a, b) { return Math.hypot(a.cx - b.cx, a.cy - b.cy); }
+/** Distância de Haversine (coordenadas geográficas WGS84, em metros). */
+function distHaversine(a, b) {
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(b.lat - a.lat), dLon = toRad(b.lon - a.lon);
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLon / 2) ** 2;
+  return 2 * EARTH_R * Math.asin(Math.min(1, Math.sqrt(s)));
+}
+/** Projeção equiretangular local (somente para desenhar — cálculos usam Haversine). */
+function makeProjector(system, points) {
+  if (system === "cartesiano_metros") return p => ({ x: p[0], y: p[1] });
+  let lat0 = 0, lon0 = 0;
+  points.forEach(p => { lat0 += p.lat; lon0 += p.lon; });
+  lat0 /= points.length || 1; lon0 /= points.length || 1;
+  const k = Math.cos(lat0 * Math.PI / 180);
+  return p => ({ x: EARTH_R * (p[0] - lon0) * Math.PI / 180 * k, y: EARTH_R * (p[1] - lat0) * Math.PI / 180 });
+}
+
+/* ---------------------------------------------------------------------
+   6. VALIDAÇÃO DE DADOS
+   --------------------------------------------------------------------- */
+/**
+ * Valida um dataset. Retorna { errors, warnings, data } — data só é
+ * utilizável se errors estiver vazio. Nunca altera o objeto de entrada.
+ */
+function validateDataset(input) {
+  const errors = [], warnings = [];
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return { errors: ["O arquivo não contém um objeto JSON com as seções esperadas (areas, equipamentos, candidatos, parametros)."], warnings };
+  }
+  const d = deepClone(input);
+  d.metadados = (d.metadados && typeof d.metadados === "object") ? d.metadados : {};
+  d.parametros = (d.parametros && typeof d.parametros === "object") ? d.parametros : null;
+  if (!d.parametros) errors.push("Seção \"parametros\" ausente. Informe ao menos \"sistema_coordenadas\" e \"distancia_referencia_m\".");
+  const P = d.parametros || {};
+  const system = P.sistema_coordenadas;
+  if (d.parametros && !COORD_SYSTEMS.includes(system)) {
+    errors.push(`parametros.sistema_coordenadas deve ser "cartesiano_metros" ou "geografico_wgs84" (recebido: ${JSON.stringify(system)}).`);
+  }
+  if (d.parametros) {
+    if (P.distancia_referencia_m == null) { P.distancia_referencia_m = 400; warnings.push("distancia_referencia_m não informada: utilizada a referência padrão de 400 m."); }
+    else if (!isNum(P.distancia_referencia_m) || P.distancia_referencia_m <= 0 || P.distancia_referencia_m > 10000) {
+      errors.push("parametros.distancia_referencia_m deve ser um número entre 0 e 10.000 metros.");
+    }
+    if (P.metodo && P.metodo !== "linha_reta") warnings.push(`Método "${P.metodo}" não implementado neste MVP: a cobertura será calculada por distância em linha reta.`);
+    P.metodo = "linha_reta";
+    if (P.tamanho_celula_m != null && (!isNum(P.tamanho_celula_m) || P.tamanho_celula_m <= 0)) { warnings.push("tamanho_celula_m inválido — ignorado."); delete P.tamanho_celula_m; }
+    if (system === "geografico_wgs84") delete P.tamanho_celula_m;
+  }
+  const fontes = Array.isArray(d.fontes) ? d.fontes : [];
+  if (!Array.isArray(d.fontes)) warnings.push("Nenhuma fonte declarada (seção \"fontes\"). As informações serão identificadas como sem fonte registrada.");
+  d.fontes = fontes.filter(f => f && typeof f === "object" && f.id != null).map(f => ({ ...f, id: String(f.id) }));
+  const fonteIds = new Set(d.fontes.map(f => f.id));
+  const regioes = Array.isArray(d.regioes) ? d.regioes.filter(r => r && r.id != null).map(r => ({ ...r, id: String(r.id) })) : [];
+  d.regioes = regioes;
+  const regIds = new Set(regioes.map(r => r.id));
+  if (regIds.size !== regioes.length) errors.push("Há IDs duplicados em \"regioes\".");
+
+  const allIds = new Map();
+  function checkCoords(o, where) {
+    if (system === "geografico_wgs84") {
+      if (!isNum(o.lat) || !isNum(o.lon)) { errors.push(`${where}: \"lat\" e \"lon\" numéricos são obrigatórios em coordenadas geográficas.`); return false; }
+      if (o.lat < -90 || o.lat > 90 || o.lon < -180 || o.lon > 180) { errors.push(`${where}: coordenadas fora do intervalo válido (lat −90 a 90, lon −180 a 180).`); return false; }
+    } else if (system === "cartesiano_metros") {
+      if (!isNum(o.x) || !isNum(o.y)) { errors.push(`${where}: \"x\" e \"y\" numéricos (metros) são obrigatórios em coordenadas cartesianas.`); return false; }
+    }
+    return true;
+  }
+  function checkList(name, label, required) {
+    const arr = d[name];
+    if (!Array.isArray(arr)) { if (required) errors.push(`Seção \"${name}\" ausente ou não é uma lista.`); d[name] = []; return; }
+    const seen = new Set();
+    arr.forEach((o, i) => {
+      const where = `${label} nº ${i + 1}`;
+      if (!o || typeof o !== "object") { errors.push(`${where}: item inválido.`); return; }
+      if (o.id == null || String(o.id).trim() === "") { errors.push(`${where}: campo \"id\" obrigatório.`); return; }
+      o.id = String(o.id);
+      if (seen.has(o.id)) errors.push(`${label}: ID duplicado \"${o.id}\".`);
+      seen.add(o.id);
+      if (name !== "areas") {
+        if (allIds.has(o.id)) errors.push(`ID \"${o.id}\" repetido entre ${allIds.get(o.id)} e ${label}.`);
+        allIds.set(o.id, label);
+      }
+      if (!o.nome) { o.nome = o.id; }
+      checkCoords(o, `${where} (${o.id})`);
+      if (o.fonte != null && !fonteIds.has(String(o.fonte))) warnings.push(`${where} (${o.id}): fonte \"${o.fonte}\" não está declarada em \"fontes\".`);
+    });
+  }
+  checkList("areas", "Área", true);
+  checkList("equipamentos", "Equipamento", true);
+  checkList("candidatos", "Candidato", true);
+
+  // Áreas: população
+  let total = 0;
+  d.areas.forEach((a, i) => {
+    if (!a || typeof a !== "object") return;
+    if (a.populacao == null || a.populacao === "") errors.push(`Área ${a.id || i + 1}: \"populacao\" obrigatória.`);
+    else if (!isNum(a.populacao)) errors.push(`Área ${a.id || i + 1}: \"populacao\" deve ser numérica.`);
+    else if (a.populacao < 0) errors.push(`Área ${a.id || i + 1}: população negativa não é permitida.`);
+    else total += a.populacao;
+    if (a.regiao != null) { a.regiao = String(a.regiao); if (regioes.length && !regIds.has(a.regiao)) warnings.push(`Área ${a.id}: região \"${a.regiao}\" não declarada.`); }
+  });
+  if (d.areas.length === 0 && Array.isArray(input.areas)) errors.push("A seção \"areas\" está vazia.");
+  if (d.areas.length > 20000) errors.push("Mais de 20.000 áreas: volume acima do suportado por este protótipo.");
+  if (!errors.length && total === 0) warnings.push("A população total é zero: percentuais não poderão ser calculados.");
+  if (d.equipamentos.length === 0 && Array.isArray(input.equipamentos)) warnings.push("Nenhum equipamento existente: a cobertura atual será 0%.");
+
+  // Candidatos
+  if (d.candidatos.length !== 3) errors.push(`São necessárias exatamente 3 alternativas comparáveis em \"candidatos\" (recebidas: ${d.candidatos.length}).`);
+  d.candidatos.forEach((c, i) => {
+    if (!c || typeof c !== "object") return;
+    const r = (c.restricoes && typeof c.restricoes === "object") ? c.restricoes : {};
+    const clean = {};
+    RESTR_KEYS.forEach(([k, lbl]) => {
+      const v = r[k];
+      if (v == null) clean[k] = "nao_informado";
+      else if (STATUS[v]) clean[k] = v;
+      else { clean[k] = "nao_informado"; warnings.push(`Candidato ${c.id}: status \"${v}\" em \"${lbl}\" não reconhecido — tratado como \"Não informado\".`); }
+    });
+    c.restricoes = clean;
+    if (c.custo_estimado != null && (!isNum(c.custo_estimado) || c.custo_estimado < 0)) { warnings.push(`Candidato ${c.id}: custo_estimado inválido — ignorado.`); c.custo_estimado = null; }
+    if (c.regiao != null) {
+      c.regiao = String(c.regiao);
+      if (!regIds.has(c.regiao)) warnings.push(`Candidato ${c.id}: região de avaliação \"${c.regiao}\" não declarada — redução proporcional indisponível.`);
+    } else warnings.push(`Candidato ${c.id}: sem região de avaliação — redução proporcional indisponível.`);
+    c.rotulo = c.rotulo ? String(c.rotulo).slice(0, 2) : "ABC"[i] || String(i + 1);
+  });
+
+  // Extensão espacial plausível
+  if (!errors.length) {
+    const pts = [...d.areas, ...d.equipamentos, ...d.candidatos];
+    const proj = makeProjector(system, pts);
+    const xy = pts.map(p => system === "geografico_wgs84" ? proj([p.lon, p.lat]) : proj([p.x, p.y]));
+    const xs = xy.map(p => p.x), ys = xy.map(p => p.y);
+    const span = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
+    if (span > 300000) errors.push(`As coordenadas se espalham por cerca de ${fmtInt(span / 1000)} km — incompatível com uma análise municipal. Verifique o sistema de coordenadas (lat/lon invertidos?).`);
+    if (span === 0) errors.push("Todas as coordenadas são idênticas.");
+  }
+  // Comparabilidade das regiões usadas pelos candidatos
+  const used = d.candidatos.map(c => regioes.find(r => r.id === c.regiao)).filter(Boolean);
+  const areasKm = used.map(r => r.area_km2).filter(isNum);
+  if (areasKm.length === used.length && areasKm.length > 1) {
+    const mn = Math.min(...areasKm), mx = Math.max(...areasKm);
+    if (mn > 0 && mx / mn > 1.25) warnings.push("As regiões de avaliação dos candidatos têm áreas diferentes em mais de 25%: interprete a redução proporcional com cautela.");
+  } else if (used.length) warnings.push("Regiões de avaliação sem área (area_km2) declarada: a comparabilidade entre regiões não pôde ser conferida.");
+
+  if (!Array.isArray(d.contexto)) d.contexto = [];
+  return { errors, warnings, data: errors.length ? null : d };
+}
+
+/* ---------------------------------------------------------------------
+   7. MOTOR DE CÁLCULO
+   --------------------------------------------------------------------- */
+/**
+ * Constrói o modelo: normaliza coordenadas, calcula a cobertura atual
+ * e os cenários de cada candidato. Toda contagem é feita por área
+ * (centroide) com flag booleana — não há dupla contagem.
+ */
+function buildModel(data) {
+  const P = data.parametros;
+  const system = P.sistema_coordenadas;
+  const R = P.distancia_referencia_m;
+  const allPts = [...data.areas, ...data.equipamentos, ...data.candidatos];
+  const proj = makeProjector(system, allPts);
+  const norm = o => {
+    const p = system === "geografico_wgs84" ? proj([o.lon, o.lat]) : proj([o.x, o.y]);
+    return { ...o, cx: system === "cartesiano_metros" ? o.x : null, cy: system === "cartesiano_metros" ? o.y : null, px: p.x, py: p.y };
+  };
+  const dist = system === "geografico_wgs84" ? distHaversine : distEuclid;
+  const areas = data.areas.map(norm);
+  const eqs = data.equipamentos.map(norm);
+  const cands = data.candidatos.map(norm);
+  // Polígonos opcionais (apenas para desenho)
+  areas.forEach(a => {
+    if (Array.isArray(a.poligono) && a.poligono.length >= 3 && a.poligono.every(p => Array.isArray(p) && isNum(p[0]) && isNum(p[1]))) a.poly = a.poligono.map(p => proj(p));
+  });
+
+  const total = areas.reduce((s, a) => s + a.populacao, 0);
+  // Cobertura atual
+  areas.forEach(a => {
+    let nearest = Infinity, nearestId = null; const covering = [];
+    eqs.forEach(e => { const dd = dist(a, e); if (dd < nearest) { nearest = dd; nearestId = e.id; } if (dd <= R) covering.push(e.id); });
+    a.nearestEq = nearest; a.nearestEqId = nearestId; a.coveringEqs = covering; a.before = covering.length > 0;
+  });
+  const coveredBefore = areas.reduce((s, a) => s + (a.before ? a.populacao : 0), 0);
+  // Estatísticas por equipamento
+  eqs.forEach(e => {
+    e.popInRadius = 0; e.popExclusive = 0;
+    areas.forEach(a => { if (a.coveringEqs.includes(e.id)) { e.popInRadius += a.populacao; if (a.coveringEqs.length === 1) e.popExclusive += a.populacao; } });
+  });
+  // Regiões
+  const regions = (data.regioes || []).map(r => {
+    const ra = areas.filter(a => a.regiao === r.id);
+    const pop = ra.reduce((s, a) => s + a.populacao, 0);
+    const cov = ra.reduce((s, a) => s + (a.before ? a.populacao : 0), 0);
+    return { ...r, pop, covered: cov, uncovered: pop - cov, nAreas: ra.length };
+  });
+  const base = { total, coveredBefore, uncoveredBefore: total - coveredBefore, pctBefore: safePct(coveredBefore, total) };
+  // Cenários por candidato
+  const scenarios = {};
+  cands.forEach(c => { scenarios[c.id] = computeScenario({ areas, regions, R, dist, base }, c); });
+  return { system, R, dist, areas, eqs, cands, regions, base, scenarios, cellSize: P.tamanho_celula_m || null, data };
+}
+
+/** Calcula um cenário de intervenção para um candidato. */
+function computeScenario(ctx, cand) {
+  const { areas, regions, R, dist, base } = ctx;
+  let coveredAfter = 0, overlapPop = 0, inRadiusPop = 0;
+  const newIds = new Set();
+  areas.forEach(a => {
+    const d = dist(a, cand);
+    const inside = d <= R;
+    if (inside) inRadiusPop += a.populacao;
+    const after = a.before || inside;             // união booleana: cada área conta uma única vez
+    if (after) coveredAfter += a.populacao;
+    if (inside && !a.before) newIds.add(a.id);
+    if (inside && a.before) overlapPop += a.populacao;
+  });
+  const newPeople = coveredAfter - base.coveredBefore;
+  const pctAfter = safePct(coveredAfter, base.total);
+  // Redução proporcional da carência na região de avaliação do candidato
+  const region = regions.find(r => r.id === cand.regiao) || null;
+  let regionNew = NaN, propReduction = NaN, propReason = "";
+  if (!region) propReason = "Candidato sem região de avaliação declarada.";
+  else if (region.uncovered <= 0) propReason = "A região de avaliação não possui população sem cobertura.";
+  else {
+    regionNew = areas.reduce((s, a) => s + (newIds.has(a.id) && a.regiao === region.id ? a.populacao : 0), 0);
+    propReduction = (regionNew / region.uncovered) * 100;
+  }
+  return {
+    candId: cand.id, newIds, coveredAfter, newPeople, overlapPop, inRadiusPop,
+    pctAfter, gainPP: Number.isFinite(pctAfter) ? pctAfter - base.pctBefore : NaN,
+    uncoveredAfter: base.total - coveredAfter,
+    region, regionNew, propReduction, propReason
+  };
+}
+
+/** Ordena alternativas segundo o critério escolhido (sem pontuação arbitrária). */
+function rankCandidates(model, criterion) {
+  const items = model.cands.map(c => {
+    const s = model.scenarios[c.id];
+    const value = criterion === "alcance" ? s.newPeople : s.propReduction;
+    return { cand: c, s, value, ok: Number.isFinite(value) };
+  });
+  items.sort((a, b) => (b.ok - a.ok) || (b.ok && a.ok ? b.value - a.value : 0));
+  const valid = items.filter(i => i.ok);
+  let leaders = [];
+  if (valid.length) {
+    const top = valid[0].value;
+    leaders = valid.filter(i => Math.abs(i.value - top) < 1e-9).map(i => i.cand.id);
+  }
+  return { items, leaders, insufficient: valid.length === 0 };
+}
+
+/** Situação de avaliação derivada das restrições. */
+function evaluationStatus(restr) {
+  const vals = RESTR_KEYS.map(([k]) => restr[k]);
+  const ni = vals.filter(v => v === "nao_informado").length;
+  const pe = vals.filter(v => v === "pendente").length;
+  const ve = vals.filter(v => v === "verificado").length;
+  let label, tone;
+  if (ni > 0) { label = "Informações insuficientes"; tone = "nao_informado"; }
+  else if (pe > 0) { label = "Em verificação"; tone = "pendente"; }
+  else { label = "Verificações registradas"; tone = "verificado"; }
+  return { ni, pe, ve, label, tone };
+}
+function eligibilityMessage(candId) {
+  const st = evaluationStatus(state.restr[candId]);
+  const reach = rankCandidates(state.model, "alcance");
+  const isReachLeader = reach.leaders.includes(candId);
+  if (st.ni > 0) return (isReachLeader ? "Alternativa promissora em alcance, mas ainda não possui" : "Alternativa ainda não possui") + " informações suficientes para confirmar sua viabilidade.";
+  if (st.pe > 0) return `Há ${st.pe} verificaç${st.pe > 1 ? "ões" : "ão"} pendente${st.pe > 1 ? "s" : ""} antes de qualquer decisão sobre esta alternativa.`;
+  return "Todas as verificações estão registradas como concluídas. Isso não constitui aprovação técnica, orçamentária ou legal — a decisão permanece com os órgãos competentes.";
+}
+
+/* ---------------------------------------------------------------------
+   8. INICIALIZAÇÃO / TROCA DE DADOS
+   --------------------------------------------------------------------- */
+function loadDataset(data, mode, fileName) {
+  const model = buildModel(data);
+  state.raw = data; state.mode = mode; state.fileName = fileName || null;
+  state.model = model;
+  state.restr = {};
+  model.cands.forEach(c => { state.restr[c.id] = { ...c.restricoes }; });
+  state.selectedCand = model.cands[0] ? model.cands[0].id : null;
+  state.selection = null; state.monitor = []; state.view = "depois";
+  prevNumbers.clear();
+  buildMap();
+  renderAll();
+}
+
+function init() {
+  const v = validateDataset(DEMO_DATA);
+  if (v.errors.length) { // nunca deve ocorrer — protege a apresentação
+    $("#panelInner").innerHTML = `<div class="callout danger">${ICON.warn}<div>Falha nos dados de demonstração: ${esc(v.errors[0])}</div></div>`;
+    return;
+  }
+  bindEvents();
+  if (window.matchMedia("(max-width:560px)").matches) $("#legend").open = false;
+  loadDataset(v.data, "demo", null);
+  let rT; window.addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(updateMap, 120); });
+}
+
+/* ---------------------------------------------------------------------
+   9. MAPA SVG
+   --------------------------------------------------------------------- */
+const SVGNS = "http://www.w3.org/2000/svg";
+const mapRefs = { cells: new Map(), dots: new Map(), candAreas: new Map(), candMarks: new Map(), eqMarks: new Map(), unit: 1 };
+function S(tag, attrs, parent) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function niceStep(span) {
+  const raw = span / 6; const p = Math.pow(10, Math.floor(Math.log10(raw)));
+  const m = raw / p; return (m < 1.5 ? 1 : m < 3.5 ? 2.5 : m < 7.5 ? 5 : 10) * p;
+}
+
+function buildMap() {
+  const svg = $("#map"), m = state.model;
+  $$(":scope > :not(title):not(desc)", svg).forEach(n => n.remove());
+  mapRefs.cells.clear(); mapRefs.dots.clear(); mapRefs.candAreas.clear(); mapRefs.candMarks.clear(); mapRefs.eqMarks.clear();
+  // Limites
+  const R = m.R;
+  const xs = [], ys = [];
+  [...m.areas, ...m.eqs, ...m.cands].forEach(p => { xs.push(p.px); ys.push(p.py); });
+  m.regions.forEach(r => { if (Array.isArray(r.limite) && r.limite.length === 4 && m.system === "cartesiano_metros") { xs.push(r.limite[0], r.limite[2]); ys.push(r.limite[1], r.limite[3]); } });
+  const pad = R * 0.9 + (m.cellSize || 0) * 0.5;
+  let minX = Math.min(...xs) - pad, maxX = Math.max(...xs) + pad, minY = Math.min(...ys) - pad, maxY = Math.max(...ys) + pad;
+  const w = maxX - minX, h = maxY - minY;
+  const unit = Math.max(w, h) / 100; mapRefs.unit = unit;
+  svg.setAttribute("viewBox", `${minX} ${-maxY - unit * 4} ${w} ${h + unit * 4}`);
+  svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+  $("#mapCard").style.setProperty("--map-ar", (w / (h + unit * 4)).toFixed(3));
+  mapRefs.bounds = { minX, maxX, minY, maxY };
+  const Y = y => -y;
+
+  S("rect", { class: "bg", x: minX - w, y: -maxY - h, width: w * 3, height: h * 3 }, svg);
+  // Grade de referência
+  const gStep = niceStep(Math.max(w, h));
+  const grid = S("g", { "aria-hidden": "true" }, svg);
+  for (let x = Math.ceil(minX / gStep) * gStep; x <= maxX; x += gStep) S("line", { class: "gridline", x1: x, x2: x, y1: Y(minY) + h, y2: Y(maxY) - h }, grid);
+  for (let y = Math.ceil(minY / gStep) * gStep; y <= maxY; y += gStep) S("line", { class: "gridline", x1: minX - w, x2: maxX + w, y1: Y(y), y2: Y(y) }, grid);
+
+  // Contexto esquemático (ex.: curso d'água)
+  const ctxG = S("g", { "aria-hidden": "true" }, svg);
+  (m.data.contexto || []).forEach(c => {
+    if (!Array.isArray(c.pontos) || c.pontos.length < 2 || m.system !== "cartesiano_metros") return;
+    const pts = c.pontos.filter(p => Array.isArray(p) && isNum(p[0]) && isNum(p[1]));
+    S("polyline", { class: "water", points: pts.map(p => `${p[0]},${Y(p[1])}`).join(" "), "stroke-width": (m.cellSize || 100) * 0.55 }, ctxG);
+    if (c.nome && pts.length > 3) {
+      const p = pts[Math.floor(pts.length * 0.78)];
+      const t = S("text", { class: "water-label", x: p[0], y: Y(p[1]) + unit * 3.4, "font-size": unit * 1.55, "text-anchor": "middle" }, ctxG);
+      t.textContent = c.nome;
+    }
+  });
+
+  // Regiões (limites declarados)
+  const regG = S("g", { "aria-hidden": "true" }, svg);
+  m.regions.forEach(r => {
+    if (!(Array.isArray(r.limite) && r.limite.length === 4 && r.limite.every(isNum)) || m.system !== "cartesiano_metros") return;
+    const [x0, y0, x1, y1] = r.limite;
+    S("rect", { class: "region", x: x0, y: Y(y1), width: x1 - x0, height: y1 - y0, rx: unit * .8 }, regG);
+    const t = S("text", { class: "region-label", x: (x0 + x1) / 2, y: Y(y1) - unit * 1.4, "font-size": unit * 1.7, "text-anchor": "middle" }, regG);
+    t.textContent = r.nome || r.id;
+  });
+
+  // Cobertura existente (união visual)
+  const covU = S("g", { class: "cov-union", "aria-hidden": "true" }, svg);
+  const covR = S("g", { "aria-hidden": "true" }, svg);
+  m.eqs.forEach(e => { S("circle", { cx: e.px, cy: Y(e.py), r: R }, covU); S("circle", { class: "cov-ring", cx: e.px, cy: Y(e.py), r: R }, covR); });
+
+  // Áreas populacionais
+  const cellG = S("g", {}, svg);
+  const maxPop = Math.max(1, ...m.areas.map(a => a.populacao));
+  m.areas.forEach(a => {
+    const op = (0.32 + 0.68 * Math.sqrt(a.populacao / maxPop)).toFixed(3);
+    let shape;
+    if (a.poly) {
+      shape = S("polygon", { class: "cell", points: a.poly.map(p => `${p.x},${Y(p.y)}`).join(" "), "fill-opacity": op, "data-kind": "area", "data-id": a.id }, cellG);
+    } else if (m.cellSize) {
+      const s = m.cellSize * 0.84;
+      shape = S("rect", { class: "cell", x: a.px - s / 2, y: Y(a.py) - s / 2, width: s, height: s, rx: s * 0.2, "fill-opacity": op, "data-kind": "area", "data-id": a.id }, cellG);
+    } else {
+      const r = Math.max(unit * 0.5, Math.sqrt(a.populacao / maxPop) * R * 0.32);
+      shape = S("circle", { class: "cell", cx: a.px, cy: Y(a.py), r, "fill-opacity": op, "data-kind": "area", "data-id": a.id }, cellG);
+    }
+    mapRefs.cells.set(a.id, shape);
+    const dot = S("circle", { class: "cell-dot", cx: a.px, cy: Y(a.py), r: (m.cellSize ? m.cellSize * 0.08 : unit * 0.45), "pointer-events": "none" }, cellG);
+    mapRefs.dots.set(a.id, dot);
+  });
+
+  // Áreas dos candidatos
+  const caG = S("g", { "aria-hidden": "true" }, svg);
+  m.cands.forEach(c => { mapRefs.candAreas.set(c.id, S("circle", { class: "cand-area", cx: c.px, cy: Y(c.py), r: R }, caG)); });
+
+  // Equipamentos
+  const eqG = S("g", {}, svg);
+  const es = unit * 2.1;
+  m.eqs.forEach(e => {
+    const g = S("g", { class: "eq", "data-kind": "eq", "data-id": e.id, tabindex: "0", role: "button", "aria-label": `${e.nome}: praça existente` }, eqG);
+    S("rect", { x: e.px - es / 2, y: Y(e.py) - es / 2, width: es, height: es, rx: es * .26, transform: `rotate(0)` }, g);
+    S("circle", { cx: e.px, cy: Y(e.py), r: es * 0.19 }, g);
+    mapRefs.eqMarks.set(e.id, g);
+  });
+
+  // Candidatos
+  const cG = S("g", {}, svg);
+  const cr = unit * 1.85;
+  m.cands.forEach(c => {
+    const g = S("g", { class: "cand", "data-kind": "cand", "data-id": c.id, tabindex: "0", role: "button", "aria-label": `${c.nome}: local candidato hipotético` }, cG);
+    S("circle", { class: "halo", cx: c.px, cy: Y(c.py), r: cr * 1.25 }, g);
+    S("circle", { class: "pin", cx: c.px, cy: Y(c.py), r: cr }, g);
+    const t = S("text", { x: c.px, y: Y(c.py) + cr * 0.4, "font-size": cr * 1.1, "text-anchor": "middle" }, g);
+    t.textContent = c.rotulo;
+    mapRefs.candMarks.set(c.id, g);
+  });
+
+  // Escala e norte
+  const sc = S("g", { class: "scale", "aria-hidden": "true" }, svg);
+  const sx1 = maxX - unit * 3, sx0 = sx1 - R, sy = Y(minY) - unit * 3;
+  S("line", { x1: sx0, x2: sx1, y1: sy, y2: sy }, sc);
+  S("line", { x1: sx0, x2: sx0, y1: sy - unit * .7, y2: sy + unit * .7 }, sc);
+  S("line", { x1: sx1, x2: sx1, y1: sy - unit * .7, y2: sy + unit * .7 }, sc);
+  const st = S("text", { x: (sx0 + sx1) / 2, y: sy - unit * 1.3, "font-size": unit * 1.5, "text-anchor": "middle" }, sc);
+  st.textContent = fmtDist(R);
+  const no = S("g", { class: "north", "aria-hidden": "true" }, svg);
+  const nx = maxX - unit * 4, ny = Y(maxY) + unit * 1;
+  S("path", { d: `M${nx} ${ny} l${unit * 1.1} ${unit * 2.8} l${-unit * 1.1} ${-unit * .7} l${-unit * 1.1} ${unit * .7}z` }, no);
+  const nt = S("text", { x: nx, y: ny + unit * 5, "font-size": unit * 1.5, "text-anchor": "middle" }, no);
+  nt.textContent = "N";
+}
+
+/** Atualiza cores/estados do mapa conforme a etapa e o cenário atual. */
+function updateMap() {
+  const m = state.model; if (!m) return;
+  const svg = $("#map");
+  svg.setAttribute("data-step", String(state.step));
+  const showScenario = (state.step === 2 && state.view === "depois") || state.step === 3;
+  const sc = state.selectedCand ? m.scenarios[state.selectedCand] : null;
+  m.areas.forEach(a => {
+    const el = mapRefs.cells.get(a.id);
+    const isNew = showScenario && sc && sc.newIds.has(a.id);
+    el.setAttribute("data-s", a.before ? "cov" : isNew ? "new" : "unc");
+    el.classList.toggle("sel", !!(state.selection && state.selection.kind === "area" && state.selection.id === a.id));
+    mapRefs.dots.get(a.id).classList.toggle("on", !!isNew);
+  });
+  m.cands.forEach(c => {
+    const ca = mapRefs.candAreas.get(c.id), mk = mapRefs.candMarks.get(c.id);
+    const sel = c.id === state.selectedCand;
+    ca.classList.remove("on", "ghost");
+    if (state.step === 2 && state.view === "depois" && sel) ca.classList.add("on");
+    if (state.step === 3) ca.classList.add(sel ? "on" : "ghost");
+    mk.classList.toggle("active", state.step >= 2 && sel);
+    mk.classList.toggle("dim", state.step === 1);
+    mk.setAttribute("aria-pressed", String(state.step >= 2 && sel));
+  });
+  m.eqs.forEach(e => mapRefs.eqMarks.get(e.id).classList.toggle("sel", !!(state.selection && state.selection.kind === "eq" && state.selection.id === e.id)));
+  // Toggle antes/depois
+  const tg = $("#baToggle"); tg.hidden = state.step !== 2;
+  $$("button", tg).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === state.view)));
+}
+
+function tooltipHTML(kind, id) {
+  const m = state.model;
+  if (kind === "area") {
+    const a = m.areas.find(x => x.id === id); if (!a) return "";
+    const sc = state.selectedCand ? m.scenarios[state.selectedCand] : null;
+    const showS = ((state.step === 2 && state.view === "depois") || state.step === 3) && sc;
+    let st = a.before ? "Coberto hoje" : (showS && sc.newIds.has(a.id) ? "Passaria a ser coberto" : "Sem cobertura estimada");
+    return `<b>${esc(a.nome)}</b><br>≈ ${fmtInt(a.populacao)} moradores<br><span class="muted">${esc(st)} · praça mais próxima a ${fmtDist(a.nearestEq)}</span>`;
+  }
+  if (kind === "eq") {
+    const e = m.eqs.find(x => x.id === id); if (!e) return "";
+    return `<b>${esc(e.nome)}</b><br><span class="muted">${esc(e.tipo || "Equipamento existente")}</span><br>≈ ${fmtInt(e.popInRadius)} moradores no raio`;
+  }
+  if (kind === "cand") {
+    const c = m.cands.find(x => x.id === id); if (!c) return "";
+    const s = m.scenarios[c.id];
+    return `<b>${esc(c.nome)}</b> <span class="muted">(hipotético)</span><br>+≈ ${fmtInt(s.newPeople)} novas pessoas cobertas<br><span class="muted">Clique para simular</span>`;
+  }
+  return "";
+}
+
+/* ---------------------------------------------------------------------
+   10. RENDERIZAÇÃO DO PAINEL E INDICADORES
+   --------------------------------------------------------------------- */
+function renderAll() { renderHeader(); renderMapChrome(); renderPanel(); updateMap(); }
+
+function renderHeader() {
+  $$(".step-btn").forEach(b => { if (+b.dataset.step === state.step) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+  const badge = $("#dataBadge");
+  badge.classList.toggle("demo", state.mode === "demo");
+  badge.classList.toggle("imported", state.mode !== "demo");
+  $("#dataBadgeText").innerHTML = state.mode === "demo"
+    ? 'Ambiente de demonstração<span class="long"> — dados simulados</span>'
+    : 'Dados importados<span class="long"> — não verificados</span>';
+}
+
+function renderMapChrome() {
+  const m = state.model;
+  const flag = $("#mapFlag");
+  if (state.mode === "demo") flag.innerHTML = `${ICON.warn}<span>Mapa esquemático. Não representa a geografia real de Londrina.</span>`;
+  else if (m.system === "geografico_wgs84") flag.innerHTML = `${ICON.info}<span>Posições relativas das coordenadas importadas · sem mapa de fundo</span>`;
+  else flag.innerHTML = `${ICON.info}<span>Representação esquemática das coordenadas importadas (metros)</span>`;
+  $("#legendRadius").textContent = `Raio de ${fmtDist(m.R)} (linha reta)`;
+  const distLabel = m.system === "geografico_wgs84" ? "Haversine (coordenadas geográficas)" : "euclidiana (coordenadas em metros)";
+  $("#mapNote").innerHTML = `
+    <span class="i">${ICON.info}<span><b>Cobertura aproximada por distância em linha reta de ${fmtDist(m.R)}.</b> Não representa percurso real de caminhada.</span></span>
+    <span>Distância ${distLabel}. População de cada setor representada por seu centroide.</span>
+    <span class="hide-sm">Atalhos: <span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span> etapas · <span class="kbd">A</span> <span class="kbd">B</span> <span class="kbd">C</span> locais</span>`;
+}
+
+function renderPanel() {
+  const host = $("#panelInner");
+  let html = "";
+  if (state.step === 1) html = viewDiagnostico();
+  else if (state.step === 2) html = viewSimulacao();
+  else html = viewComparacao();
+  host.innerHTML = html;
+  host.style.animation = "none"; void host.offsetWidth; host.style.animation = "";
+  animateNumbers(host);
+  bindPanel(host);
+}
+
+/** Números com transição curta — o valor final é sempre o calculado. */
+function numSpan(key, value, fmt) {
+  const from = prevNumbers.has(key) ? prevNumbers.get(key) : value;
+  prevNumbers.set(key, value);
+  return `<span class="num" data-anim="${esc(key)}" data-from="${from}" data-to="${value}" data-fmt="${fmt}">${formatBy(fmt, value)}</span>`;
+}
+function formatBy(fmt, v) { return fmt === "pct" ? fmtPct(v) : fmt === "pp" ? fmtPP(v) : fmtInt(v); }
+function animateNumbers(root) {
+  if (reduceMotion()) return;
+  $$("[data-anim]", root).forEach(el => {
+    const from = parseFloat(el.dataset.from), to = parseFloat(el.dataset.to), fmt = el.dataset.fmt;
+    if (!Number.isFinite(from) || !Number.isFinite(to) || from === to) return;
+    const t0 = performance.now(), dur = 420;
+    const tick = now => {
+      const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = formatBy(fmt, from + (to - from) * e);
+      if (k < 1 && el.isConnected) requestAnimationFrame(tick); else el.textContent = formatBy(fmt, to);
+    };
+    el.textContent = formatBy(fmt, from);
+    requestAnimationFrame(tick);
+  });
+}
+
+function pill(status, text) { return `<span class="pill ${status}">${STATUS_ICON[status] || ""}${esc(text || STATUS[status].label)}</span>`; }
+function restrPills(candId, onlyIssues) {
+  const r = state.restr[candId];
+  return RESTR_KEYS.filter(([k]) => !onlyIssues || r[k] !== "verificado").map(([k, lbl]) => pill(r[k], `${lbl}: ${STATUS[r[k]].short}`)).join("");
+}
+function sourceName(id) {
+  if (id == null) return "Sem fonte registrada";
+  const f = (state.raw.fontes || []).find(x => x.id === String(id));
+  return f ? (f.nome || f.id) : `“${id}” (não declarada)`;
+}
+
+/* --- TELA 01 · DIAGNÓSTICO --- */
+function viewDiagnostico() {
+  const m = state.model, b = m.base;
+  const pc = Number.isFinite(b.pctBefore) ? b.pctBefore : 0;
+  const regRows = m.regions.map(r => `<tr><td>${esc(r.nome || r.id)}</td><td class="r num">≈ ${fmtInt(r.pop)}</td><td class="r num">${fmtPct(safePct(r.covered, r.pop))}</td><td class="r num">≈ ${fmtInt(r.uncovered)}</td></tr>`).join("");
+  return `
+    <div>
+      <div class="eyebrow">01 — Diagnóstico</div>
+      <h1 style="margin-top:6px">Onde investir para ampliar o acesso?</h1>
+      <p class="lead">Uma cidade tem recursos limitados. Como saber onde uma nova praça poderia beneficiar mais pessoas?</p>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="label">População do território analisado</div><div class="value"><small>≈</small>${numSpan("d-total", b.total, "int")}</div></div>
+      <div class="kpi green"><div class="label">Cobertura atual estimada</div><div class="value">${numSpan("d-pct", b.pctBefore, "pct")}</div><div class="sub">até ${fmtDist(m.R)} de uma praça</div></div>
+      <div class="kpi"><div class="label">População coberta hoje</div><div class="value"><small>≈</small>${numSpan("d-cov", b.coveredBefore, "int")}</div></div>
+      <div class="kpi"><div class="label">População sem cobertura</div><div class="value"><small>≈</small>${numSpan("d-unc", b.uncoveredBefore, "int")}</div></div>
+    </div>
+    <div>
+      <div class="bar" role="img" aria-label="Cobertura atual: ${fmtPct(b.pctBefore)} da população"><span class="g" style="width:${pc}%"></span></div>
+      <div class="bar-legend"><span><i class="sw" style="background:var(--green)"></i>Coberta ${fmtPct(b.pctBefore)}</span><span><i class="sw" style="background:var(--surface-3);border:1px solid var(--line-2)"></i>Sem cobertura ${fmtPct(safePct(b.uncoveredBefore, b.total))}</span></div>
+    </div>
+    <div class="callout quote">Antes de decidir onde investir, precisamos entender quem ainda não tem acesso.</div>
+    ${selectionCard()}
+    ${m.regions.length ? `
+    <div class="stack">
+      <h3>Situação por região de avaliação</h3>
+      <table class="table"><thead><tr><th>Região</th><th class="r">População</th><th class="r">Cobertura</th><th class="r">Sem cob.</th></tr></thead><tbody>${regRows}</tbody></table>
+    </div>` : ""}
+    <button class="btn primary block" type="button" data-go="2">Simular alternativas ${ICON.arrow}</button>
+    <p class="muted small" style="margin:0">${state.mode === "demo" ? "Ambiente de demonstração — dados simulados. " : "Dados importados pelo usuário. Origem e qualidade não verificadas automaticamente. "}Valores estimados; não representam contagem exata de pessoas.</p>`;
+}
+
+function selectionCard() {
+  const m = state.model, sel = state.selection;
+  if (!sel) return `<div class="empty-hint">${ICON.pointer}<span>Selecione um setor ou uma praça no mapa para ver os detalhes.</span></div>`;
+  if (sel.kind === "area") {
+    const a = m.areas.find(x => x.id === sel.id); if (!a) return "";
+    const reg = m.regions.find(r => r.id === a.regiao);
+    const sc = state.step >= 2 && state.selectedCand ? m.scenarios[state.selectedCand] : null;
+    const cand = sc ? m.cands.find(c => c.id === state.selectedCand) : null;
+    return `<div class="sel-card"><div class="row between"><b>${esc(a.nome)}</b><button class="btn ghost small" type="button" data-clear-sel aria-label="Limpar seleção">✕</button></div>
+      <dl>
+        <dt>População estimada</dt><dd>≈ ${fmtInt(a.populacao)}</dd>
+        ${reg ? `<dt>Região</dt><dd>${esc(reg.nome || reg.id)}</dd>` : ""}
+        <dt>Situação atual</dt><dd>${a.before ? "Coberto" : "Sem cobertura"}</dd>
+        <dt>Praça mais próxima</dt><dd>${fmtDist(a.nearestEq)}</dd>
+        ${sc ? `<dt>Com ${esc(cand.nome)}</dt><dd>${a.before ? "Já coberto (não recontado)" : sc.newIds.has(a.id) ? "Passaria a ser coberto" : "Continuaria sem cobertura"}</dd>` : ""}
+        <dt>Fonte</dt><dd>${esc(sourceName(a.fonte))}</dd>
+        <dt>Ano de referência</dt><dd>${a.ano_referencia != null ? esc(a.ano_referencia) : "Não informado"}</dd>
+      </dl></div>`;
+  }
+  if (sel.kind === "eq") {
+    const e = m.eqs.find(x => x.id === sel.id); if (!e) return "";
+    return `<div class="sel-card"><div class="row between"><b>${esc(e.nome)}</b><button class="btn ghost small" type="button" data-clear-sel aria-label="Limpar seleção">✕</button></div>
+      <dl>
+        <dt>Tipo</dt><dd>${esc(e.tipo || "Não informado")}</dd>
+        <dt>População no raio</dt><dd>≈ ${fmtInt(e.popInRadius)}</dd>
+        <dt>Atendida só por esta praça</dt><dd>≈ ${fmtInt(e.popExclusive)}</dd>
+        <dt>Fonte</dt><dd>${esc(sourceName(e.fonte))}</dd>
+      </dl></div>`;
+  }
+  return "";
+}
+
+/* --- TELA 02 · SIMULAÇÃO --- */
+function viewSimulacao() {
+  const m = state.model, b = m.base;
+  const c = m.cands.find(x => x.id === state.selectedCand) || m.cands[0];
+  const s = m.scenarios[c.id];
+  const pBefore = Number.isFinite(b.pctBefore) ? b.pctBefore : 0;
+  const pGain = Number.isFinite(s.gainPP) ? s.gainPP : 0;
+  const st = evaluationStatus(state.restr[c.id]);
+  const opts = m.cands.map(x => {
+    const sx = m.scenarios[x.id];
+    return `<button class="cand-opt" type="button" data-cand="${esc(x.id)}" aria-pressed="${x.id === c.id}">
+      <span class="cand-letter" aria-hidden="true">${esc(x.rotulo)}</span>
+      <span class="nm">${esc(x.nome)}</span>
+      <span class="gain">+≈ ${fmtInt(sx.newPeople)} pessoas</span></button>`;
+  }).join("");
+  return `
+    <div>
+      <div class="eyebrow">02 — Simulação</div>
+      <h2 style="margin-top:6px">Qual seria o efeito de cada alternativa?</h2>
+      <p class="lead">Escolha um local candidato. O mapa e os indicadores são recalculados a partir dos dados.</p>
+    </div>
+    <div class="cand-picker" role="group" aria-label="Locais candidatos">${opts}</div>
+    <p class="muted small" style="margin:-6px 0 0">Locais candidatos hipotéticos para análise — não são terrenos aprovados pela Prefeitura.</p>
+
+    <div class="ba" aria-label="Cobertura antes e depois">
+      <div class="side"><div class="tag">Antes</div><div class="big">${numSpan("s-before", b.pctBefore, "pct")}</div></div>
+      <div class="arrow">${ICON.arrow}</div>
+      <div class="side after"><div class="tag">Depois · ${esc(c.nome)}</div><div class="big">${numSpan("s-after", s.pctAfter, "pct")}</div></div>
+      <div class="full">
+        <div class="bar" role="img" aria-label="Cobertura atual ${fmtPct(b.pctBefore)}, acréscimo ${fmtPP(s.gainPP)}"><span class="g" style="width:${pBefore}%"></span><span class="b" style="width:${pGain}%"></span></div>
+        <div class="bar-legend"><span><i class="sw" style="background:var(--green)"></i>Cobertura atual</span><span><i class="sw" style="background:var(--blue)"></i>Acréscimo com ${esc(c.nome)}</span></div>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi blue"><div class="label">Novas pessoas potencialmente cobertas</div><div class="value"><small>+≈</small>${numSpan("s-new", s.newPeople, "int")}</div></div>
+      <div class="kpi"><div class="label">Ganho de cobertura</div><div class="value">${numSpan("s-gain", s.gainPP, "pp")}</div></div>
+      <div class="kpi"><div class="label">Cobertura total estimada após</div><div class="value">${numSpan("s-after2", s.pctAfter, "pct")}</div></div>
+      <div class="kpi"><div class="label">Permaneceriam sem cobertura</div><div class="value"><small>≈</small>${numSpan("s-unc", s.uncoveredAfter, "int")}</div></div>
+    </div>
+
+    ${s.overlapPop > 0 ? `<div class="callout blue">${ICON.info}<div>≈ ${fmtInt(s.overlapPop)} moradores dentro do raio de ${esc(c.nome)} já eram cobertos por praças existentes e <b>não foram contados novamente</b>.</div></div>` : ""}
+
+    <div class="sel-card">
+      <div class="row between"><b>Verificações de ${esc(c.nome)}</b>${pill(st.tone, st.label)}</div>
+      <div class="pills" style="margin-top:10px">${restrPills(c.id, true) || pill("verificado", "Nenhuma pendência registrada")}</div>
+      <p class="small muted" style="margin:10px 0 0">${esc(eligibilityMessage(c.id))}</p>
+      <button class="btn small" type="button" data-restr="${esc(c.id)}" style="margin-top:10px">${ICON.doc} Ver pendências e restrições</button>
+    </div>
+
+    ${selectionCard()}
+    <button class="btn primary block" type="button" data-go="3">Comparar as três alternativas ${ICON.arrow}</button>`;
+}
+
+/* --- TELA 03 · COMPARAÇÃO --- */
+function viewComparacao() {
+  const m = state.model;
+  const crit = state.criterion;
+  const rk = rankCandidates(m, crit);
+  const other = rankCandidates(m, crit === "alcance" ? "proporcional" : "alcance");
+  const maxVal = Math.max(1e-9, ...rk.items.filter(i => i.ok).map(i => i.value));
+  const cards = rk.items.map((it, idx) => {
+    const c = it.cand, s = it.s, st = evaluationStatus(state.restr[c.id]);
+    const isLeader = rk.leaders.includes(c.id);
+    const valTxt = !it.ok ? "Dados insuficientes" : crit === "alcance" ? `+≈ ${fmtInt(it.value)}` : fmtPct(it.value);
+    const w = it.ok ? (it.value / maxVal) * 100 : 0;
+    const missing = RESTR_KEYS.filter(([k]) => state.restr[c.id][k] === "nao_informado").map(([, l]) => l);
+    return `<div class="cmp ${c.id === state.selectedCand ? "active" : ""}" role="button" tabindex="0" data-cmp="${esc(c.id)}" aria-pressed="${c.id === state.selectedCand}" aria-label="${esc(c.nome)}: mostrar no mapa">
+      <div class="cmp-head">
+        <span class="cmp-rank">${it.ok ? idx + 1 + "º" : "—"}</span>
+        <span class="cand-letter" aria-hidden="true">${esc(c.rotulo)}</span>
+        <span class="cmp-name">${esc(c.nome)} ${isLeader ? `<span class="leader-badge">${crit === "alcance" ? "Maior alcance" : "Maior redução"}</span>` : ""}</span>
+        <span class="cmp-val">${valTxt}</span>
+      </div>
+      <div class="cmp-bar" aria-hidden="true"><span style="width:${w}%"></span></div>
+      ${crit === "proporcional" ? `<div class="small muted" style="margin:-4px 0 10px">${s.region ? `${esc(s.region.nome || s.region.id)}: ≈ ${fmtInt(s.regionNew)} de ≈ ${fmtInt(s.region.uncovered)} sem cobertura` : esc(s.propReason)}${!it.ok && s.region ? " · " + esc(s.propReason) : ""}</div>` : ""}
+      <div class="cmp-grid">
+        <div>Novas pessoas<b>+≈ ${fmtInt(s.newPeople)}</b></div>
+        <div>Cobertura total<b>${fmtPct(s.pctAfter)}</b></div>
+        <div>Sem cobertura<b>≈ ${fmtInt(s.uncoveredAfter)}</b></div>
+        <div>Ganho<b>${fmtPP(s.gainPP)}</b></div>
+      </div>
+      <div class="cmp-foot">
+        <div class="pills">${pill(st.tone, st.label)}${missing.length ? `<span class="pill nao_informado">${missing.length} dado${missing.length > 1 ? "s" : ""} faltante${missing.length > 1 ? "s" : ""}</span>` : ""}</div>
+        <button class="btn small" type="button" data-restr="${esc(c.id)}">${ICON.doc} Restrições</button>
+      </div>
+    </div>`;
+  }).join("");
+
+  const leaderNames = rk.leaders.map(id => m.cands.find(c => c.id === id).nome);
+  const leadersTxt = leaderNames.join(" e ");
+  let resultK, resultV, resultP;
+  if (rk.insufficient) {
+    resultK = "Resultado"; resultV = "Dados insuficientes para este critério.";
+    resultP = crit === "proporcional" ? "Declare uma região de avaliação com população sem cobertura para cada candidato." : "Não foi possível calcular o alcance.";
+  } else if (crit === "alcance") {
+    resultK = "Resultado preliminar";
+    resultV = rk.leaders.length > 1 ? `Empate em maior alcance estimado: ${leadersTxt}.` : `Alternativa com maior alcance estimado neste cenário: ${leadersTxt}.`;
+    resultP = "Esta alternativa apresenta a maior estimativa de novos moradores cobertos segundo os dados e premissas disponíveis.";
+  } else {
+    resultK = "Resultado preliminar";
+    resultV = rk.leaders.length > 1 ? `Empate em maior redução proporcional: ${leadersTxt}.` : `Alternativa com maior redução proporcional estimada da carência: ${leadersTxt}.`;
+    resultP = "Esta alternativa reduz a maior fração da população sem cobertura em sua região de avaliação, segundo os dados e premissas disponíveis.";
+  }
+  const differ = !rk.insufficient && !other.insufficient && rk.leaders.join() !== other.leaders.join();
+  const def = crit === "alcance"
+    ? `<b>Maior alcance:</b> número estimado de moradores que estavam fora da cobertura atual e passariam a estar a até ${fmtDist(m.R)} do novo espaço. <code>coberta_com_intervenção − coberta_atual</code>`
+    : `<b>Redução proporcional da carência:</b> novas pessoas cobertas residentes na <i>região de avaliação</i> do candidato ÷ população sem cobertura dessa região antes da intervenção. <code>novas_na_região ÷ sem_cobertura_na_região</code>${regionComparabilityNote()}`;
+
+  return `
+    <div>
+      <div class="eyebrow">03 — Comparação</div>
+      <h2 style="margin-top:6px">Comparar alternativas</h2>
+      <p class="lead">Mesmos dados, critérios explícitos. Escolha como comparar.</p>
+    </div>
+    <div class="seg" role="group" aria-label="Critério de comparação">
+      <button type="button" data-crit="alcance" aria-pressed="${crit === "alcance"}">Maior alcance</button>
+      <button type="button" data-crit="proporcional" aria-pressed="${crit === "proporcional"}">Redução proporcional da carência</button>
+    </div>
+    <div class="def">${def}</div>
+    <div class="cmp-list">${cards}</div>
+    <div class="result" role="status">
+      <div class="k">${resultK}</div>
+      <div class="v">${esc(resultV)}</div>
+      <p>${esc(resultP)}</p>
+      <div class="caveat">${ICON.warn}<span>Comparação preliminar — não constitui recomendação técnica aprovada. Maior alcance estimado não significa viabilidade confirmada.</span></div>
+    </div>
+    ${differ ? `<div class="callout amber">${ICON.info}<div><b>Os critérios apontam alternativas diferentes.</b> Maior número absoluto de pessoas cobertas não significa, necessariamente, a maior redução proporcional da carência.</div></div>` : ""}
+
+    <details class="more" id="monitorBox">
+      <summary>Definir acompanhamento do indicador</summary>
+      <div class="body">${viewMonitor()}</div>
+    </details>
+
+    <button class="btn primary block" type="button" id="genReport">${ICON.doc} Gerar justificativa</button>
+    <p class="closing">A Revano não decide pela Prefeitura. Ela mostra quem pode ser beneficiado, quais alternativas merecem atenção e o que ainda precisa ser verificado.</p>`;
+}
+
+function regionComparabilityNote() {
+  const m = state.model;
+  const used = m.cands.map(c => m.regions.find(r => r.id === c.regiao)).filter(Boolean);
+  if (!used.length) return "";
+  const uniq = [...new Map(used.map(r => [r.id, r])).values()];
+  const desc = uniq.map(r => `${esc(r.nome || r.id)}${isNum(r.area_km2) ? ` (${nfPct.format(r.area_km2)} km²)` : ""}`).join(", ");
+  return `<br><span class="muted">Regiões de avaliação: ${desc}.</span>`;
+}
+
+/* --- ACOMPANHAMENTO --- */
+function viewMonitor() {
+  const m = state.model;
+  const c = m.cands.find(x => x.id === state.selectedCand) || m.cands[0];
+  const s = m.scenarios[c.id];
+  const opts = m.cands.map(x => `<option value="${esc(x.id)}" ${x.id === c.id ? "selected" : ""}>${esc(x.nome)}</option>`).join("");
+  const list = state.monitor.length ? state.monitor.map((r, i) => `
+    <div class="monitor-item">
+      <div class="t">${esc(r.candNome)} · ${esc(r.status)}</div>
+      <div>${esc(r.indicador)}</div>
+      <div class="muted">Referência: ${fmtPct(r.base)} · Meta proposta: ${fmtPct(r.meta)} · registrado em ${esc(r.quando)}</div>
+      ${r.motivo ? `<div class="muted">Motivo: ${esc(r.motivo)}</div>` : ""}
+      <div class="muted">Medições realizadas: nenhuma. Resultados futuros não são estimados pela plataforma.</div>
+      <div><button class="btn ghost small" type="button" data-del-mon="${i}">Remover</button></div>
+    </div>`).join("") : "";
+  return `
+    <p class="small muted" style="margin:0 0 10px">A intervenção é <b>hipotética e não foi executada</b>. Aqui você define como o resultado de uma decisão poderia ser monitorado.</p>
+    <form class="form" id="monitorForm" novalidate>
+      <div class="field"><label for="monCand">Alternativa selecionada para estudo</label><select id="monCand">${opts}</select></div>
+      <div class="field"><label for="monMotivo">Motivo da seleção</label><textarea id="monMotivo" placeholder="Ex.: maior alcance estimado; verificar terreno e custo."></textarea></div>
+      <div class="field"><label for="monInd">Indicador a acompanhar</label><input id="monInd" value="Percentual da população com acesso estimado a espaços de lazer (até ${fmtDist(m.R)}, linha reta)"></div>
+      <div class="two">
+        <div class="field"><label for="monBase">Valor de referência (antes)</label><input id="monBase" value="${fmtPct(m.base.pctBefore)}" readonly aria-describedby="monBaseHelp"><span class="help" id="monBaseHelp">Calculado a partir dos dados atuais.</span></div>
+        <div class="field"><label for="monMeta">Meta proposta (%)</label><input id="monMeta" type="number" min="0" max="100" step="0.1" value="${Number.isFinite(s.pctAfter) ? (Math.round(s.pctAfter * 10) / 10) : ""}" aria-describedby="monMetaHelp"><span class="help" id="monMetaHelp">Sugestão = cobertura estimada com a alternativa.</span></div>
+      </div>
+      <div class="field"><label for="monStatus">Estado do acompanhamento</label>
+        <select id="monStatus"><option>Proposto — intervenção não executada</option><option>Em estudo de viabilidade</option><option>Aguardando dados oficiais</option></select></div>
+      <div id="monErr" class="small" style="color:var(--danger)" aria-live="assertive"></div>
+      <button class="btn" type="submit">${ICON.check} Registrar acompanhamento</button>
+    </form>
+    <div class="stack" style="margin-top:12px">${list}</div>`;
+}
+
+/* --- DIÁLOGO DE RESTRIÇÕES --- */
+let restrCandId = null;
+function openRestr(candId) {
+  restrCandId = candId;
+  renderRestr();
+  openDialog($("#restrDialog"));
+}
+function renderRestr() {
+  const m = state.model, c = m.cands.find(x => x.id === restrCandId); if (!c) return;
+  const s = m.scenarios[c.id], r = state.restr[c.id], st = evaluationStatus(r);
+  $("#restrTitle").textContent = c.nome;
+  const orig = c.restricoes;
+  const rows = RESTR_KEYS.map(([k, lbl]) => `
+    <div class="restr-row">
+      <div class="lbl">${pill(r[k], STATUS[r[k]].short)}<span>${esc(lbl)}${r[k] !== orig[k] ? ` <span class="edited">· alterado na simulação</span>` : ""}</span></div>
+      <select data-rk="${k}" aria-label="Status: ${esc(lbl)}">
+        ${Object.keys(STATUS).map(v => `<option value="${v}" ${r[k] === v ? "selected" : ""}>${STATUS[v].label}</option>`).join("")}
+      </select>
+    </div>`).join("");
+  $("#restrBody").innerHTML = `
+    ${c.descricao ? `<p class="lead" style="margin:0">${esc(c.descricao)}</p>` : ""}
+    <div class="kpis">
+      <div class="kpi blue"><div class="label">Novas pessoas potencialmente cobertas</div><div class="value"><small>+≈</small>${fmtInt(s.newPeople)}</div></div>
+      <div class="kpi"><div class="label">Situação da avaliação</div><div class="value" style="font-size:18px;white-space:normal">${esc(st.label)}</div><div class="sub">${st.ve} verificado · ${st.pe} pendente · ${st.ni} não informado</div></div>
+    </div>
+    <div class="callout ${st.ni ? "amber" : st.pe ? "amber" : "green"}">${st.ni || st.pe ? ICON.warn : ICON.check}<div><b>${esc(eligibilityMessage(c.id))}</b></div></div>
+    <div>${rows}</div>
+    <div class="sel-card"><dl style="margin:0">
+      <dt>Estimativa de custo</dt><dd>${isNum(c.custo_estimado) ? "R$ " + fmtInt(c.custo_estimado) + (state.mode === "demo" ? " (simulado)" : " (declarado no arquivo)") : "Não informada — a plataforma não estima valores"}</dd>
+      <dt>Região de avaliação</dt><dd>${s.region ? esc(s.region.nome || s.region.id) : "Não declarada"}</dd>
+      ${c.observacoes ? `<dt>Observações</dt><dd>${esc(c.observacoes)}</dd>` : ""}
+    </dl></div>
+    <div class="callout">${ICON.info}<div class="small">${state.mode === "demo" ? "<b>Verificações ilustrativas</b> do ambiente de demonstração. " : ""}“Não informado” não significa inviável, e “Verificado” não significa aprovação legal definitiva. Alterações feitas aqui valem apenas para esta simulação e não representam aprovação oficial.</div></div>`;
+}
+
+/* ---------------------------------------------------------------------
+   11. INTERAÇÕES
+   --------------------------------------------------------------------- */
+function goStep(n) {
+  if (![1, 2, 3].includes(n) || n === state.step) { if (n === state.step) return; }
+  state.step = n;
+  renderAll();
+  if (window.matchMedia("(max-width:960px)").matches) { /* mantém mapa visível no celular */ }
+  else $("#panel").scrollTop = 0;
+}
+function selectCand(id, opts = {}) {
+  if (!state.model.cands.some(c => c.id === id)) return;
+  state.selectedCand = id;
+  if (state.step === 1 && !opts.stay) state.step = 2;
+  if (state.step === 2) state.view = "depois";
+  renderAll();
+}
+
+function bindEvents() {
+  $$(".step-btn").forEach(b => b.addEventListener("click", () => goStep(+b.dataset.step)));
+  $("#brandHome").addEventListener("click", e => { e.preventDefault(); goStep(1); });
+  $$("#baToggle button").forEach(b => b.addEventListener("click", () => { state.view = b.dataset.view; updateMap(); }));
+  $("#openData").addEventListener("click", () => openDataDialog("fontes"));
+  $("#dataBadge").addEventListener("click", () => openDataDialog("fontes"));
+
+  // Mapa: tooltip, seleção e teclado
+  const svg = $("#map"), tip = $("#tooltip"), card = $("#mapCard");
+  svg.addEventListener("pointermove", e => {
+    const t = e.target.closest("[data-kind]");
+    if (!t || e.pointerType === "touch") { tip.classList.remove("show"); return; }
+    tip.innerHTML = tooltipHTML(t.dataset.kind, t.dataset.id);
+    const r = card.getBoundingClientRect();
+    let x = e.clientX - r.left + 14, y = e.clientY - r.top + 14;
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    if (x + tw > r.width - 8) x = e.clientX - r.left - tw - 14;
+    if (y + th > r.height - 8) y = e.clientY - r.top - th - 14;
+    tip.style.left = Math.max(8, x) + "px"; tip.style.top = Math.max(8, y) + "px";
+    tip.classList.add("show");
+  });
+  svg.addEventListener("pointerleave", () => tip.classList.remove("show"));
+  const activate = t => {
+    const kind = t.dataset.kind, id = t.dataset.id;
+    tip.classList.remove("show");
+    if (kind === "cand") { selectCand(id); return; }
+    state.selection = (state.selection && state.selection.kind === kind && state.selection.id === id) ? null : { kind, id };
+    if (state.step === 3) { state.step = state.step; }
+    renderPanel(); updateMap();
+  };
+  svg.addEventListener("click", e => { const t = e.target.closest("[data-kind]"); if (t) activate(t); });
+  svg.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.closest("[data-kind]")) { e.preventDefault(); activate(e.target.closest("[data-kind]")); } });
+
+  // Atalhos de teclado para a apresentação
+  document.addEventListener("keydown", e => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.target.closest("input,textarea,select,[contenteditable]") || document.querySelector("dialog[open]")) return;
+    const k = e.key.toLowerCase();
+    if (["1", "2", "3"].includes(k)) { goStep(+k); }
+    const idx = ["a", "b", "c"].indexOf(k);
+    if (idx >= 0 && state.model.cands[idx]) selectCand(state.model.cands[idx].id, { stay: state.step === 3 });
+  });
+
+  // Diálogos
+  $$("dialog").forEach(d => {
+    d.addEventListener("click", e => { if (e.target === d || e.target.closest("[data-close]")) closeDialog(d); });
+  });
+  $("#restrBody").addEventListener("change", e => {
+    const sel = e.target.closest("select[data-rk]"); if (!sel || !restrCandId) return;
+    state.restr[restrCandId][sel.dataset.rk] = sel.value;
+    renderRestr(); renderPanel();
+    toast("Status alterado apenas nesta simulação — não representa aprovação oficial.");
+  });
+  $("#restrReset").addEventListener("click", () => {
+    const c = state.model.cands.find(x => x.id === restrCandId); if (!c) return;
+    state.restr[c.id] = { ...c.restricoes }; renderRestr(); renderPanel();
+  });
+
+  // Importação
+  $$("#dataDialog [role=tab]").forEach(t => t.addEventListener("click", () => selectTab(t.id.replace("tab-", ""))));
+  $("#dataDialog .tabs").addEventListener("keydown", e => {
+    const tabs = $$("#dataDialog [role=tab]"); const i = tabs.indexOf(document.activeElement);
+    if (i < 0) return;
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); const n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length]; selectTab(n.id.replace("tab-", "")); n.focus(); }
+  });
+  $("#fileInput").addEventListener("change", e => { const f = e.target.files && e.target.files[0]; if (f) importFile(f); e.target.value = ""; });
+  const dz = $("#dropZone");
+  ["dragenter", "dragover"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove("over"); }));
+  dz.addEventListener("drop", e => { const f = e.dataTransfer && e.dataTransfer.files[0]; if (f) importFile(f); });
+  $("#dlExample").addEventListener("click", () => downloadJSON(DEMO_DATA, "revano-alcance-exemplo-metrico.json"));
+  $("#dlExampleGeo").addEventListener("click", () => downloadJSON(buildGeoExample(), "revano-alcance-exemplo-latlon.json"));
+  $("#restoreDemo").addEventListener("click", () => {
+    loadDataset(validateDataset(DEMO_DATA).data, "demo", null);
+    showImportResult("ok", "Dados de demonstração restaurados.", []);
+    renderSources();
+  });
+  $("#printReport").addEventListener("click", printReport);
+  window.addEventListener("afterprint", () => { $("#printArea").innerHTML = ""; });
+}
+
+function bindPanel(host) {
+  $$("[data-go]", host).forEach(b => b.addEventListener("click", () => goStep(+b.dataset.go)));
+  $$("[data-cand]", host).forEach(b => b.addEventListener("click", () => selectCand(b.dataset.cand)));
+  $$("[data-crit]", host).forEach(b => b.addEventListener("click", () => { state.criterion = b.dataset.crit; renderPanel(); }));
+  $$("[data-restr]", host).forEach(b => b.addEventListener("click", e => { e.stopPropagation(); openRestr(b.dataset.restr); }));
+  $$("[data-clear-sel]", host).forEach(b => b.addEventListener("click", () => { state.selection = null; renderPanel(); updateMap(); }));
+  $$("[data-cmp]", host).forEach(card => {
+    const act = () => { state.selectedCand = card.dataset.cmp; const open = $("#monitorBox") && $("#monitorBox").open; renderPanel(); updateMap(); if (open) $("#monitorBox").open = true; };
+    card.addEventListener("click", e => { if (!e.target.closest("button")) act(); });
+    card.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target === card) { e.preventDefault(); act(); } });
+  });
+  const gen = $("#genReport", host); if (gen) gen.addEventListener("click", openReport);
+  const form = $("#monitorForm", host);
+  if (form) {
+    $("#monCand", form).addEventListener("change", e => {
+      const s = state.model.scenarios[e.target.value];
+      $("#monMeta", form).value = Number.isFinite(s.pctAfter) ? Math.round(s.pctAfter * 10) / 10 : "";
+    });
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const candId = $("#monCand", form).value, cand = state.model.cands.find(c => c.id === candId);
+      const meta = parseFloat($("#monMeta", form).value);
+      const ind = $("#monInd", form).value.trim();
+      const err = $("#monErr", form);
+      if (!ind) { err.textContent = "Informe o indicador a acompanhar."; $("#monInd", form).focus(); return; }
+      if (!Number.isFinite(meta) || meta < 0 || meta > 100) { err.textContent = "A meta deve ser um percentual entre 0 e 100."; $("#monMeta", form).focus(); return; }
+      state.monitor.push({
+        candId, candNome: cand.nome, motivo: $("#monMotivo", form).value.trim(), indicador: ind,
+        base: state.model.base.pctBefore, meta, status: $("#monStatus", form).value,
+        quando: new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
+      });
+      renderPanel(); $("#monitorBox").open = true;
+      toast("Acompanhamento registrado. Ele será incluído na justificativa.");
+    });
+  }
+  $$("[data-del-mon]", host).forEach(b => b.addEventListener("click", () => { state.monitor.splice(+b.dataset.delMon, 1); renderPanel(); $("#monitorBox").open = true; }));
+}
+
+/* ---- Diálogos acessíveis ---- */
+let lastFocus = null;
+function openDialog(d) {
+  lastFocus = document.activeElement;
+  if (typeof d.showModal === "function") { if (!d.open) d.showModal(); }
+  else d.setAttribute("open", "");
+}
+function closeDialog(d) {
+  if (typeof d.close === "function") d.close(); else d.removeAttribute("open");
+  if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (_) {}
+}
+
+/* ---------------------------------------------------------------------
+   12. DADOS: FONTES, IMPORTAÇÃO E EXEMPLOS
+   --------------------------------------------------------------------- */
+function openDataDialog(tab) { renderSources(); renderSchema(); selectTab(tab || "fontes"); openDialog($("#dataDialog")); }
+function selectTab(name) {
+  ["fontes", "importar", "estrutura"].forEach(n => {
+    const t = $("#tab-" + n), p = $("#pane-" + n), on = n === name;
+    t.setAttribute("aria-selected", String(on)); t.tabIndex = on ? 0 : -1; p.hidden = !on;
+  });
+}
+function renderSources() {
+  const m = state.model, d = state.raw, md = d.metadados || {};
+  const all = [...m.areas.map(x => ["Áreas", x]), ...m.eqs.map(x => ["Equipamentos", x]), ...m.cands.map(x => ["Candidatos", x])];
+  const counts = {}; let noSrc = 0;
+  all.forEach(([g, x]) => { if (x.fonte == null) { noSrc++; return; } const k = String(x.fonte); counts[k] = counts[k] || {}; counts[k][g] = (counts[k][g] || 0) + 1; });
+  const srcHtml = (d.fontes || []).length ? d.fontes.map(f => {
+    const c = counts[f.id] ? Object.entries(counts[f.id]).map(([g, n]) => `${n} ${g.toLowerCase()}`).join(", ") : "não referenciada pelos itens";
+    const url = typeof f.url === "string" && /^https?:\/\//i.test(f.url) ? `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.url)}</a>` : "";
+    return `<div class="src"><div class="t">${esc(f.nome || f.id)} <span class="muted small">· id: ${esc(f.id)}</span></div>${f.descricao ? `<div>${esc(f.descricao)}</div>` : ""}<div class="meta">${f.ano != null ? "Ano: " + esc(f.ano) + " · " : ""}Utilizada por: ${esc(c)}${url ? " · " + url : ""}</div></div>`;
+  }).join("") : `<div class="callout amber">${ICON.warn}<div>Nenhuma fonte declarada no arquivo.</div></div>`;
+  $("#pane-fontes").innerHTML = `
+    <div class="stack">
+      ${state.mode === "demo"
+        ? `<div class="callout amber">${ICON.warn}<div><b>Ambiente de demonstração — dados simulados.</b> Setores, populações, praças e locais candidatos são fictícios. O mapa é esquemático e não representa a geografia real de Londrina.</div></div>`
+        : `<div class="callout blue">${ICON.info}<div><b>Dados importados pelo usuário. Origem e qualidade não verificadas automaticamente.</b>${state.fileName ? `<br><span class="small">Arquivo: ${esc(state.fileName)}</span>` : ""}</div></div>`}
+      <h3>Conjunto de dados</h3>
+      <div class="sel-card"><dl style="margin:0">
+        <dt>Título</dt><dd>${esc(md.titulo || "Não informado")}</dd>
+        <dt>Território</dt><dd>${esc(md.territorio || "Não informado")}</dd>
+        <dt>Ano de referência</dt><dd>${md.ano_referencia != null ? esc(md.ano_referencia) : "Não informado"}</dd>
+        <dt>Áreas · praças · candidatos</dt><dd>${m.areas.length} · ${m.eqs.length} · ${m.cands.length}</dd>
+      </dl></div>
+      <h3>Fontes declaradas</h3>
+      ${srcHtml}
+      ${noSrc ? `<div class="callout amber">${ICON.warn}<div>${noSrc} ite${noSrc > 1 ? "ns" : "m"} sem fonte registrada.</div></div>` : ""}
+      <h3>Método de cálculo</h3>
+      <div class="sel-card"><dl style="margin:0">
+        <dt>Distância de referência</dt><dd>${fmtDist(m.R)}</dd>
+        <dt>Método</dt><dd>Linha reta (sem rede viária)</dd>
+        <dt>Distância</dt><dd>${m.system === "geografico_wgs84" ? "Haversine (lat/lon WGS84)" : "Euclidiana (metros)"}</dd>
+        <dt>Unidade populacional</dt><dd>Centroide de cada área</dd>
+      </dl>
+      ${d.parametros.fonte_metodologica ? `<p class="small muted" style="margin:10px 0 0">${esc(d.parametros.fonte_metodologica)}</p>` : ""}</div>
+      <h3>Limitações</h3>
+      <ul class="msg-list" style="margin-top:0">${limitations().map(l => `<li>${esc(l)}</li>`).join("")}</ul>
+      <h3>Referências conceituais</h3>
+      ${REFERENCES.map(r => `<div class="src"><div class="t">${esc(r.nome)}</div><div class="meta">${esc(r.uso)} · <a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.url)}</a></div></div>`).join("")}
+      <p class="small muted" style="margin:0">Referências para metodologia e futura integração com dados oficiais. Este protótipo não possui integração com o SIPLAM ou outras bases.</p>
+    </div>`;
+}
+function limitations() {
+  const m = state.model;
+  return [
+    `Cobertura aproximada por distância em linha reta de ${fmtDist(m.R)}; não representa o percurso real de caminhada pela rede viária.`,
+    "A população de cada área é atribuída ao seu centroide: a estimativa pode superestimar ou subestimar a cobertura real.",
+    "Proximidade não equivale a uso efetivo do espaço: pessoas cobertas são pessoas próximas, não usuários.",
+    "Não considera barreiras físicas, topografia, segurança, qualidade ou capacidade dos espaços.",
+    "Restrições de terreno, custo e viabilidade dependem de verificação técnica e legal formal.",
+    state.mode === "demo" ? "Dados de demonstração: fictícios e não representam Londrina." : "Dados importados: origem e qualidade não verificadas automaticamente."
+  ];
+}
+function renderSchema() {
+  const sample = {
+    metadados: { titulo: "Nome da análise", territorio: "Recorte analisado", ano_referencia: 2022 },
+    parametros: { sistema_coordenadas: "cartesiano_metros | geografico_wgs84", distancia_referencia_m: 400, metodo: "linha_reta", tamanho_celula_m: 200, fonte_metodologica: "texto" },
+    fontes: [{ id: "f1", nome: "Nome da fonte", descricao: "...", ano: 2022, url: "https://..." }],
+    regioes: [{ id: "R1", nome: "Região de avaliação", area_km2: 2.2, limite: [0, 0, 1000, 2200] }],
+    areas: [{ id: "S001", nome: "Setor 1", populacao: 420, x: 100, y: 100, regiao: "R1", fonte: "f1", ano_referencia: 2022 }],
+    equipamentos: [{ id: "E1", nome: "Praça 1", tipo: "Praça", x: 500, y: 1100, fonte: "f1" }],
+    candidatos: [{ id: "A", rotulo: "A", nome: "Local A", x: 1500, y: 1350, regiao: "R1", custo_estimado: null, restricoes: { terreno: "verificado | pendente | nao_informado", urbanistica: "…", custo: "…", acessibilidade: "…", documentacao: "…" } }]
+  };
+  $("#pane-estrutura").innerHTML = `
+    <div class="stack">
+      <pre class="code" tabindex="0" aria-label="Estrutura do JSON">${esc(JSON.stringify(sample, null, 2))}</pre>
+      <table class="table">
+        <thead><tr><th>Campo</th><th>Regra</th></tr></thead>
+        <tbody>
+          <tr><td><b>parametros.sistema_coordenadas</b></td><td>Obrigatório. <code>cartesiano_metros</code> usa <i>x/y</i> em metros (distância euclidiana); <code>geografico_wgs84</code> usa <i>lat/lon</i> (Haversine).</td></tr>
+          <tr><td><b>areas[]</b></td><td>Obrigatório. <i>id</i> único, <i>populacao</i> ≥ 0 e coordenadas do centroide. <i>poligono</i> opcional (apenas desenho).</td></tr>
+          <tr><td><b>equipamentos[]</b></td><td>Lista de praças/espaços existentes com coordenadas.</td></tr>
+          <tr><td><b>candidatos[]</b></td><td>Exatamente 3 alternativas. <i>regiao</i> define a área de avaliação da redução proporcional.</td></tr>
+          <tr><td><b>restricoes</b></td><td>Chaves: terreno, urbanistica, custo, acessibilidade, documentacao. Valores: verificado, pendente ou nao_informado (ausente = não informado).</td></tr>
+          <tr><td><b>regioes[]</b></td><td>Opcional. Recomenda-se regiões de área semelhante (<i>area_km2</i>) para comparabilidade.</td></tr>
+          <tr><td><b>fonte</b></td><td>Referência ao <i>id</i> de um item em <i>fontes</i>. Itens sem fonte são identificados como “sem fonte registrada”.</td></tr>
+        </tbody>
+      </table>
+    </div>`;
+}
+function showImportResult(kind, title, items) {
+  const cls = kind === "ok" ? "green" : kind === "warn" ? "amber" : "danger";
+  const icon = kind === "ok" ? ICON.check : ICON.warn;
+  const list = items && items.length ? `<ul class="msg-list">${items.slice(0, 12).map(i => `<li>${esc(i)}</li>`).join("")}${items.length > 12 ? `<li>… e mais ${items.length - 12} ocorrência(s).</li>` : ""}</ul>` : "";
+  $("#importResult").innerHTML = `<div class="callout ${cls}">${icon}<div><b>${esc(title)}</b>${list}</div></div>`;
+}
+function importFile(file) {
+  if (file.size > 15 * 1024 * 1024) { showImportResult("err", "Arquivo muito grande (limite de 15 MB). Os dados anteriores foram mantidos.", []); return; }
+  const reader = new FileReader();
+  reader.onerror = () => showImportResult("err", "Não foi possível ler o arquivo. Os dados anteriores foram mantidos.", []);
+  reader.onload = () => {
+    let obj;
+    try { obj = JSON.parse(String(reader.result).replace(/^﻿/, "")); }
+    catch (err) { showImportResult("err", "O arquivo não é um JSON válido. Os dados anteriores foram mantidos.", [String(err.message || err)]); return; }
+    let v;
+    try { v = validateDataset(obj); }
+    catch (err) { showImportResult("err", "Estrutura incompatível. Os dados anteriores foram mantidos.", [String(err.message || err)]); return; }
+    if (v.errors.length) { showImportResult("err", `Importação recusada: ${v.errors.length} problema(s) encontrado(s). Os dados anteriores foram mantidos.`, v.errors); return; }
+    try {
+      const prev = { raw: state.raw, mode: state.mode, fileName: state.fileName };
+      try { loadDataset(v.data, "importado", file.name); }
+      catch (err) { loadDataset(prev.raw, prev.mode, prev.fileName); throw err; }
+    } catch (err) { showImportResult("err", "Falha ao calcular com os dados importados. Os dados anteriores foram mantidos.", [String(err.message || err)]); return; }
+    showImportResult(v.warnings.length ? "warn" : "ok",
+      `Dados importados de “${file.name}”. Resultados recalculados.${v.warnings.length ? " Avisos:" : ""}`, v.warnings);
+    renderSources();
+    toast("Dados importados pelo usuário — origem e qualidade não verificadas automaticamente.");
+  };
+  reader.readAsText(file, "utf-8");
+}
+function downloadJSON(obj, name) {
+  try {
+    const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    toast("Arquivo de exemplo gerado: " + name);
+  } catch (err) { toast("Não foi possível gerar o download neste navegador."); }
+}
+/** Exemplo em lat/lon com coordenadas fictícias (próximas a 0°,0°) apenas para testar o formato. */
+function buildGeoExample() {
+  const mPerDegLat = 111320, lat0 = 0.01, lon0 = 0.01;
+  const toGeo = (x, y) => ({ lat: +(lat0 + y / mPerDegLat).toFixed(6), lon: +(lon0 + x / (mPerDegLat * Math.cos(lat0 * Math.PI / 180))).toFixed(6) });
+  const d = deepClone(DEMO_DATA);
+  d.metadados = { ...d.metadados, titulo: "Exemplo de formato com coordenadas geográficas (fictícias)", territorio: "Coordenadas fictícias próximas a 0°, 0° — apenas para teste de formato", descricao: "Mesmo conjunto sintético da demonstração convertido para lat/lon. Não representa nenhum local real." };
+  d.parametros = { ...d.parametros, sistema_coordenadas: "geografico_wgs84" }; delete d.parametros.tamanho_celula_m;
+  const conv = o => { const g = toGeo(o.x, o.y); const r = { ...o, lat: g.lat, lon: g.lon }; delete r.x; delete r.y; return r; };
+  d.areas = d.areas.map(conv); d.equipamentos = d.equipamentos.map(conv); d.candidatos = d.candidatos.map(conv);
+  d.regioes = d.regioes.map(r => { const c = { ...r }; delete c.limite; return c; });
+  d.contexto = [];
+  return d;
+}
+
+/* ---------------------------------------------------------------------
+   13. RELATÓRIO DE JUSTIFICATIVA
+   --------------------------------------------------------------------- */
+function buildReportHTML() {
+  const m = state.model, d = state.raw, b = m.base;
+  const now = new Date();
+  const when = now.toLocaleString("pt-BR", { dateStyle: "long", timeStyle: "short" });
+  const reach = rankCandidates(m, "alcance"), prop = rankCandidates(m, "proporcional");
+  const nameOf = id => m.cands.find(c => c.id === id).nome;
+  const rows = m.cands.map(c => {
+    const s = m.scenarios[c.id], st = evaluationStatus(state.restr[c.id]);
+    return `<tr><td><b>${esc(c.nome)}</b></td><td class="r">+≈ ${fmtInt(s.newPeople)}</td><td class="r">${fmtPct(s.pctAfter)}</td><td class="r">≈ ${fmtInt(s.uncoveredAfter)}</td><td class="r">${fmtPP(s.gainPP)}</td><td class="r">${Number.isFinite(s.propReduction) ? fmtPct(s.propReduction) : "Dados insuficientes"}</td><td>${esc(st.label)}</td></tr>`;
+  }).join("");
+  const restrRows = m.cands.map(c => `<tr><td><b>${esc(c.nome)}</b></td>${RESTR_KEYS.map(([k]) => {
+    const v = state.restr[c.id][k]; const edited = v !== c.restricoes[k];
+    return `<td>${esc(STATUS[v].label)}${edited ? " *" : ""}</td>`; }).join("")}</tr>`).join("");
+  const anyEdited = m.cands.some(c => RESTR_KEYS.some(([k]) => state.restr[c.id][k] !== c.restricoes[k]));
+  const pend = m.cands.map(c => {
+    const items = RESTR_KEYS.filter(([k]) => state.restr[c.id][k] !== "verificado").map(([k, l]) => `${l} (${STATUS[state.restr[c.id][k]].label.toLowerCase()})`);
+    return `<li><b>${esc(c.nome)}:</b> ${items.length ? esc(items.join("; ")) : "nenhuma pendência registrada (sem constituir aprovação)"}. ${esc(eligibilityMessage(c.id))}</li>`;
+  }).join("");
+  const fontes = (d.fontes || []).length ? d.fontes.map(f => `<li><b>${esc(f.nome || f.id)}</b>${f.ano != null ? ` (${esc(f.ano)})` : ""}${f.descricao ? ` — ${esc(f.descricao)}` : ""}${f.url ? ` — ${esc(f.url)}` : ""}</li>`).join("") : "<li>Sem fonte registrada.</li>";
+  const regs = m.cands.map(c => { const s = m.scenarios[c.id]; return s.region ? `<li>${esc(c.nome)}: ${esc(s.region.nome || s.region.id)}${isNum(s.region.area_km2) ? ` (${nfPct.format(s.region.area_km2)} km²)` : ""} — ≈ ${fmtInt(s.region.uncovered)} sem cobertura antes; ≈ ${fmtInt(s.regionNew)} passariam a ser cobertos.</li>` : `<li>${esc(c.nome)}: ${esc(s.propReason)}</li>`; }).join("");
+  const mon = state.monitor.length ? `<table><thead><tr><th>Alternativa</th><th>Indicador</th><th class="r">Referência</th><th class="r">Meta</th><th>Estado</th></tr></thead><tbody>${state.monitor.map(r => `<tr><td>${esc(r.candNome)}${r.motivo ? `<br><span class="meta">${esc(r.motivo)}</span>` : ""}</td><td>${esc(r.indicador)}</td><td class="r">${fmtPct(r.base)}</td><td class="r">${fmtPct(r.meta)}</td><td>${esc(r.status)}</td></tr>`).join("")}</tbody></table><p class="meta">Intervenções hipotéticas, não executadas. Nenhuma medição posterior foi realizada; a plataforma não projeta resultados futuros.</p>` : `<p class="meta">Nenhum acompanhamento registrado nesta sessão.</p>`;
+  // Mapa do cenário em estudo
+  let mapHtml = "";
+  try {
+    const clone = $("#map").cloneNode(true);
+    clone.removeAttribute("id"); clone.setAttribute("aria-hidden", "true");
+    $$("title,desc", clone).forEach(n => n.remove());
+    $$(".halo", clone).forEach(n => n.remove());
+    mapHtml = `<div class="rep-map" id="repMap">${clone.outerHTML}</div><p class="meta">Mapa ${state.mode === "demo" ? "esquemático (não representa a geografia real de Londrina)" : "a partir das coordenadas importadas"} — cenário exibido: ${esc(nameOf(state.selectedCand))}. Verde: coberto hoje · Azul: passaria a ser coberto · Cinza: sem cobertura.</p>`;
+  } catch (_) { mapHtml = ""; }
+
+  return `
+    <div class="brandline">${MARK_SVG}<div><b>Revano Prioriza</b> · Alcance</div></div>
+    <h1>Justificativa preliminar — ${esc(d.metadados.titulo || "Acesso a espaços públicos de lazer")}</h1>
+    <p class="meta">Gerado em ${esc(when)} · ${state.mode === "demo" ? "Ambiente de demonstração — dados simulados" : "Dados importados pelo usuário" + (state.fileName ? ` (${esc(state.fileName)})` : "") + " — origem e qualidade não verificadas automaticamente"}</p>
+    <div class="warn">Estudo preliminar de apoio à decisão. Não constitui recomendação técnica aprovada, decisão administrativa ou aprovação de viabilidade.</div>
+
+    <h2>1. Pergunta analisada</h2>
+    <p>Onde implantar um novo espaço público de lazer para que mais pessoas tenham acesso, considerando ${m.cands.length} alternativas: ${m.cands.map(c => esc(c.nome)).join(", ")}?</p>
+    <p>Território: ${esc(d.metadados.territorio || "não informado")}. População considerada: ≈ ${fmtInt(b.total)}. Cobertura atual estimada: <b>${fmtPct(b.pctBefore)}</b> (≈ ${fmtInt(b.coveredBefore)} cobertos; ≈ ${fmtInt(b.uncoveredBefore)} sem cobertura).</p>
+
+    <h2>2. Critérios utilizados</h2>
+    <ul>
+      <li><b>Maior alcance:</b> novas pessoas potencialmente cobertas = população coberta com a intervenção − população coberta atualmente.</li>
+      <li><b>Redução proporcional da carência:</b> novas pessoas cobertas na região de avaliação ÷ população sem cobertura nessa região antes da intervenção.</li>
+    </ul>
+    <p class="meta">Regiões de avaliação:</p><ul>${regs}</ul>
+
+    <h2>3. Resultados de cobertura</h2>
+    <table><thead><tr><th>Alternativa</th><th class="r">Novas pessoas</th><th class="r">Cobertura após</th><th class="r">Sem cobertura</th><th class="r">Ganho</th><th class="r">Redução prop.</th><th>Avaliação</th></tr></thead><tbody>${rows}</tbody></table>
+    <p><b>Alternativa com maior alcance estimado neste cenário:</b> ${reach.insufficient ? "dados insuficientes" : esc(reach.leaders.map(nameOf).join(" e "))}. Esta alternativa apresenta a maior estimativa de novos moradores cobertos segundo os dados e premissas disponíveis.</p>
+    <p><b>Maior redução proporcional estimada da carência:</b> ${prop.insufficient ? "dados insuficientes" : esc(prop.leaders.map(nameOf).join(" e "))}.</p>
+    ${!reach.insufficient && !prop.insufficient && reach.leaders.join() !== prop.leaders.join() ? `<p>Os dois critérios indicam alternativas diferentes: maior número absoluto de pessoas cobertas não significa, necessariamente, maior redução proporcional da carência.</p>` : ""}
+    ${mapHtml}
+
+    <h2>4. Restrições conhecidas</h2>
+    <table><thead><tr><th>Alternativa</th>${RESTR_KEYS.map(([, l]) => `<th>${esc(l)}</th>`).join("")}</tr></thead><tbody>${restrRows}</tbody></table>
+    ${anyEdited ? `<p class="meta">* Status alterado durante a simulação nesta sessão; não representa aprovação oficial.</p>` : ""}
+    ${state.mode === "demo" ? `<p class="meta">Verificações ilustrativas do ambiente de demonstração.</p>` : ""}
+
+    <h2>5. Informações pendentes</h2>
+    <ul>${pend}</ul>
+    <p class="meta">“Não informado” não significa inviável; “Verificado” não significa aprovação legal definitiva. Nenhum valor de custo é estimado pela plataforma.</p>
+
+    <h2>6. Acompanhamento proposto</h2>
+    ${mon}
+
+    <h2>7. Fontes declaradas</h2>
+    <ul>${fontes}</ul>
+
+    <h2>8. Método de cálculo</h2>
+    <p>Cobertura aproximada por distância em linha reta de ${fmtDist(m.R)} (${m.system === "geografico_wgs84" ? "fórmula de Haversine sobre coordenadas WGS84" : "distância euclidiana em coordenadas métricas"}). Não representa percurso real de caminhada. Cada área é representada por seu centroide; uma área é considerada coberta se estiver a até ${fmtDist(m.R)} de ao menos um equipamento, e cada área é contada uma única vez (sem dupla contagem em sobreposições).</p>
+    ${d.parametros.fonte_metodologica ? `<p class="meta">${esc(d.parametros.fonte_metodologica)}</p>` : ""}
+
+    <h2>9. Limitações</h2>
+    <ul>${limitations().map(l => `<li>${esc(l)}</li>`).join("")}</ul>
+
+    <p class="closing-r">A Revano não decide pela Prefeitura. Ela mostra quem pode ser beneficiado, quais alternativas merecem atenção e o que ainda precisa ser verificado.</p>`;
+}
+function openReport() {
+  try { $("#reportBody").innerHTML = buildReportHTML(); }
+  catch (err) { $("#reportBody").innerHTML = `<div class="callout danger">${ICON.warn}<div>Não foi possível gerar a justificativa: ${esc(err.message || err)}</div></div>`; }
+  openDialog($("#reportDialog"));
+}
+function printReport() {
+  const pa = $("#printArea");
+  pa.innerHTML = `<div class="report">${$("#reportBody").innerHTML}</div>`;
+  closeDialog($("#reportDialog"));
+  setTimeout(() => { try { window.print(); } catch (_) { toast("Impressão indisponível neste navegador."); } }, 60);
+}
+
+/* ---------------------------------------------------------------------
+   14. TRATAMENTO GLOBAL DE ERROS — a apresentação não pode parar
+   --------------------------------------------------------------------- */
+window.addEventListener("error", e => { try { toast("Ocorreu um erro inesperado; os dados foram preservados."); } catch (_) {} });
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
