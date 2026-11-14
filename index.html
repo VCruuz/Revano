@@ -403,6 +403,23 @@ code{font-family:var(--mono);font-size:12px;background:var(--surface-2);padding:
 .sug-c:hover{border-color:var(--brand-orange);box-shadow:0 0 0 3px rgba(200,115,76,.12)}
 .sug-c .go{color:var(--brand-orange);flex:none}
 .sug-c .go svg{width:20px;height:20px}
+.prio-map{position:absolute;top:14px;left:14px;width:236px;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-1);padding:12px 12px 10px;display:grid;gap:8px;z-index:2}
+.prio-map[hidden]{display:none}
+.map-flag:not([hidden]) ~ .prio-map{top:56px}
+.prio-map .pm-h{font-size:11.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.prio-map select{width:100%;border:1px solid var(--line-2);border-radius:9px;padding:7px 9px;background:var(--surface);font-weight:700;font-size:14px;color:var(--ink);cursor:pointer}
+.prio-map ol{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.prio-map li button{width:100%;display:flex;gap:8px;align-items:center;text-align:left;border:0;background:transparent;border-radius:9px;padding:6px 4px;cursor:pointer}
+.prio-map li button:hover{background:var(--surface-2)}
+.prio-map .pn{width:20px;height:20px;border-radius:50%;background:var(--brand-green);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:750;flex:none}
+.prio-map .svc-badge{width:24px;height:24px;border-radius:7px}
+.prio-map .svc-badge svg{width:14px;height:14px}
+.prio-map .tx{min-width:0;line-height:1.25}
+.prio-map .tx b{display:block;font-size:13px;font-weight:700;color:var(--ink)}
+.prio-map .tx span{display:block;font-size:11.5px;color:var(--ink-3)}
+.prio-map .pm-f{font-size:11px;color:var(--ink-3);line-height:1.3}
+@media (max-width:1500px){ .prio-map{width:206px;padding:10px 10px 8px;gap:6px} .prio-map .svc-badge{display:none} .prio-map .pm-f{display:none} }
+@media (max-width:960px){ .map-card .prio-map{position:static;width:auto;margin:0 10px 10px;box-shadow:none;order:2} }
 .prio-n{width:24px;height:24px;border-radius:50%;background:var(--brand-green);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:750;flex:none}
 .reg-chips{display:flex;flex-wrap:wrap;gap:6px}
 .stats4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -520,6 +537,12 @@ code{font-family:var(--mono);font-size:12px;background:var(--surface-2);padding:
         <desc id="mapDesc">Setores populacionais por região, coloridos pelo indicador selecionado ou pela situação de acesso ao serviço simulado.</desc>
       </svg>
       <div class="map-flag" id="mapFlag"></div>
+      <div class="prio-map" id="prioMap" hidden aria-label="Prioridades da região">
+        <div class="pm-h">Prioridades da região</div>
+        <select id="prioReg" aria-label="Região"></select>
+        <ol id="prioList"></ol>
+        <div class="pm-f">Serviços em que a região está mais atrás da média da cidade. Toque para simular.</div>
+      </div>
       <div class="map-hint" id="mapHint" hidden></div>
       <div class="map-tools" id="mapTools" hidden>
         <label class="tool" for="indSel">Colorir por <select id="indSel"></select></label>
@@ -4182,6 +4205,24 @@ function updateMap() {
   else if (state.step === 2 && !state.point) { hint.hidden = false; hint.innerHTML = `${ICON.pin}Toque no mapa para posicionar`; }
   else hint.hidden = true;
   renderLegend(sim, sid);
+  renderPrioMap();
+}
+/** Quadro de prioridades no mapa (etapa 1): 3 serviços da região escolhida. */
+function renderPrioMap() {
+  const box = $("#prioMap"), m = state.model;
+  box.hidden = state.step !== 1;
+  if (box.hidden) return;
+  const regs = m.regions.filter(r => r.n);
+  if (!regs.length) { box.hidden = true; return; }
+  const rid = state.region && regs.some(r => r.id === state.region) ? state.region : regs[0].id;
+  const sel = $("#prioReg");
+  const opts = regs.map(r => `<option value="${esc(r.id)}">${esc(r.nome)}</option>`).join("");
+  if (sel.dataset.v !== opts) { sel.innerHTML = opts; sel.dataset.v = opts; }
+  sel.value = rid;
+  const pr = regionPriorities(rid, 3);
+  $("#prioList").innerHTML = pr.length ? pr.map((p, i) => `<li><button type="button" data-pm="${esc(p.sid)}|${esc(rid)}" aria-label="Prioridade ${i + 1}: simular ${esc(p.S.nome)}">
+      <span class="pn">${i + 1}</span>${badge(p.S, true)}<span class="tx"><b>${esc(p.S.nome)}</b><span>${fmtPct(p.pct)} ${p.rede ? "sem o serviço" : "sem acesso"} · cidade ${fmtPct(p.city)}</span></span></button></li>`).join("")
+    : `<li class="small muted">Todos os serviços já alcançam o público desta região.</li>`;
 }
 function renderLegend(sim, sid) {
   let h = "";
@@ -4292,8 +4333,6 @@ function viewTerritory() {
     <div class="stack"><h3>Principais necessidades</h3>
       ${sugs.length ? topDistinct(sugs, 3).map(s => sugCard(s, true)).join("") : `<div class="callout">${ICON.info}<div>Nenhuma necessidade atende às regras de sugestão com os dados atuais.</div></div>`}
     </div>
-    <div class="stack"><h3>Prioridades por região</h3>
-      <div class="reg-chips">${state.model.regions.filter(r => r.n).map(r => `<button class="chip" type="button" data-region="${esc(r.id)}">${esc(r.nome)}</button>`).join("")}</div></div>
 `;
 }
 /** Prioridades de uma região: serviços em que a região está mais atrás da média da cidade (p.p. de público sem acesso). */
@@ -4350,9 +4389,7 @@ function viewRegion() {
       <div><div class="l">Crianças 0–14</div><div class="v">${fmtPct(kid)}</div><div class="c">${cmpW(kid, kidT)}</div></div>
       <div><div class="l">Idosos 60+</div><div class="v">${fmtPct(r.idosos)}</div><div class="c">${cmpW(r.idosos, T.idosos)}</div></div>
     </div>
-    <div class="stack"><h3>Prioridades da região</h3>
-      ${(() => { const pr = regionPriorities(r.id, 3); return pr.length ? pr.map((p, i) => prioCard(p, r.id, i)).join("") : `<div class="callout green">${ICON.check}<div>Todos os serviços já alcançam o público desta região.</div></div>`; })()}
-      <p class="small muted" style="margin:0">Ordem: serviços em que a região está mais atrás da média da cidade. Toque para simular.</p></div>
+    <p class="small muted" style="margin:0">As 3 prioridades desta região aparecem no quadro do mapa.</p>
     <button class="linkbtn" type="button" data-sim-region="${esc(r.id)}">${ICON.pin} Simular outro serviço nesta região</button>`;
 }
 
@@ -4611,6 +4648,8 @@ function bindEvents() {
   $("#printReport").addEventListener("click", printReport);
   $("#openHelp").addEventListener("click", () => openDialog($("#welcomeDialog")));
   $("#toggleEq").addEventListener("click", () => { state.showEq = !state.showEq; updateMap(); });
+  $("#prioReg").addEventListener("change", e => { state.region = e.target.value; renderPanel(); updateMap(); });
+  $("#prioList").addEventListener("click", e => { const b = e.target.closest("[data-pm]"); if (!b) return; const [sid, rid] = b.dataset.pm.split("|"); startSim(sid, rid); });
   $("#indSel").addEventListener("change", e => { state.indicator = e.target.value; updateMap(); if (state.region) renderPanel(); });
   $("#welcomeStart").addEventListener("click", () => {
     closeDialog($("#welcomeDialog"));
