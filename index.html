@@ -439,7 +439,7 @@ body.presenting .pres-bar{display:flex;align-items:center;gap:18px;height:60px;p
 .pres-title{font-size:19px;font-weight:700;letter-spacing:-.015em;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pres-actions{display:flex;gap:8px}
 body.presenting .pres-nav{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;height:68px;padding:0 24px;background:var(--surface);border-top:1px solid var(--line);position:fixed;left:0;right:0;bottom:0;z-index:20}
-.pres-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.pres-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:5px}
 .pres-steps button{width:100%;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:5px 8px;text-align:left;line-height:1.15;color:var(--ink-3);font-size:12.5px;font-weight:600;min-width:0}
 .pres-steps button .tm{display:block;font-size:11px;font-weight:500;font-variant-numeric:tabular-nums}
 .pres-steps button .lb{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -581,6 +581,40 @@ button.vchip{cursor:pointer}
 button.vchip:hover{border-color:var(--ink-3)}
 button.vchip.on:hover{border-color:var(--brand-green)}
 @media (max-height:800px){ .pres-alt .big{font-size:32px} .vchip{padding:4px 10px;font-size:13px} .vgroup{gap:5px} .pres-why{font-size:15px} }
+
+/* ---------- Modo apresentação: acompanhar, encerramento, mapa limpo ---------- */
+body.presenting #map .region-label{opacity:1!important}
+.pres-steps button{padding:8px 7px;font-size:12.5px;gap:6px}
+.pres-data{font-size:14px;font-weight:650;color:var(--amber-ink);background:var(--amber-soft);border-radius:10px;padding:8px 12px;margin:0}
+.cap-ratio{font-size:14.5px;line-height:1.4;margin:0;color:var(--ink-2)}
+.cap-ratio b{color:var(--ink)}
+.mon-ind{background:var(--surface-2);border-radius:14px;padding:12px 14px}
+.mon-ind .k{font-size:12px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.mon-ind .v{font-size:16.5px;font-weight:700;line-height:1.35;margin-top:3px}
+.mon-chart{border:1px solid var(--line);border-radius:14px;padding:8px 10px 4px;background:var(--surface)}
+.mon-chart svg{display:block;width:100%;height:auto}
+.mon-chart .ax{stroke:var(--line-2);stroke-width:1}
+.mon-chart .grid{stroke:var(--line);stroke-width:1}
+.mon-chart .meta{stroke:var(--brand-orange);stroke-width:2;stroke-dasharray:6 5}
+.mon-chart .base{fill:var(--brand-green)}
+.mon-chart .slot{fill:none;stroke:var(--ink-3);stroke-width:1.5;stroke-dasharray:3 3}
+.mon-chart text{font-family:var(--font);fill:var(--ink-3);font-size:12px}
+.mon-chart .tb{fill:var(--brand-green);font-weight:750;font-size:13px}
+.mon-chart .tm{fill:var(--blue-ink);font-weight:750;font-size:13px}
+.mon-vals{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.mon-vals>div{border-radius:12px;padding:9px 12px;background:var(--surface-2)}
+.mon-vals .l{font-size:12px;font-weight:650;color:var(--ink-3)}
+.mon-vals .n{font-size:26px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.mon-vals>.goal{background:var(--blue-soft)} .mon-vals .goal .n{color:var(--blue-ink)}
+.mon-vals>.ar{background:none;padding:0;color:var(--ink-3)} .mon-vals .ar svg{width:22px;height:22px}
+.pres-end{display:flex;flex-direction:column;justify-content:center;gap:22px;height:100%;padding:10px 6px}
+.pres-end .mk{width:64px;height:71px}
+.pres-end .q{font-size:30px;font-weight:750;letter-spacing:-.02em;line-height:1.25;color:var(--ink);margin:0;text-wrap:balance}
+.pres-end .q b{color:var(--brand-green)}
+.pres-end .s{font-size:16px;color:var(--ink-3);margin:0;border-left:4px solid var(--brand-orange);padding-left:12px}
+@media (max-height:800px){ .mon-vals .n{font-size:21px} .mon-vals>div{padding:6px 12px} .pres-end .q{font-size:26px} .mon-ind{padding:9px 12px} .mon-ind .v{font-size:15px} .mon-chart svg{max-height:128px} .pres-data{padding:6px 10px;font-size:13px} }
+@media (max-width:1500px){ .pres-steps button .tm{display:none!important} .pres-steps button{justify-content:center;padding:8px 4px} body.presenting .pres-nav .btn{padding:11px 14px} }
+@media (max-width:640px){ .pres-steps{display:none} body.presenting .pres-nav{grid-template-columns:1fr 1fr} .mon-vals{grid-template-columns:1fr} .mon-vals .ar{display:none} .pres-end .q{font-size:22px} }
 
 /* ---------- Responsividade ---------- */
 @media (max-width:1200px){ .app{grid-template-columns:minmax(0,1fr) 400px} .brand-name span{display:none} }
@@ -4214,7 +4248,9 @@ const PRES_STAGES = [
   { id: "quantidade", t: "Comparar: mais crianças próximas", c: "Quantidade" },
   { id: "proporcao", t: "Comparar: maior redução local", c: "Proporção" },
   { id: "capacidade", t: "Capacidade e verificações", c: "Capacidade" },
-  { id: "justificativa", t: "Justificativa", c: "Justificativa" }
+  { id: "acompanhar", t: "Acompanhar o resultado", c: "Acompanhar" },
+  { id: "justificativa", t: "Justificativa", c: "Justificativa" },
+  { id: "encerramento", t: "Encerramento", c: "Fim" }
 ];
 const presId = () => PRES_STAGES[PRES.stage - 1].id;
 const PRES_CRIT = {
@@ -4255,7 +4291,7 @@ function setupPresentation() {
   state.premises = {}; state.service = PRES_SID; state.region = null; state.showEq = false;
   state.indicator = "criancas"; state.view = "depois"; state.point = null; state.criterion = "publico";
   state.scenarios = []; state.activeScenario = null;
-  Object.assign(PRES, { stage: 1, view: "depois", crit: "quantidade", ind: "criancas", userActive: null, checksFor: null, showChecks: false, err: null });
+  Object.assign(PRES, { stage: 1, view: "depois", crit: "quantidade", ind: "criancas", monFor: null, userActive: null, checksFor: null, showChecks: false, err: null });
   const S = svc(PRES_SID);
   if (!S) { PRES.err = "O serviço Creche / CMEI não está no catálogo de dados."; }
   else if (access(PRES_SID).insufficient) { PRES.err = "Dados insuficientes: os setores não informam o percentual de crianças de 0 a 5 anos."; }
@@ -4267,6 +4303,9 @@ function setupPresentation() {
     const pt = makePoint(b.area.px, b.area.py);
     const s = { id: "pres-" + r.id, sid: PRES_SID, pt: { ...pt }, label: `${S.nome} · ${r.nome}`, short: r.nome, rid: r.id, site: b.area.nome, checks: {} };
     S.verificar.forEach((_, i) => { s.checks[i] = "nao_informado"; });
+    // Exemplo ilustrativo da demonstração: um item verificado e um pendente (não é aprovação)
+    const k = state.scenarios.length;
+    if (S.verificar.length >= 2) { s.checks[k % 2 === 0 ? 0 : 1] = "verificado"; s.checks[k % 2 === 0 ? 1 : 0] = "pendente"; }
     state.scenarios.push(s);
   });
   prevNumbers.clear();
@@ -4316,6 +4355,7 @@ function presApply() {
   else {
     state.step = 3; state.point = null; state.service = PRES_SID;
     if (id === "decisao") state.activeScenario = null;
+    else if (id === "acompanhar") state.activeScenario = presMonScenario().s.id;
     else { const rk = presRank(PRES.crit); state.activeScenario = PRES.userActive || (rk.valid[0] ? rk.valid[0].s.id : (s0 ? s0.id : null)); }
   }
   if (!PRES.checksFor && s0) PRES.checksFor = s0.id;
@@ -4345,12 +4385,51 @@ function presDecorateMap() {
   });
   $$("#map .pin").forEach(g => {
     const s = state.scenarios.find(x => x.id === g.dataset.id) || (g.dataset.kind === "pin" ? s0 : null);
-    const tx = $("text", g); if (s && tx) tx.textContent = s.short;
+    const tx = $("text", g); if (tx) tx.textContent = "";            // o nome da região já aparece no mapa
     if (s) g.setAttribute("aria-label", `Unidade simulada: ${s.short}`);
   });
+  if (!["decisao", "variaveis", "simular"].includes(id)) {         // comparação em diante: só as duas alternativas
+    refs.eqs.forEach(g => { g.style.display = "none"; });
+    refs.covU.innerHTML = ""; refs.covR.innerHTML = "";
+  }
 }
 function presHead(title) {
   return `<div><div class="pres-stage">Etapa ${PRES.stage} de ${PRES_STAGES.length}</div><h2 class="pres-h">${esc(title || PRES_STAGES[PRES.stage - 1].t)}</h2></div>`;
+}
+/** Alternativa acompanhada: escolhida pelo apresentador ou a líder do critério selecionado. */
+function presMonScenario() {
+  const items = presScen(), rk = presRank(PRES.crit);
+  let x = PRES.monFor ? items.find(i => i.s.id === PRES.monFor) : null, note;
+  if (x) note = "Alternativa escolhida pelo apresentador.";
+  else if (rk.leader) { x = items.find(i => i.s.id === rk.leader.s.id); note = `Líder em “${PRES_CRIT[PRES.crit].nome}”.`; }
+  else { x = items[0]; note = rk.tie ? "Empate no critério: escolha a alternativa." : "Dados insuficientes no critério: escolha a alternativa."; }
+  return { ...x, note };
+}
+function monIndicator(regiao, S) { return `% de crianças de 0 a 5 anos a até ${fmtDist(S.raio)} de uma creche na ${regiao}`; }
+/** Relação capacidade × crianças no raio (aritmética simples, não previsão de matrículas). */
+function capRatioText(regiao, sim, S) {
+  if (!isNum(S.cap) || !(sim.newT >= 1)) return `${esc(regiao)}: capacidade não definida ou nenhuma criança adicional no raio.`;
+  if (sim.cap >= sim.newT) return `<b>${esc(regiao)}:</b> ≈ ${fmtInt(sim.newT)} crianças no raio para ${fmtInt(S.cap)} vagas — as vagas bastariam para todas.`;
+  const share = S.cap / sim.newT * 100, n = Math.max(2, Math.round(sim.newT / S.cap));
+  return `<b>${esc(regiao)}:</b> ≈ ${fmtInt(sim.newT)} crianças no raio para ${fmtInt(S.cap)} vagas — uma unidade atenderia ≈ ${fmtPct(share)} delas (cerca de 1 em cada ${n}).`;
+}
+/** Gráfico SVG: linha de base (hoje), meta e espaços vazios para medições futuras. */
+function monChart(base, meta) {
+  if (!Number.isFinite(base) || !Number.isFinite(meta)) return `<p class="small muted" style="margin:8px">Dados insuficientes para o gráfico.</p>`;
+  const W = 520, H = 170, L = 44, R = 96, T = 14, B = 34;
+  const lo = Math.max(0, Math.floor(Math.min(base, meta) / 10) * 10 - 10), hi = 100;
+  const y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+  const cols = ["Hoje", "Medição 1", "Medição 2", "Medição 3"], x = i => L + 18 + i * ((W - L - R - 18) / (cols.length - 1));
+  const ticks = []; for (let v = lo; v <= hi; v += (hi - lo) / 4) ticks.push(v);
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Linha de base ${fmtPct(base)} hoje; meta ${fmtPct(meta)}; medições futuras ainda não registradas">
+    ${ticks.map(v => `<line class="grid" x1="${L}" x2="${W - R + 10}" y1="${y(v)}" y2="${y(v)}"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${Math.round(v)}%</text>`).join("")}
+    <line class="meta" x1="${L}" x2="${W - R + 10}" y1="${y(meta)}" y2="${y(meta)}"/>
+    <text class="tm" x="${W - R + 16}" y="${y(meta) + 4}">Meta ${fmtPct(meta)}</text>
+    ${cols.map((c, i) => `<text x="${x(i)}" y="${H - 10}" text-anchor="middle">${c}</text>`).join("")}
+    ${cols.slice(1).map((_, i) => `<line class="ax" x1="${x(i + 1)}" x2="${x(i + 1)}" y1="${T}" y2="${H - B}" stroke-dasharray="2 4"/><circle class="slot" cx="${x(i + 1)}" cy="${(H - B + T) / 2}" r="7"/><text x="${x(i + 1)}" y="${(H - B + T) / 2 + 22}" text-anchor="middle" font-size="11">a registrar</text>`).join("")}
+    <circle class="base" cx="${x(0)}" cy="${y(base)}" r="7"/>
+    <text class="tb" x="${x(0) + 12}" y="${y(base) - 8}">Hoje ${fmtPct(base)}</text>
+  </svg>`;
 }
 function presPanelHTML() {
   if (PRES.err) return `${presHead()}<div class="callout danger">${ICON.warn}<div><b>Não foi possível preparar a demonstração.</b> ${esc(PRES.err)}</div></div>`;
@@ -4362,7 +4441,8 @@ function presPanelHTML() {
     <div class="pres-guide">Compare o que cada alternativa melhora.</div>
     <div class="pres-alts">${items.map(({ s, sim }) => `<div class="pres-alt"><div class="rg">${esc(s.short)}</div>
       <div class="big">≈ ${fmtInt(sim.hostUnc)}</div><div class="ln">crianças de 0 a 5 anos a mais de ${R} de uma creche</div></div>`).join("")}</div>
-    <p class="pres-note">Só uma unidade seria implantada. Dados simulados.</p>`;
+    <p class="pres-note">Só uma unidade seria implantada.</p>
+    <p class="pres-data">Nomes reais das zonas de Londrina; números simulados para demonstração.</p>`;
 
   if (id === "variaveis") {
     const m = state.model, used = new Set(state.scenarios.map(s => s.rid));
@@ -4437,11 +4517,34 @@ function presPanelHTML() {
     const cur = state.scenarios.find(x => x.id === PRES.checksFor) || state.scenarios[0];
     const checks = cur ? `<div class="pres-tabs" role="group" aria-label="Alternativa">${state.scenarios.map(s => `<button type="button" data-pchk="${esc(s.id)}" aria-pressed="${s.id === cur.id}">${esc(s.short)}</button>`).join("")}</div>
       <div class="pres-checks">${S.verificar.map((v, i) => `<div class="restr-row"><div class="lbl">${pill(cur.checks[i], STATUS[cur.checks[i]])}<span>${esc(v)}</span></div><select data-pchkv="${i}" aria-label="Status: ${esc(v)} (${esc(cur.short)})">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}" ${cur.checks[i] === k ? "selected" : ""}>${l}</option>`).join("")}</select></div>`).join("")}</div>
-      <p class="pres-note"><b>Verificar não é aprovar:</b> não equivale a aprovação técnica, legal ou orçamentária.</p>` : "";
+      <p class="pres-note"><b>Status de exemplo, ilustrativos.</b> Verificar não é aprovar: não equivale a aprovação técnica, legal ou orçamentária.</p>` : "";
     return `${presHead()}
       <div class="pres-cap">${capRows}</div>
+      ${PRES.showChecks ? "" : items.map(({ s, sim }) => `<p class="cap-ratio">${capRatioText(s.short, sim, S)}</p>`).join("")}
       <p class="pres-lead" style="font-size:16px">Crianças por perto não são vagas: o atendimento depende de vagas e das condições de operação.</p>
       ${PRES.showChecks ? checks : `<button class="btn block" type="button" id="pShowChecks" style="font-size:16px;padding:13px">${ICON.doc} Ver o que ainda precisa ser verificado</button>`}`;
+  }
+
+  if (id === "acompanhar") {
+    const { s, sim, note } = presMonScenario();
+    return `${presHead()}
+      <div class="row wrap" style="gap:10px"><div class="pres-tabs" role="group" aria-label="Alternativa acompanhada">${state.scenarios.map(x => `<button type="button" data-pmon="${esc(x.id)}" aria-pressed="${x.id === s.id}">${esc(x.short)}</button>`).join("")}</div><span class="small muted">${esc(note)}</span></div>
+      <div class="mon-ind"><div class="k">Indicador proposto</div><div class="v">${esc(monIndicator(s.short, S))}</div></div>
+      <div class="mon-vals">
+        <div><div class="l">Linha de base (hoje)</div><div class="n">${fmtPct(sim.hostBefore)}</div></div>
+        <div class="ar">${ICON.arrow}</div>
+        <div class="goal"><div class="l">Meta (após a unidade)</div><div class="n">${fmtPct(sim.hostAfter)}</div></div>
+      </div>
+      <div class="mon-chart">${monChart(sim.hostBefore, sim.hostAfter)}</div>
+      <p class="pres-data">Intervenção hipotética: ainda não há medições. Os valores serão registrados após a implantação.</p>
+      <p class="pres-close" style="font-size:17px;padding:2px 0 2px 12px">A Revano não termina na escolha: ela define como o resultado será monitorado.</p>`;
+  }
+  if (id === "encerramento") {
+    return `<div class="pres-end">
+      <svg class="mk" viewBox="0 0 180 200" aria-hidden="true"><rect x="10" y="37" width="58" height="53" rx="3" fill="#C8734C"/><path d="M80 10H115C145 10 168 34 168 64V132C150 113 116 96 95 74C85 63 80 52 80 40Z" fill="#1F453D"/><path d="M13 104H60C108 104 146 141 151 190H113C109 171 93 158 71 158H13A3 3 0 0 1 10 155V107A3 3 0 0 1 13 104Z" fill="#1F453D"/></svg>
+      <p class="q"><b>A Revano não decide pela prefeitura.</b> Ela mostra quem pode ser beneficiado, quais alternativas merecem atenção e o que ainda precisa ser verificado.</p>
+      <p class="s">Subsídio para avaliação técnica. A decisão permanece com o gestor.</p>
+    </div>`;
   }
 
   // justificativa
@@ -4465,13 +4568,14 @@ function bindPresPanel(host) {
     const f = $(`[data-pchkv="${i}"]`); if (f) f.focus();
   });
   on("#pGenSum", "click", openPresSummary);
+  on("[data-pmon]", "click", e => { PRES.monFor = e.currentTarget.dataset.pmon; presApply(); const b = $(`[data-pmon="${PRES.monFor}"]`); if (b) b.focus(); });
   on("[data-pind]", "click", e => { PRES.ind = e.currentTarget.dataset.pind; presApply(); const b = $(`[data-pind="${PRES.ind}"]`); if (b) b.focus(); });
 }
 function presKey(e) {
   const k = e.key;
   if (k === "ArrowRight" || k === "PageDown") { e.preventDefault(); presGo(PRES.stage + 1); }
   else if (k === "ArrowLeft" || k === "PageUp") { e.preventDefault(); presGo(PRES.stage - 1); }
-  else if (/^[1-7]$/.test(k)) presGo(+k);
+  else if (/^[1-9]$/.test(k)) presGo(+k);
 }
 /** Primeira tela da justificativa: curta e com os mesmos valores mostrados na tela. */
 function presSummaryHTML() {
@@ -4482,14 +4586,16 @@ function presSummaryHTML() {
     return `<div class="sum-alt"><h4>${esc(s.short)}</h4><dl>
       <dt>Crianças adicionais no raio</dt><dd>≈ ${fmtInt(sim.newT)}</dd>
       <dt>Redução local da carência</dt><dd>${fmtPct(sim.propReduction)}</dd>
-      <dt>Capacidade ilustrativa</dt><dd>${isNum(S.cap) ? fmtInt(S.cap) + " " + esc(S.capacidade_unidade || "vagas") : "—"}</dd></dl>
+      <dt>Capacidade ilustrativa</dt><dd>${isNum(S.cap) ? fmtInt(S.cap) + " " + esc(S.capacidade_unidade || "vagas") : "—"}</dd>
+      <dt>Acompanhamento: base → meta</dt><dd>${fmtPct(sim.hostBefore)} → ${fmtPct(sim.hostAfter)}</dd></dl>
       <p class="meta" style="margin:6px 0 0"><b>Verificações pendentes (${pend.length} de ${S.verificar.length}):</b> ${pend.length ? esc(pend.join("; ")) : "nenhuma registrada como pendente (não constitui aprovação)"}.</p></div>`;
   }).join("");
   return `<p class="meta" style="margin:0 0 8px">Revano · gerado em ${esc(when)} · <b>demonstração com dados simulados</b> (${esc((state.raw.fontes[0] || {}).nome || "sem fonte registrada")}); os números não representam a situação real de Londrina.</p>
     <p style="margin:0 0 8px"><b>Serviço:</b> ${esc(S.nome)}, crianças de 0 a 5 anos (população estimada). <b>Alternativas:</b> uma unidade na ${esc(state.scenarios.map(s => s.short).join(" ou uma unidade na "))} — os ganhos não se somam.</p>
     <div class="warn" style="margin:8px 0"><b>Critério: ${esc(PRES_CRIT[crit].nome)}.</b> ${esc(why1)}</div>
     <div class="sum-grid">${alts}</div>
-    <p class="meta" style="margin:10px 0 0"><b>Premissas:</b> raio ilustrativo de ${fmtDist(S.raio)} em linha reta (não é percurso de caminhada); crianças de cada setor = população × % de 0 a 5 anos, no centro do setor, sem recontar quem já tinha creche no raio; capacidade ilustrativa por unidade. Proximidade não é demanda registrada nem matrícula.</p>
+    <p class="meta" style="margin:10px 0 0"><b>Indicador de acompanhamento:</b> ${esc(monIndicator("região", S))}. Linha de base = hoje; meta = valor estimado após a unidade. Intervenção hipotética: ainda não há medições; os valores serão registrados após a implantação.</p>
+    <p class="meta" style="margin:6px 0 0"><b>Premissas:</b> raio ilustrativo de ${fmtDist(S.raio)} em linha reta (não é percurso de caminhada); crianças de cada setor = população × % de 0 a 5 anos, no centro do setor, sem recontar quem já tinha creche no raio; capacidade ilustrativa por unidade. Proximidade não é demanda registrada nem matrícula.</p>
     <p class="closing-r" style="margin-top:12px">Subsídio para avaliação técnica. A decisão permanece com o gestor.</p>`;
 }
 function openPresSummary() { $("#presSumBody").innerHTML = presSummaryHTML(); openDialog($("#presSummary")); }
