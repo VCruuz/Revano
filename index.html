@@ -411,6 +411,9 @@ code{font-family:var(--mono);font-size:12px;background:var(--surface-2);padding:
 .prio-map ol{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .prio-map li button{width:100%;display:flex;gap:8px;align-items:center;text-align:left;border:0;background:transparent;border-radius:9px;padding:6px 4px;cursor:pointer}
 .prio-map li button:hover{background:var(--surface-2)}
+.prio-map li button.cur{background:var(--blue-soft)}
+.prio-map li button:disabled{cursor:default;opacity:.6}
+.prio-map .tx b small{font-weight:600;color:var(--blue-ink);font-size:11px;margin-left:4px}
 .prio-map .pn{width:20px;height:20px;border-radius:50%;background:var(--brand-green);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:750;flex:none}
 .prio-map .svc-badge{width:24px;height:24px;border-radius:7px}
 .prio-map .svc-badge svg{width:14px;height:14px}
@@ -537,6 +540,11 @@ code{font-family:var(--mono);font-size:12px;background:var(--surface-2);padding:
         <desc id="mapDesc">Setores populacionais por região, coloridos pelo indicador selecionado ou pela situação de acesso ao serviço simulado.</desc>
       </svg>
       <div class="map-flag" id="mapFlag"></div>
+      <div class="prio-map" id="rankMap" hidden aria-label="Regiões onde o serviço mais falta">
+        <div class="pm-h" id="rankTitle">Onde mais falta</div>
+        <ol id="rankList"></ol>
+        <div class="pm-f">Ordem: % do público sem acesso. Toque para simular na região.</div>
+      </div>
       <div class="prio-map" id="prioMap" hidden aria-label="Prioridades da região">
         <div class="pm-h">Prioridades da região</div>
         <select id="prioReg" aria-label="Região"></select>
@@ -4206,6 +4214,21 @@ function updateMap() {
   else hint.hidden = true;
   renderLegend(sim, sid);
   renderPrioMap();
+  renderRankMap();
+}
+/** Etapa 2: regiões em ordem de carência para o serviço selecionado. */
+function renderRankMap() {
+  const box = $("#rankMap"), m = state.model, sid = state.service;
+  box.hidden = state.step !== 2 || !sid;
+  if (box.hidden) return;
+  const S = svc(sid), A = access(sid);
+  if (A.insufficient) { box.hidden = true; return; }
+  const rows = m.regions.filter(r => r.n).map(r => { const st = A.byRegion[r.id]; const unc = st ? st.target - st.covered : 0; return { r, unc, pct: st && st.target > 0 ? unc / st.target * 100 : NaN }; })
+    .filter(x => Number.isFinite(x.pct)).sort((a, b) => b.pct - a.pct || b.unc - a.unc);
+  const cur = state.point ? state.point.regiao : null;
+  $("#rankTitle").textContent = "Onde mais falta · " + (S.nome_curto || S.nome);
+  $("#rankList").innerHTML = rows.map((x, i) => `<li><button type="button" data-rk="${esc(x.r.id)}" class="${x.r.id === cur ? "cur" : ""}" ${x.unc < 1 ? "disabled" : ""} aria-label="${i + 1}º ${esc(x.r.nome)}: simular ${esc(S.nome)} nesta região">
+      <span class="pn">${i + 1}</span><span class="tx"><b>${esc(x.r.nome)}${x.r.id === cur ? "<small>simulando</small>" : ""}</b><span>${x.unc < 1 ? "todos já têm acesso" : `${fmtPct(x.pct)} ${A.rede ? "sem o serviço" : "sem acesso"} · ≈ ${fmtInt(x.unc)}`}</span></span></button></li>`).join("");
 }
 /** Quadro de prioridades no mapa (etapa 1): 3 serviços da região escolhida. */
 function renderPrioMap() {
@@ -4648,6 +4671,12 @@ function bindEvents() {
   $("#printReport").addEventListener("click", printReport);
   $("#openHelp").addEventListener("click", () => openDialog($("#welcomeDialog")));
   $("#toggleEq").addEventListener("click", () => { state.showEq = !state.showEq; updateMap(); });
+  $("#rankList").addEventListener("click", e => {
+    const b = e.target.closest("[data-rk]"); if (!b || b.disabled) return;
+    const best = bestSite(state.service, b.dataset.rk);
+    if (!best || best.newT <= 0) { toast("Nenhum local nessa região ampliaria o acesso com as premissas atuais."); return; }
+    state.point = makePoint(best.area.px, best.area.py); state.view = "depois"; renderPanel(); updateMap();
+  });
   $("#prioReg").addEventListener("change", e => { state.region = e.target.value; renderPanel(); updateMap(); });
   $("#prioList").addEventListener("click", e => { const b = e.target.closest("[data-pm]"); if (!b) return; const [sid, rid] = b.dataset.pm.split("|"); startSim(sid, rid); });
   $("#indSel").addEventListener("change", e => { state.indicator = e.target.value; updateMap(); if (state.region) renderPanel(); });
