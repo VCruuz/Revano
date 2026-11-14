@@ -424,6 +424,19 @@ code{font-family:var(--mono);font-size:12px;background:var(--surface-2);padding:
 @media (max-width:1500px){ .prio-map{width:206px;padding:10px 10px 8px;gap:6px} .prio-map .svc-badge{display:none} .prio-map .pm-f{display:none} }
 @media (max-width:960px){ .map-card .prio-map{position:static;width:auto;margin:0 10px 10px;box-shadow:none;order:2} }
 .sim-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.seg4{grid-template-columns:repeat(2,1fr)!important}
+.seg4 button{font-size:13px;padding:8px 6px}
+.cmp .lt{width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:800;flex:none}
+.cmp-m{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}
+.cmp-m div{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.cmp-m div{background:var(--surface-2);border-radius:9px;padding:6px 8px;min-width:0}
+.cmp-m span{display:block;font-size:11px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-m b{display:block;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-m .cur{outline:1.5px solid var(--line-2)}
+.cmp-m .best{background:var(--green-soft)}
+.cmp-m .best b{color:var(--green-ink)}
+.cmp-m .best b::before{content:"★ ";font-size:11px}
+@media (max-width:560px){ .cmp-m{grid-template-columns:repeat(2,minmax(0,1fr))} }
 .prio-n{width:24px;height:24px;border-radius:50%;background:var(--brand-green);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:750;flex:none}
 .reg-chips{display:flex;flex-wrap:wrap;gap:6px}
 .stats4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -544,7 +557,7 @@ code{font-family:var(--mono);font-size:12px;background:var(--surface-2);padding:
       <div class="prio-map" id="rankMap" hidden aria-label="Regiões onde o serviço mais falta">
         <div class="pm-h" id="rankTitle">Onde mais falta</div>
         <ol id="rankList"></ol>
-        <div class="pm-f">Ordem: % do público sem acesso. Toque para simular na região.</div>
+        <div class="pm-f" id="rankFoot">Ordem: % do público sem acesso. Toque para simular na região.</div>
       </div>
       <div class="prio-map" id="prioMap" hidden aria-label="Prioridades da região">
         <div class="pm-h">Prioridades da região</div>
@@ -3681,7 +3694,8 @@ const state = {
   premises: {},            // {sid:{raio, capacidade}}
   scenarios: [],           // cenários salvos
   activeScenario: null,
-  criterion: "publico"
+  criterion: "pessoas",
+  cmpService: null
 };
 const prevNumbers = new Map();
 let scnSeq = 0;
@@ -4035,7 +4049,7 @@ function impactsFor(sim) {
 function loadDataset(data, mode, fileName) {
   const model = buildModel(data);
   state.raw = data; state.mode = mode; state.fileName = fileName || null; state.model = model;
-  state.premises = {}; state.scenarios = []; state.activeScenario = null; state.point = null;
+  state.premises = {}; state.scenarios = []; state.activeScenario = null; state.point = null; state.cmpService = null;
   state.region = null; state.view = "depois";
   state.service = null;
   prevNumbers.clear();
@@ -4146,7 +4160,7 @@ function updateMap() {
   const m = state.model; if (!m) return;
   const svg = $("#map"); svg.setAttribute("data-step", state.step);
   const sim = currentSim();
-  const sid = state.step === 1 ? null : (sim ? sim.sid : state.service);
+  const sid = state.step === 1 ? null : (sim ? sim.sid : state.step === 3 ? state.cmpService : state.service);
   // células
   if (state.step === 1) {
     const k = state.indicator, vals = m.areas.map(a => indicatorValue(a, k)), br = quantileBreaks(vals);
@@ -4205,7 +4219,7 @@ function updateMap() {
     state.scenarios.forEach((s, i) => {
       const S = svc(s.sid), act = s.id === state.activeScenario;
       S_("circle", { class: "new-area" + (act ? "" : " ghost"), cx: s.pt.px, cy: Y(s.pt.py), r: S.raio }, refs.newG);
-      drawPin(s.pt, S, String(i + 1), { ghost: !act, kind: "scn", id: s.id });
+      drawPin(s.pt, S, s.letter || String(i + 1), { ghost: !act, kind: "scn", id: s.id });
     });
   }
   // controles
@@ -4213,6 +4227,8 @@ function updateMap() {
   $$("#baToggle button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === state.view)));
   const hint = $("#mapHint");
   if (state.step === 1 && !state.region) { hint.hidden = false; hint.innerHTML = `${ICON.pointer}Toque em uma região`; }
+  else if (state.step === 3 && !state.cmpService) { hint.hidden = false; hint.innerHTML = `${ICON.pointer}Escolha um serviço ao lado`; }
+  else if (state.step === 3 && state.scenarios.length < 3) { hint.hidden = false; hint.innerHTML = `${ICON.pin}Toque no mapa para marcar um local (${state.scenarios.length}/3)`; }
   else if (state.step === 2 && !state.service) { hint.hidden = false; hint.innerHTML = `${ICON.pointer}Escolha um serviço ao lado`; }
   else if (state.step === 2 && !state.point) { hint.hidden = false; hint.innerHTML = `${ICON.pin}Toque no mapa para posicionar`; }
   else hint.hidden = true;
@@ -4222,17 +4238,19 @@ function updateMap() {
 }
 /** Etapa 2: regiões em ordem de carência para o serviço selecionado. */
 function renderRankMap() {
-  const box = $("#rankMap"), m = state.model, sid = state.service;
-  box.hidden = state.step !== 2 || !sid;
+  const box = $("#rankMap"), m = state.model, sid = state.step === 3 ? state.cmpService : state.service;
+  box.hidden = !(state.step === 2 || state.step === 3) || !sid;
   if (box.hidden) return;
   const S = svc(sid), A = access(sid);
   if (A.insufficient) { box.hidden = true; return; }
   const rows = m.regions.filter(r => r.n).map(r => { const st = A.byRegion[r.id]; const unc = st ? st.target - st.covered : 0; return { r, unc, pct: st && st.target > 0 ? unc / st.target * 100 : NaN }; })
     .filter(x => Number.isFinite(x.pct)).sort((a, b) => b.pct - a.pct || b.unc - a.unc);
-  const cur = state.point ? state.point.regiao : null;
+  const cur = state.step === 2 && state.point ? state.point.regiao : null;
+  const usedReg = new Set(state.step === 3 ? state.scenarios.map(s => s.pt.regiao) : []);
   $("#rankTitle").textContent = "Onde mais falta · " + (S.nome_curto || S.nome);
+  $("#rankFoot").textContent = state.step === 3 ? "Ordem: % do público sem acesso. Toque para marcar o melhor local da região." : "Ordem: % do público sem acesso. Toque para simular na região.";
   $("#rankList").innerHTML = rows.map((x, i) => `<li><button type="button" data-rk="${esc(x.r.id)}" class="${x.r.id === cur ? "cur" : ""}" ${x.unc < 1 ? "disabled" : ""} aria-label="${i + 1}º ${esc(x.r.nome)}: simular ${esc(S.nome)} nesta região">
-      <span class="pn">${i + 1}</span><span class="tx"><b>${esc(x.r.nome)}${x.r.id === cur ? "<small>simulando</small>" : ""}</b><span>${x.unc < 1 ? "todos já têm acesso" : `${fmtPct(x.pct)} ${A.rede ? "sem o serviço" : "sem acesso"} · ≈ ${fmtInt(x.unc)}`}</span></span></button></li>`).join("");
+      <span class="pn">${i + 1}</span><span class="tx"><b>${esc(x.r.nome)}${x.r.id === cur ? "<small>simulando</small>" : ""}${usedReg.has(x.r.id) ? "<small>marcado</small>" : ""}</b><span>${x.unc < 1 ? "todos já têm acesso" : `${fmtPct(x.pct)} ${A.rede ? "sem o serviço" : "sem acesso"} · ≈ ${fmtInt(x.unc)}`}</span></span></button></li>`).join("");
 }
 /** Quadro de prioridades no mapa (etapa 1): 3 serviços da região escolhida. */
 function renderPrioMap() {
@@ -4507,51 +4525,69 @@ function premisesBox(S) {
 
 /* --- ETAPA 3 · COMPARAR --- */
 function viewCompare() {
-  const m = state.model, sugs = computeSuggestions();
-  const crit = state.criterion, asc = crit === "custo";
-  const val = (sim, c) => c === "publico" ? sim.newT : c === "custo" ? sim.custoPessoa : sim.propReduction;
-  const fmtV = (c, v) => !Number.isFinite(v) ? "—" : c === "publico" ? "+≈ " + fmtInt(v) : c === "custo" ? "R$ " + fmtInt(v) : fmtPct(v);
-  const LBL = { publico: "Novo acesso", proporcional: "Redução da carência", custo: "Custo por pessoa" };
-  const NOTE = { publico: "Pessoas do público-alvo que passam a ter o serviço no raio, sem recontar quem já tinha.", proporcional: "Parte do público sem acesso da região que seria alcançada.", custo: "Custo de implantação ilustrativo ÷ pessoas com novo acesso. Menor é melhor." };
-  const items = state.scenarios.map(s => { const sim = simulate(s.sid, s.pt); const v = val(sim, crit); return { s, sim, v, ok: Number.isFinite(v) }; });
-  items.sort((a, b) => (b.ok - a.ok) || (a.ok && b.ok ? (asc ? a.v - b.v : b.v - a.v) : 0));
-  const valid = items.filter(i => i.ok), top = valid.length ? valid[0].v : NaN;
-  const leaders = valid.filter(i => Math.abs(i.v - top) < 1e-9);
-  const maxV = Math.max(1e-9, ...valid.map(i => i.v));
-  const publicos = new Set(state.scenarios.map(s => svc(s.sid).publico_nome));
-  const others = Object.keys(LBL).filter(k => k !== crit);
-  const cards = items.map((it, idx) => {
-    const { s, sim } = it, S = sim.S, reg = m.regions.find(r => r.id === sim.host);
-    const st = checkStatus(s), isL = leaders.includes(it) && valid.length > 1;
-    const pend = st.ni + st.pe;
+  const m = state.model, sid = state.cmpService;
+  const tiles = m.services.map(s0 => { const s = svc(s0.id); return `<button class="svc-tile" type="button" data-svc="${esc(s.id)}" aria-pressed="${s.id === sid}" title="${esc(s.nome)}">${badge(s, true)}<span>${esc(s.nome_curto || s.nome)}</span></button>`; }).join("");
+  const head = `<div class="sim-head"><h2>Comparar locais</h2><button class="btn small" type="button" id="clearCmp" ${sid ? "" : "disabled"}>Limpar</button></div>
+    <div class="svc-icons" role="group" aria-label="Serviço">${tiles}</div>`;
+  if (!sid) return `${head}<div class="callout">${ICON.pointer}<div>Escolha um serviço e marque até 3 locais no mapa para comparar.</div></div>`;
+  const S = svc(sid), rede = !!(PUBLICOS[S.publico] || {}).rede;
+  const CR = {
+    pessoas:   { l: "Pessoas beneficiadas", s: "Pessoas", asc: false, f: v => "+≈ " + fmtInt(v), note: `${S.publico_nome} que passam a ter o serviço, sem recontar quem já tinha.` },
+    distancia: { l: "Distância média", s: "Distância", asc: true, f: v => fmtDist(v), note: rede ? "Não se aplica a serviços de rede." : "Distância até a nova unidade para quem passa a ter acesso. Menor é melhor." },
+    custo:     { l: "Custo por pessoa", s: "R$/pessoa", asc: true, f: v => "R$ " + fmtInt(v), note: "Custo de implantação ilustrativo ÷ pessoas beneficiadas. Menor é melhor." },
+    area:      { l: "% com acesso na área", s: "Na área", asc: false, f: v => fmtPP(v), note: "Aumento da parcela do público com acesso na região do local." }
+  };
+  if (!CR[state.criterion]) state.criterion = "pessoas";
+  const crit = state.criterion, C = CR[crit];
+  const met = sim => ({ pessoas: sim.newT, distancia: sim.noPrev ? NaN : sim.distAfter, custo: sim.custoPessoa, area: Number.isFinite(sim.hostAfter) && Number.isFinite(sim.hostBefore) ? sim.hostAfter - sim.hostBefore : NaN });
+  const items = state.scenarios.map(s => { const sim = simulate(s.sid, s.pt); return { s, sim, mv: met(sim) }; });
+  // melhor valor por critério e quantos critérios cada local lidera
+  const best = {}, leadCount = {};
+  Object.keys(CR).forEach(k => {
+    const vals = items.map(i => i.mv[k]).filter(v => Number.isFinite(v) && !(k === "pessoas" && v < 0.5));
+    if (items.length < 2 || !vals.length) return;
+    best[k] = CR[k].asc ? Math.min(...vals) : Math.max(...vals);
+    items.forEach(i => { if (Number.isFinite(i.mv[k]) && Math.abs(i.mv[k] - best[k]) < 1e-9) leadCount[i.s.id] = (leadCount[i.s.id] || 0) + 1; });
+  });
+  const sorted = [...items].sort((a, b) => { const va = a.mv[crit], vb = b.mv[crit], oa = Number.isFinite(va), ob = Number.isFinite(vb); return (ob - oa) || (oa && ob ? (C.asc ? va - vb : vb - va) : 0); });
+  const valid = sorted.filter(i => Number.isFinite(i.mv[crit]));
+  const maxV = Math.max(1e-9, ...valid.map(i => i.mv[crit]));
+  const reg = s => (m.regions.find(r => r.id === s.pt.regiao) || {}).nome || "—";
+  const cards = sorted.map((it, idx) => {
+    const { s, mv } = it, v = mv[crit], okv = Number.isFinite(v);
+    const isBest = items.length > 1 && okv && Math.abs(v - best[crit]) < 1e-9;
+    const w = !okv ? 0 : C.asc ? (valid[0].mv[crit] / v) * 100 : (v / maxV) * 100;
+    const minis = Object.keys(CR).map(k => { const b = items.length > 1 && Number.isFinite(mv[k]) && Math.abs(mv[k] - best[k]) < 1e-9; return `<div class="${b ? "best" : ""} ${k === crit ? "cur" : ""}"><span>${CR[k].s}</span><b>${Number.isFinite(mv[k]) ? CR[k].f(mv[k]) : "—"}</b></div>`; }).join("");
     return `<div class="cmp ${s.id === state.activeScenario ? "active" : ""}" role="button" tabindex="0" data-scn="${esc(s.id)}" aria-pressed="${s.id === state.activeScenario}">
-      <div class="cmp-head"><span class="cmp-rank">${it.ok ? idx + 1 + "º" : "—"}</span>${badge(S, true)}
-        <span class="cmp-name">${esc(S.nome)}${isL ? ` <span class="leader-badge">Lidera</span>` : ""}<span>${esc(reg ? reg.nome : "—")}</span></span>
-        <span class="cmp-val">${it.ok ? fmtV(crit, it.v) : "Dados insuficientes"}<span>${crit === "publico" ? esc(S.publico_nome) : crit === "custo" ? "por pessoa" : "da carência local"}</span></span></div>
-      <div class="cmp-bar" aria-hidden="true"><span style="width:${it.ok ? (asc ? (valid[0].v / it.v) : (it.v / maxV)) * 100 : 0}%"></span></div>
-      <div class="cmp-act"><span class="st">${STATUS_ICON[pend ? (st.ni ? "nao_informado" : "pendente") : "verificado"]}${pend ? `${pend} pendências` : "Verificado"}</span>
-        <span class="row" style="gap:4px"><button class="btn small ghost" type="button" data-scn-open="${esc(s.id)}">Detalhes</button><button class="btn small ghost" type="button" data-scn-del="${esc(s.id)}" aria-label="Remover cenário">${ICON.trash}</button></span></div>
+      <div class="cmp-head"><span class="cmp-rank">${okv ? idx + 1 + "º" : "—"}</span><span class="lt">${esc(s.letter || "")}</span>
+        <span class="cmp-name">Local ${esc(s.letter || "")}${isBest ? ` <span class="leader-badge">Mais eficaz</span>` : ""}<span>${esc(reg(s))}</span></span>
+        <span class="cmp-val">${okv ? C.f(v) : "—"}</span></div>
+      <div class="cmp-bar" aria-hidden="true"><span style="width:${w}%"></span></div>
+      <div class="cmp-m">${minis}</div>
+      <div class="cmp-act"><span class="st">${items.length > 1 ? `Lidera em ${leadCount[s.id] || 0} de 4 critérios` : ""}</span>
+        <span class="row" style="gap:4px"><button class="btn small ghost" type="button" data-scn-open="${esc(s.id)}">Detalhes</button><button class="btn small ghost" type="button" data-scn-del="${esc(s.id)}" aria-label="Remover local ${esc(s.letter || "")}">${ICON.trash}</button></span></div>
     </div>`;
   }).join("");
   let result = "";
-  if (state.scenarios.length >= 2) {
-    const names = leaders.map(i => `${svc(i.s.sid).nome} · ${(m.regions.find(r => r.id === i.sim.host) || {}).nome || "—"}`).join(" e ");
-    result = !valid.length ? `<div class="result"><div class="v">Dados insuficientes para este critério.</div></div>` : `
-      <div class="result" role="status"><div class="k">Resultado preliminar · ${LBL[crit]}</div>
-        <div class="v">${leaders.length > 1 ? "Empate: " : "Lidera: "}${esc(names)}</div>
-        <div class="caveat">${ICON.warn}<span>Comparação preliminar, não é recomendação aprovada. Confira as verificações antes de decidir.</span></div></div>
-      ${publicos.size > 1 && crit === "publico" ? `<p class="small muted" style="margin:0"><b>Públicos diferentes:</b> números absolutos não são diretamente equivalentes. Compare também pela redução da carência.</p>` : ""}`;
+  if (items.length >= 2) {
+    const leaders = items.filter(i => Number.isFinite(i.mv[crit]) && Math.abs(i.mv[crit] - best[crit]) < 1e-9);
+    const overall = Math.max(0, ...items.map(i => leadCount[i.s.id] || 0));
+    const top = items.filter(i => (leadCount[i.s.id] || 0) === overall && overall > 0);
+    result = !leaders.length ? `<div class="result"><div class="v">Dados insuficientes para este critério.</div></div>` : `
+      <div class="result" role="status"><div class="k">Mais eficaz em ${C.l.toLowerCase()}</div>
+        <div class="v">${leaders.length > 1 ? "Empate: " : ""}${leaders.map(i => `Local ${esc(i.s.letter)} · ${esc(reg(i.s))}`).join(" e ")}</div>
+        ${top.length ? `<p>No conjunto dos 4 critérios, ${top.map(i => `o Local ${esc(i.s.letter)}`).join(" e ")} ${top.length > 1 ? "lideram" : "lidera"} em ${overall} de 4.</p>` : ""}
+        <div class="caveat">${ICON.warn}<span>Comparação preliminar. Confira as verificações antes de decidir.</span></div></div>`;
   }
-  return `
-    <div><h2>Comparar cenários</h2></div>
-    ${state.scenarios.length ? `
-      <div class="seg" role="group" aria-label="Critério" style="grid-template-columns:repeat(3,1fr)">${Object.entries(LBL).map(([k, l]) => `<button type="button" data-crit="${k}" aria-pressed="${crit === k}">${l}</button>`).join("")}</div>
-      <p class="crit-note">${NOTE[crit]}</p>
+  const n = state.scenarios.length;
+  return `${head}
+    <p class="small muted" style="margin:-4px 0 0"><b>${esc(S.nome)}</b> · ${n}/3 locais · ${n < 3 ? "toque no mapa para marcar" : "remova um para marcar outro"}</p>
+    ${n ? `<div class="seg seg4" role="group" aria-label="Critério">${Object.entries(CR).map(([k, c]) => `<button type="button" data-crit="${k}" aria-pressed="${crit === k}">${c.l}</button>`).join("")}</div>
+      <p class="crit-note">${esc(C.note)}</p>
       <div class="cmp-list">${cards}</div>${result}
-      ${state.scenarios.length === 1 ? `<p class="small muted" style="margin:0">Adicione outro cenário na etapa 2 para comparar.</p>` : ""}
-      <button class="btn primary block" type="button" id="genReport">${ICON.doc} Gerar justificativa</button>`
-    : `<div class="empty">${ICON.plus.replace('aria-hidden', 'style="width:28px;height:28px" aria-hidden')}<div><b>Nenhum cenário ainda</b><br><span class="small muted">Simule um serviço ou comece pelas sugestões.</span></div>
-        <div class="row wrap" style="justify-content:center">${sugs.length ? `<button class="btn accent" type="button" id="addTopSugs">${ICON.spark} Usar as ${Math.min(3, sugs.length)} principais sugestões</button>` : ""}<button class="btn" type="button" data-go="2">Ir para simulação</button></div></div>`}`;
+      ${n === 1 ? `<div class="callout">${ICON.pin}<div>Marque mais um local no mapa para comparar.</div></div>` : ""}
+      ${n >= 2 ? `<button class="btn primary block" type="button" id="genReport">${ICON.doc} Gerar justificativa</button>` : ""}`
+    : `<div class="callout blue">${ICON.pin}<div><b>Toque no mapa</b> para marcar até 3 locais, ou use o quadro “Onde mais falta” para marcar o melhor local de uma região.</div></div>`}`;
 }
 function pill(status, text) { return `<span class="pill ${status}">${STATUS_ICON[status]}${esc(text)}</span>`; }
 function checkStatus(s) {
@@ -4564,11 +4600,32 @@ function addScenario(sid, pt) {
   const S = svc(sid), r = state.model.regions.find(x => x.id === pt.regiao);
   const dup = state.scenarios.find(s => s.sid === sid && Math.hypot(s.pt.px - pt.px, s.pt.py - pt.py) < 1);
   if (dup) { state.activeScenario = dup.id; return false; }
-  const s = { id: "c" + (++scnSeq), sid, pt: { ...pt }, label: `${S.nome} · ${r ? r.nome : "local"}`, checks: {} };
+  const used = new Set(state.scenarios.map(s => s.letter));
+  const letter = ["A", "B", "C"].find(l => !used.has(l)) || String(state.scenarios.length + 1);
+  const s = { id: "c" + (++scnSeq), sid, pt: { ...pt }, letter, label: `Local ${letter} · ${r ? r.nome : "local"}`, checks: {} };
   S.verificar.forEach((_, i) => s.checks[i] = "nao_informado");
   state.scenarios.push(s); state.activeScenario = s.id;
   return true;
 }
+/** Adiciona um local à comparação (máximo 3, todos do mesmo serviço). */
+function addCmpPoint(sid, pt) {
+  if (state.cmpService && state.cmpService !== sid && state.scenarios.length) {
+    state.scenarios = []; state.activeScenario = null;
+    toast(`Comparação reiniciada para ${svc(sid).nome}.`);
+  }
+  state.cmpService = sid;
+  if (state.scenarios.length >= 3) { toast("Máximo de 3 locais. Remova um para marcar outro."); return false; }
+  const ok = addScenario(sid, pt);
+  if (!ok) toast("Este local já está na comparação.");
+  return ok;
+}
+/** Troca o serviço da comparação mantendo os locais marcados. */
+function setCmpService(sid) {
+  state.cmpService = sid;
+  const S = svc(sid);
+  state.scenarios.forEach(s => { s.sid = sid; s.checks = {}; S.verificar.forEach((_, i) => s.checks[i] = "nao_informado"); });
+}
+function clearCmp() { state.cmpService = null; state.scenarios = []; state.activeScenario = null; }
 let scnOpen = null;
 function openScenario(id) { scnOpen = id; renderScenarioDialog(); openDialog($("#scnDialog")); }
 function renderScenarioDialog() {
@@ -4647,7 +4704,16 @@ function bindEvents() {
       state.point = makePoint(p.x, p.y); state.view = "depois"; renderPanel(); updateMap();
       return;
     }
-    if (state.step === 3 && t && t.dataset.kind === "scn") { state.activeScenario = t.dataset.id; renderPanel(); updateMap(); }
+    if (state.step === 3) {
+      if (t && t.dataset.kind === "scn") { state.activeScenario = t.dataset.id; renderPanel(); updateMap(); return; }
+      if (!state.cmpService) { toast("Escolha um serviço ao lado primeiro."); return; }
+      if (access(state.cmpService).insufficient) return;
+      const p = svgPoint(e), b = refs.bounds;
+      if (p.x < b.minX || p.x > b.maxX || p.y < b.minY || p.y > b.maxY) return;
+      const m = state.model, lim = m.cell ? m.cell * 0.75 : Infinity;
+      if (!m.areas.some(a => Math.hypot(a.px - p.x, a.py - p.y) <= lim)) { toast("Marque o local dentro do território."); return; }
+      if (addCmpPoint(state.cmpService, makePoint(p.x, p.y))) { renderPanel(); updateMap(); }
+    }
   });
   svg.addEventListener("keydown", e => {
     const t = e.target.closest("[data-kind]"); if (!t || (e.key !== "Enter" && e.key !== " ")) return;
@@ -4685,8 +4751,10 @@ function bindEvents() {
   $("#toggleEq").addEventListener("click", () => { state.showEq = !state.showEq; updateMap(); });
   $("#rankList").addEventListener("click", e => {
     const b = e.target.closest("[data-rk]"); if (!b || b.disabled) return;
-    const best = bestSite(state.service, b.dataset.rk);
+    const sid = state.step === 3 ? state.cmpService : state.service;
+    const best = bestSite(sid, b.dataset.rk);
     if (!best || best.newT <= 0) { toast("Nenhum local nessa região ampliaria o acesso com as premissas atuais."); return; }
+    if (state.step === 3) { if (addCmpPoint(sid, makePoint(best.area.px, best.area.py))) { renderPanel(); updateMap(); } return; }
     state.point = makePoint(best.area.px, best.area.py); state.view = "depois"; renderPanel(); updateMap();
   });
   $("#prioReg").addEventListener("change", e => { state.region = e.target.value; renderPanel(); updateMap(); });
@@ -4713,10 +4781,13 @@ function bindPanel(host) {
   on("[data-sim-sug]", "click", e => { const [sid, rid] = e.currentTarget.dataset.simSug.split("|"); startSim(sid, rid); });
   on("[data-sim-region]", "click", e => { clearSim(); state.simRegion = e.currentTarget.dataset.simRegion; goStep(2); });
   on("#clearSim", "click", () => { clearSim(); renderPanel(); updateMap(); const f = document.querySelector(".svc-tile"); if (f) f.focus(); });
-  on("[data-svc]", "click", e => { const sid = e.currentTarget.dataset.svc; if (sid === state.service) return; state.service = sid; if (state.point) state.point = makePoint(state.point.px, state.point.py); renderPanel(); updateMap(); });
+  on("[data-svc]", "click", e => { const sid = e.currentTarget.dataset.svc;
+    if (state.step === 3) { if (sid !== state.cmpService) { setCmpService(sid); renderPanel(); updateMap(); } return; }
+    if (sid === state.service) return; state.service = sid; if (state.point) state.point = makePoint(state.point.px, state.point.py); renderPanel(); updateMap(); });
   on("#useBest", "click", () => { const rid = $("#bestReg", host).value || null; const b = bestSite(state.service, rid); if (!b || b.newT <= 0) { toast("Nenhum local nessa região ampliaria o acesso com as premissas atuais."); return; } state.point = makePoint(b.area.px, b.area.py); state.view = "depois"; renderPanel(); updateMap(); });
   on("#clearPoint", "click", () => { state.point = null; renderPanel(); updateMap(); });
-  on("#addScn", "click", () => { const added = addScenario(state.service, state.point); toast(added ? `Adicionado à comparação (${state.scenarios.length}). Veja na etapa 3.` : "Este cenário já está na comparação."); renderPanel(); });
+  on("#addScn", "click", () => { const added = addCmpPoint(state.service, state.point); if (added) toast(`Adicionado à comparação (${state.scenarios.length}/3). Veja na etapa 3.`); renderPanel(); });
+  on("#clearCmp", "click", () => { clearCmp(); renderPanel(); updateMap(); const f = document.querySelector(".svc-tile"); if (f) f.focus(); });
   on("#premBox", "toggle", e => { state._premOpen = e.currentTarget.open; });
   const premChange = () => {
     const r = parseFloat($("#premRaio", host).value), cRaw = $("#premCap", host).value.trim(), c = cRaw === "" ? null : parseFloat(cRaw);
@@ -4736,7 +4807,7 @@ function bindPanel(host) {
   on("[data-scn]", "keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target === e.currentTarget) { e.preventDefault(); state.activeScenario = e.currentTarget.dataset.scn; renderPanel(); updateMap(); } });
   on("[data-scn-open]", "click", e => openScenario(e.currentTarget.dataset.scnOpen));
   on("[data-scn-del]", "click", e => { const id = e.currentTarget.dataset.scnDel; state.scenarios = state.scenarios.filter(s => s.id !== id); if (state.activeScenario === id) state.activeScenario = state.scenarios[0] ? state.scenarios[0].id : null; renderPanel(); updateMap(); });
-  on("#addTopSugs", "click", () => { topDistinct(computeSuggestions(), 3).forEach(sg => { if (sg.best) addScenario(sg.sid, makePoint(sg.best.area.px, sg.best.area.py)); }); state.activeScenario = state.scenarios[0] ? state.scenarios[0].id : null; renderPanel(); updateMap(); });
+
   on("#genReport", "click", openReport);
 }
 let lastFocus = null;
