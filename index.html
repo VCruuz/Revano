@@ -381,6 +381,54 @@ code{font-family:var(--mono);font-size:12px;background:var(--surface-2);padding:
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 16px;border-radius:12px;font-size:14px;box-shadow:var(--shadow-2);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:200;max-width:calc(100vw - 32px)}
 .toast.show{opacity:1;transform:translateX(-50%)}
 
+/* ---------- Refinamento: interface enxuta ---------- */
+.map-note{display:none}
+.map-tools{position:absolute;top:12px;right:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100% - 24px)}
+.map-tools[hidden]{display:none}
+.tool{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:11px;padding:4px 6px 4px 10px;box-shadow:var(--shadow-1);font-size:12.5px;font-weight:600;color:var(--ink-3)}
+.tool select{border:0;background:transparent;font-weight:700;font-size:13.5px;color:var(--ink);padding:4px 2px;cursor:pointer}
+.tool select:focus-visible{outline:none;box-shadow:var(--focus);border-radius:6px}
+.tool.btnlike{padding:7px 12px;cursor:pointer;color:var(--ink-2)}
+.tool.btnlike[aria-pressed="true"]{background:var(--brand-green);border-color:var(--brand-green);color:#fff}
+.legend ul{gap:5px}
+.panel-inner{gap:16px}
+.panel h1{font-size:25px}
+.panel h2{font-size:23px}
+.sug-c{width:100%;text-align:left;cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .1s}
+.sug-c:hover{border-color:var(--brand-orange);box-shadow:0 0 0 3px rgba(200,115,76,.12)}
+.sug-c .go{color:var(--brand-orange);flex:none}
+.sug-c .go svg{width:20px;height:20px}
+.stats4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stats4 div{background:var(--surface-2);border-radius:12px;padding:9px 12px}
+.stats4 .l{font-size:12px;color:var(--ink-3);font-weight:600}
+.stats4 .v{font-size:19px;font-weight:750;font-variant-numeric:tabular-nums}
+.stats4 .c{font-size:11.5px;color:var(--ink-3)}
+.res{border-radius:16px;background:var(--blue-soft);padding:14px 16px;display:grid;gap:6px}
+.res-top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--ink-2)}
+.res-v{font-size:40px;font-weight:800;letter-spacing:-.03em;color:var(--blue-ink);line-height:1.05;font-variant-numeric:tabular-nums}
+.res-l{font-size:14.5px;color:var(--ink);line-height:1.35}
+.res-row{display:flex;gap:8px;align-items:baseline;font-size:14px;border-top:1px solid rgba(154,79,44,.18);padding-top:8px;margin-top:2px;flex-wrap:wrap}
+.res-row b{font-size:17px;font-variant-numeric:tabular-nums}
+.res-warn{font-size:13px;color:var(--amber-ink);font-weight:600}
+.ptabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.ptabs button{border:0;background:transparent;padding:9px 10px;font-weight:650;font-size:14px;color:var(--ink-3);border-bottom:2.5px solid transparent;margin-bottom:-1px}
+.ptabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--brand-orange)}
+.kvlist{margin:0;display:grid;grid-template-columns:1fr auto;gap:0}
+.kvlist dt,.kvlist dd{padding:9px 0;border-bottom:1px solid var(--line);margin:0}
+.kvlist dt{font-size:14px;color:var(--ink-2)}
+.kvlist dt span{display:block;font-size:12px;color:var(--ink-3)}
+.kvlist dd{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;white-space:nowrap;padding-left:12px}
+.cmp{padding:12px 14px}
+.cmp-sub{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--ink-3);margin-top:8px}
+.cmp-sub b{color:var(--ink);font-weight:650}
+.cmp-act{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px}
+.cmp-act .st{font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:5px}
+.cmp-act .st svg{width:14px;height:14px}
+.result{padding:13px 15px}
+.result .v{font-size:16px}
+.crit-note{font-size:13px;color:var(--ink-3);margin:-6px 0 0}
+@media (max-width:560px){ .map-tools{top:8px;right:8px} .tool{font-size:11.5px} .res-v{font-size:34px} }
+
 /* ---------- Modo apresentação ---------- */
 .pres-open{gap:7px}
 .pres-bar,.pres-nav{display:none}
@@ -611,6 +659,10 @@ body.presenting .legend{font-size:12.5px}
       </svg>
       <div class="map-flag" id="mapFlag"></div>
       <div class="map-hint" id="mapHint" hidden></div>
+      <div class="map-tools" id="mapTools" hidden>
+        <label class="tool" for="indSel">Colorir por <select id="indSel"></select></label>
+        <button class="tool btnlike" type="button" id="toggleEq" aria-pressed="false">Serviços existentes</button>
+      </div>
       <div class="map-toggle" id="baToggle" role="group" aria-label="Comparar antes e depois" hidden>
         <button type="button" data-view="antes" aria-pressed="false">Antes</button>
         <button type="button" data-view="depois" aria-pressed="true">Depois</button>
@@ -3505,33 +3557,37 @@ function updateMap() {
   $("#baToggle").hidden = !(state.step === 2 && state.point);
   $$("#baToggle button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === state.view)));
   const hint = $("#mapHint");
-  if (state.step === 1 && !state.region) { hint.hidden = false; hint.innerHTML = `${ICON.pointer}Toque em uma região para ver suas necessidades`; }
-  else if (state.step === 2 && !state.point) { hint.hidden = false; hint.innerHTML = `${ICON.pin}Toque no mapa para posicionar o novo serviço`; }
+  if (state.step === 1 && !state.region) { hint.hidden = false; hint.innerHTML = `${ICON.pointer}Toque em uma região`; }
+  else if (state.step === 2 && !state.point) { hint.hidden = false; hint.innerHTML = `${ICON.pin}Toque no mapa para posicionar`; }
   else hint.hidden = true;
   renderLegend(sim, sid);
   if (PRES.on) presDecorateMap();
 }
 function renderLegend(sim, sid) {
-  const m = state.model; let h = "";
+  let h = "";
   if (state.step === 1) {
     const k = state.indicator, I = INDICATORS[k], br = refs.breaks || [];
     const f = v => I.unidade === "%" ? fmtPct(v) : fmtInt(v);
     h = `<div class="lg-title">${esc(I.nome)} <span class="muted">(${esc(I.unidade)})</span></div>
       <div class="ramp">${RAMP.map(c => `<span style="background:${c}"></span>`).join("")}</div>
-      <div class="ramp-l"><span>até ${br.length ? f(br[0]) : "—"}</span><span>acima de ${br.length ? f(br[3]) : "—"}</span></div>
-      ${state.showEq ? `<ul><li><svg class="sw16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="var(--ink-3)"/></svg>Serviços existentes (cor por tipo)</li></ul>` : ""}
-      <ul><li><svg class="sw16" viewBox="0 0 16 16"><path d="M2 8h12" stroke="#8A6A50" stroke-width="1.5" stroke-dasharray="3 2"/></svg>Limite de região</li></ul>`;
+      <div class="ramp-l"><span>menor · ${br.length ? f(br[0]) : "—"}</span><span>${br.length ? f(br[3]) : "—"} · maior</span></div>`;
   } else if (sid) {
     const S = svc(sid);
-    h = `<div class="lg-title">${esc(S.nome)} · ${esc(S.publico_nome)}</div><ul>
-      <li><svg class="sw16" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" fill="var(--green)"/></svg>Já tem acesso (até ${fmtDist(S.raio)})</li>
-      <li><svg class="sw16" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" fill="var(--neutral-cell)"/></svg>Sem acesso hoje</li>
-      <li><svg class="sw16" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" fill="var(--blue)"/><circle cx="8" cy="8" r="2.2" fill="#fff"/></svg>Passaria a ter acesso</li>
-      <li><svg class="sw16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="${esc(S.cor)}"/></svg>${esc(S.nome)} existente</li>
-      <li><svg class="sw16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="var(--blue)" stroke="#fff" stroke-width="1.5"/></svg>Novo serviço (simulado)</li></ul>
-      <div class="muted" style="margin-top:6px;font-size:11px">Intensidade da cor = tamanho do público-alvo</div>`;
+    h = `<div class="lg-title">${esc(S.nome)} · até ${fmtDist(S.raio)}</div><ul>
+      <li><svg class="sw16" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" fill="var(--green)"/></svg>Já tem acesso</li>
+      <li><svg class="sw16" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" fill="var(--blue)"/><circle cx="8" cy="8" r="2.2" fill="#fff"/></svg>Passa a ter acesso</li>
+      <li><svg class="sw16" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" fill="var(--neutral-cell)"/></svg>Sem acesso</li></ul>`;
   }
   $("#legendBody").innerHTML = h;
+  // ferramentas do mapa (etapa 1)
+  const tools = $("#mapTools"); tools.hidden = state.step !== 1 || PRES.on;
+  if (!tools.hidden) {
+    const sel = $("#indSel");
+    const opts = Object.entries(INDICATORS).map(([k, I]) => `<option value="${k}" ${state.indicator === k ? "selected" : ""}>${esc(I.nome)}</option>`).join("");
+    if (sel.dataset.v !== opts) { sel.innerHTML = opts; sel.dataset.v = opts; }
+    sel.value = state.indicator;
+    $("#toggleEq").setAttribute("aria-pressed", String(state.showEq));
+  }
 }
 function tooltipHTML(kind, id) {
   const m = state.model;
@@ -3558,7 +3614,7 @@ function renderHeader() {
 }
 function renderMapChrome() {
   const m = state.model;
-  $("#mapFlag").innerHTML = state.mode === "demo" ? `${ICON.warn}<span>Londrina (contorno aproximado) · dados simulados</span>`
+  $("#mapFlag").innerHTML = state.mode === "demo" ? `${ICON.warn}<span>Dados simulados</span>`
     : `${ICON.info}<span>${m.sys === "geografico_wgs84" ? "Posições relativas das coordenadas importadas · sem mapa de fundo" : "Representação esquemática das coordenadas importadas"}</span>`;
   $("#mapNote").innerHTML = `<span class="i">${ICON.info}<span><b>Acesso estimado por distância em linha reta</b> até o equipamento (raio por serviço). Não representa percurso real de caminhada.</span></span><span>${m.sys === "geografico_wgs84" ? "Distância de Haversine." : "Distância euclidiana em metros."} População de cada setor representada por seu centroide.</span><span class="hide-sm">Atalhos: <code>1</code> <code>2</code> <code>3</code></span>`;
 }
@@ -3592,11 +3648,11 @@ function compareTxt(v, ref) {
   return "próximo da média";
 }
 function sugCard(sg, showRegion) {
-  const S = sg.S;
-  return `<div class="sug-c">${badge(S, true)}<div class="body">
-    <div class="t">${esc(S.nome)}${showRegion ? ` · ${esc(sg.region.nome)}` : ""}${sg.level === "alta" ? '<span class="level alta">Alta</span>' : ""}</div>
-    <div class="r">${fmtPct(sg.pctU)} sem acesso · ≈ ${fmtInt(sg.unc)} ${esc(S.publico_nome)}</div></div>
-    ${sg.best && sg.best.newT > 0 ? `<button class="btn small accent" type="button" data-sim-sug="${esc(sg.sid)}|${esc(sg.rid)}" aria-label="Simular ${esc(S.nome)} na ${esc(sg.region.nome)}">Simular</button>` : ""}</div>`;
+  const S = sg.S, can = sg.best && sg.best.newT > 0;
+  return `<button type="button" class="sug-c" ${can ? `data-sim-sug="${esc(sg.sid)}|${esc(sg.rid)}"` : "disabled"} aria-label="Simular ${esc(S.nome)} na ${esc(sg.region.nome)}">${badge(S, true)}<span class="body">
+    <span class="t" style="display:block">${esc(S.nome)}${showRegion ? ` · ${esc(sg.region.nome)}` : ""}${sg.level === "alta" ? '<span class="level alta">Alta</span>' : ""}</span>
+    <span class="r" style="display:block">${fmtPct(sg.pctU)} sem acesso · ≈ ${fmtInt(sg.unc)} ${esc(S.publico_nome)}</span></span>
+    ${can ? `<span class="go" aria-hidden="true">${ICON.arrow}</span>` : ""}</button>`;
 }
 
 /* --- ETAPA 1 · TERRITÓRIO --- */
@@ -3605,21 +3661,14 @@ function indicatorChips() {
     <button class="switch" type="button" role="switch" aria-checked="${state.showEq}" id="toggleEq"><span class="tr" aria-hidden="true"></span>Mostrar serviços existentes</button>`;
 }
 function viewTerritory() {
-  const m = state.model, T = m.terr, sugs = computeSuggestions();
+  const sugs = computeSuggestions();
   return `
-    <div><div class="eyebrow">1 · Território</div>
-      <h1 style="margin-top:6px">Onde estão as maiores necessidades?</h1>
-      <p class="lead">Escolha um indicador e toque em uma região do mapa.</p></div>
-    <div class="stack">${indicatorChips()}</div>
-    <div class="stats">
-      <div class="stat"><div class="l">População</div><div class="v">≈ ${numSpan("t-pop", T.pop, "int")}</div></div>
-      <div class="stat"><div class="l">Pobreza</div><div class="v">${fmtPct(T.pobreza)}</div></div>
-      <div class="stat"><div class="l">Serviços</div><div class="v">${fmtInt(m.eqs.length)}</div></div>
-    </div>
+    <div><h1>Onde estão as maiores necessidades?</h1>
+      <p class="lead">Toque em uma região do mapa ou comece por uma sugestão.</p></div>
     <div class="stack"><h3>Principais necessidades</h3>
       ${sugs.length ? topDistinct(sugs, 3).map(s => sugCard(s, true)).join("") : `<div class="callout">${ICON.info}<div>Nenhuma necessidade atende às regras de sugestão com os dados atuais.</div></div>`}
     </div>
-    ${rulesNote()}`;
+    <p class="small muted" style="margin:0">Clique em uma sugestão para simular o serviço no melhor local da região. <button class="linkbtn" type="button" data-open-method>Como calculamos</button></p>`;
 }
 function topDistinct(sugs, n) {
   const seen = new Set(), out = [];
@@ -3643,20 +3692,22 @@ function viewRegion() {
     return { S, A, p: st && st.target > 0 ? safePct(st.covered, st.target) : NaN };
   }).sort((x, y) => (Number.isFinite(x.p) ? x.p : 999) - (Number.isFinite(y.p) ? y.p : 999)).map(({ S, A, p }) =>
     `<div class="acc-row">${badge(S, true)}<div><div class="nm">${esc(S.nome)}</div><div class="bar"><span class="g" style="width:${Number.isFinite(p) ? p : 0}%"></span></div></div><div class="v">${A.insufficient ? "s/ dados" : fmtPct(p)}</div></div>`).join("");
-  const bairros = Array.isArray(r.bairros_referencia) && r.bairros_referencia.length ? `<div class="bairros">Bairros de referência: ${esc(r.bairros_referencia.join(", "))}</div>` : "";
+  const cmpW = (v, ref) => { if (!Number.isFinite(v) || !Number.isFinite(ref) || !ref) return ""; const q = v / ref; return q >= 1.15 ? "acima da média" : q <= 0.85 ? "abaixo da média" : "na média"; };
+  const kid = (r.criancas || 0) + (r.criancas614 || 0), kidT = (T.criancas || 0) + (T.criancas614 || 0);
+  const bairros = Array.isArray(r.bairros_referencia) && r.bairros_referencia.length ? `<div class="bairros">${esc(r.bairros_referencia.join(" · "))}</div>` : "";
   return `
-    <button class="btn small ghost back" type="button" data-region-clear>${ICON.back} Todas as regiões</button>
-    <div><h1>${esc(r.nome)}</h1><p class="lead">≈ ${fmtInt(r.pop)} moradores · ${fmtInt(r.dens)} hab/km²</p>${bairros}</div>
-    <div class="kpis">
-      <div class="kpi"><div class="label">Pobreza</div><div class="value">${fmtPct(r.pobreza)}</div><div class="sub">${compareTxt(r.pobreza, T.pobreza)}</div></div>
-      <div class="kpi"><div class="label">Densidade</div><div class="value">${fmtInt(r.dens)}</div><div class="sub">${compareTxt(r.dens, T.dens)}</div></div>
-      <div class="kpi"><div class="label">Crianças 0–14</div><div class="value">${fmtPct((r.criancas || 0) + (r.criancas614 || 0))}</div><div class="sub">${compareTxt((r.criancas || 0) + (r.criancas614 || 0), (T.criancas || 0) + (T.criancas614 || 0))}</div></div>
-      <div class="kpi"><div class="label">Idosos 60+</div><div class="value">${fmtPct(r.idosos)}</div><div class="sub">${compareTxt(r.idosos, T.idosos)}</div></div>
+    <button class="btn small ghost back" type="button" data-region-clear>${ICON.back} Voltar</button>
+    <div><h1>${esc(r.nome)}</h1><p class="lead" style="margin-bottom:2px">≈ ${fmtInt(r.pop)} moradores · ${fmtInt(r.dens)} hab/km²</p>${bairros}</div>
+    <div class="stats4">
+      <div><div class="l">Pobreza</div><div class="v">${fmtPct(r.pobreza)}</div><div class="c">${cmpW(r.pobreza, T.pobreza)}</div></div>
+      <div><div class="l">Densidade</div><div class="v">${fmtInt(r.dens)}</div><div class="c">${cmpW(r.dens, T.dens)}</div></div>
+      <div><div class="l">Crianças 0–14</div><div class="v">${fmtPct(kid)}</div><div class="c">${cmpW(kid, kidT)}</div></div>
+      <div><div class="l">Idosos 60+</div><div class="v">${fmtPct(r.idosos)}</div><div class="c">${cmpW(r.idosos, T.idosos)}</div></div>
     </div>
     <div class="stack"><h3>O que esta região mais precisa</h3>
       ${sugs.length ? sugs.slice(0, 3).map(s => sugCard(s, false)).join("") : `<div class="callout green">${ICON.check}<div>Nenhum serviço atende às regras de sugestão nesta região.</div></div>`}</div>
     <details class="more"><summary>Acesso atual a cada serviço</summary><div class="body">${accRows}</div></details>
-    <button class="btn block" type="button" data-sim-region="${esc(r.id)}">${ICON.pin} Simular um serviço nesta região</button>`;
+    <button class="linkbtn" type="button" data-sim-region="${esc(r.id)}">${ICON.pin} Simular outro serviço nesta região</button>`;
 }
 
 /* --- ETAPA 2 · SIMULAR --- */
@@ -3667,14 +3718,14 @@ function viewSimulate() {
   let body;
   if (A.insufficient) body = `<div class="callout amber">${ICON.warn}<div><b>Dados insuficientes</b> para estimar ${esc(S.publico_nome)}.</div></div>`;
   else if (!state.point) body = `
-    <div class="callout blue">${ICON.pin}<div><b>Toque no mapa</b> para posicionar ${esc(S.artigo || "o")} ${esc(lc(S.nome))}, ou use o melhor local calculado:</div></div>
-    <div class="two"><div class="field"><label for="bestReg">Região</label><select id="bestReg"><option value="">Toda a cidade</option>${regOpts}</select></div>
-      <div class="field"><label>&nbsp;</label><button class="btn accent" type="button" id="useBest">${ICON.spark} Melhor local</button></div></div>`;
+    <div class="callout blue">${ICON.pin}<div><b>Toque no mapa</b> para posicionar ${esc(S.artigo || "o")} ${esc(lc(S.nome))}, ou deixe a Revano escolher:</div></div>
+    <div class="row"><select id="bestReg" aria-label="Região" style="flex:1;border:1px solid var(--line-2);border-radius:10px;padding:9px 10px;background:var(--surface)"><option value="">Toda a cidade</option>${regOpts}</select>
+      <button class="btn accent" type="button" id="useBest">${ICON.spark} Melhor local</button></div>`;
   else body = simResults(simulate(sid, state.point));
   return `
-    <div><div class="eyebrow">2 · Simular</div><h2 style="margin-top:6px">E se a Prefeitura criasse…</h2></div>
+    <div><h2>Qual serviço simular?</h2></div>
     <div class="svc-icons" role="group" aria-label="Serviço">${tiles}</div>
-    <div class="svc-sum"><span><b>${esc(S.nome)}</b> · ${esc(S.publico_nome)} · raio ${fmtDist(S.raio)}</span><span>Hoje com acesso: <b>${A.insufficient ? "—" : fmtPct(A.pct)}</b></span></div>
+    <p class="small muted" style="margin:-4px 0 0">${esc(S.nome)} · ${esc(S.publico_nome)} · raio ${fmtDist(S.raio)} · hoje ${A.insufficient ? "—" : fmtPct(A.pct)} têm acesso</p>
     ${body}
     ${premisesBox(S)}`;
 }
@@ -3699,29 +3750,37 @@ function effTiles(sim) {
 }
 function simResults(sim) {
   const m = state.model, S = sim.S, reg = m.regions.find(r => r.id === sim.host);
+  const tab = state.simTab || "efetividade";
+  const il = state.premises[S.id] && state.premises[S.id].custo !== undefined ? "" : " (ilustrativo)";
   const maxR = Math.max(1, ...sim.byRegion.map(x => x[1]));
-  const regBars = sim.byRegion.length ? sim.byRegion.map(([rid, v]) => { const r = m.regions.find(x => x.id === rid); return `<div class="acc-row" style="grid-template-columns:1fr 70px"><div><div class="nm">${esc(r ? r.nome : rid)}</div><div class="bar"><span class="b" style="width:${v / maxR * 100}%"></span></div></div><div class="v">+≈ ${fmtInt(v)}</div></div>`; }).join("")
-    : `<p class="small muted" style="margin:0">Ninguém do público-alvo sem acesso está dentro do raio.</p>`;
+  let panel = "";
+  if (tab === "efetividade") panel = `<dl class="kvlist">
+      <dt>Acesso em toda a cidade<span>${esc(S.publico_nome)}</span></dt><dd>${fmtPct(sim.pctBefore)} → ${fmtPct(sim.pctAfter)}</dd>
+      <dt>Distância média<span>para quem passa a ter acesso</span></dt><dd>${sim.noPrev ? "—" : fmtDist(sim.distBefore)} → ${fmtDist(sim.distAfter)}</dd>
+      <dt>Focalização<span>beneficiados em áreas mais pobres que a média</span></dt><dd>${fmtPct(sim.focalPct)}</dd>
+      <dt>Redução da carência na região<span>do público sem acesso na ${esc(reg ? reg.nome : "região")}</span></dt><dd>${fmtPct(sim.propReduction)}</dd>
+      ${sim.cap != null ? `<dt>Demanda ÷ capacidade<span>${fmtInt(sim.cap)} ${esc(S.capacidade_unidade || "")} de referência</span></dt><dd>${fmtPct(sim.ocupacao)}</dd>` : ""}
+      <dt>Custo por pessoa${il}<span>implantação ÷ novo acesso</span></dt><dd>${Number.isFinite(sim.custoPessoa) ? "R$ " + fmtInt(sim.custoPessoa) : "—"}</dd>
+    </dl>${sim.alreadyT >= 1 ? `<p class="small muted" style="margin:0">≈ ${fmtInt(sim.alreadyT)} pessoas no raio já tinham acesso e não foram contadas de novo.</p>` : ""}`;
+  else if (tab === "impactos") panel = `<ul class="impacts">${impactsFor(sim).map((x, i) => `<li><span class="b">${i + 1}</span><span>${esc(x)}</span></li>`).join("")}</ul>
+      <p class="small muted" style="margin:0">Efeitos sociais são hipóteses a confirmar com monitoramento.</p>`;
+  else panel = `<ul class="checks">${S.verificar.map(v => `<li>${STATUS_ICON.nao_informado.replace("<svg", '<svg style="width:15px;height:15px;color:var(--ink-3)"')}${esc(v)}</li>`).join("")}</ul>
+      <h3 style="margin-top:4px">Beneficiados por região</h3>
+      ${sim.byRegion.length ? sim.byRegion.map(([rid, v]) => { const r = m.regions.find(x => x.id === rid); return `<div class="acc-row" style="grid-template-columns:1fr 70px"><div><div class="nm">${esc(r ? r.nome : rid)}</div><div class="bar"><span class="b" style="width:${v / maxR * 100}%"></span></div></div><div class="v">+≈ ${fmtInt(v)}</div></div>`; }).join("") : `<p class="small muted" style="margin:0">Ninguém do público-alvo sem acesso está no raio.</p>`}`;
+  const warn = sim.cap != null && sim.newT > sim.cap * 1.05 ? `<div class="res-warn">Demanda próxima ≈ ${nf1.format(sim.newT / sim.cap)}× a capacidade de referência (${fmtInt(sim.cap)} ${esc(S.capacidade_unidade || "")}).</div>` : "";
   return `
-    <div class="row between wrap"><span class="small muted">Local: <b>${esc(reg ? reg.nome : "—")}</b> · toque no mapa para mover</span><button class="linkbtn" type="button" id="clearPoint">Limpar</button></div>
-    <div class="headline" role="status">${headline(sim)}</div>
-    <div class="ba">
-      <div><div class="tag">Hoje</div><div class="big">${numSpan("s-b", sim.pctBefore, "pct")}</div></div>
-      <div class="arrow">${ICON.arrow}</div>
-      <div class="after"><div class="tag">Com o serviço</div><div class="big">${numSpan("s-a", sim.pctAfter, "pct")}</div></div>
-      <div class="full"><div class="bar" role="img" aria-label="Acesso de ${fmtPct(sim.pctBefore)} para ${fmtPct(sim.pctAfter)}"><span class="g" style="width:${sim.pctBefore || 0}%"></span><span class="b" style="width:${sim.gainPP || 0}%"></span></div>
-      <div class="bar-legend"><span>${esc(S.publico_nome)} com acesso na cidade</span><span>${fmtPP(sim.gainPP)}</span></div></div>
+    <div class="res" role="status">
+      <div class="res-top"><span>Local: <b>${esc(reg ? reg.nome : "—")}</b> · toque no mapa para mover</span><button class="linkbtn" type="button" id="clearPoint">Remover</button></div>
+      <div class="res-v">${sim.newT < 0.5 ? "0" : "+ " + numSpan("s-n", sim.newT, "int")}</div>
+      <div class="res-l">${sim.newT < 0.5 ? "Neste ponto ninguém do público-alvo sem acesso seria alcançado. Experimente outro local." : `${esc(S.publico_nome)} passam a ter ${esc(lc(S.nome))} a até ${fmtDist(S.raio)}`}</div>
+      <div class="res-row"><span>Com acesso na ${esc(reg ? reg.nome : "região")}:</span><b>${fmtPct(sim.hostBefore)} → ${fmtPct(sim.hostAfter)}</b></div>
+      ${warn}
     </div>
-    ${effTiles(sim)}
-    <div class="stack"><h3>Possíveis impactos</h3>
-      <ul class="impacts">${impactsFor(sim).map((x, i) => `<li><span class="b">${i + 1}</span><span>${esc(x)}</span></li>`).join("")}</ul>
-      <p class="small muted" style="margin:0">Efeitos sociais são hipóteses a confirmar com monitoramento.</p></div>
-    <details class="more"><summary>Mais detalhes</summary><div class="body">
-      <h3>Beneficiados por região</h3>${regBars}
-      ${sim.alreadyT >= 1 ? `<p class="small muted" style="margin:0">≈ ${fmtInt(sim.alreadyT)} pessoas no raio já tinham acesso e não foram contadas de novo.</p>` : ""}
-      <h3 style="margin-top:6px">Antes de decidir, verificar</h3><ul class="checks">${S.verificar.map(v => `<li>${STATUS_ICON.nao_informado.replace("<svg", '<svg style="width:15px;height:15px;color:var(--ink-3)"')}${esc(v)}</li>`).join("")}</ul>
-    </div></details>
-    <button class="btn primary block" type="button" id="addScn">${ICON.plus} Adicionar à comparação</button>`;
+    <button class="btn primary block" type="button" id="addScn">${ICON.plus} Adicionar à comparação</button>
+    <div class="ptabs" role="tablist" aria-label="Detalhes do resultado">
+      ${[["efetividade", "Efetividade"], ["impactos", "Impactos"], ["verificar", "Verificar"]].map(([k, l]) => `<button type="button" role="tab" data-stab="${k}" aria-selected="${tab === k}">${l}</button>`).join("")}
+    </div>
+    <div role="tabpanel" class="stack">${panel}</div>`;
 }
 function premisesBox(S) {
   return `<details class="more"${state._premOpen ? " open" : ""} id="premBox"><summary>Ajustar premissas</summary><div class="body">
@@ -3737,53 +3796,51 @@ function premisesBox(S) {
 /* --- ETAPA 3 · COMPARAR --- */
 function viewCompare() {
   const m = state.model, sugs = computeSuggestions();
-  const crit = state.criterion;
-  const asc = crit === "custo";
-  const items = state.scenarios.map(s => { const sim = simulate(s.sid, s.pt); const v = crit === "publico" ? sim.newT : crit === "custo" ? sim.custoPessoa : sim.propReduction; return { s, sim, v, ok: Number.isFinite(v) }; });
+  const crit = state.criterion, asc = crit === "custo";
+  const val = (sim, c) => c === "publico" ? sim.newT : c === "custo" ? sim.custoPessoa : sim.propReduction;
+  const fmtV = (c, v) => !Number.isFinite(v) ? "—" : c === "publico" ? "+≈ " + fmtInt(v) : c === "custo" ? "R$ " + fmtInt(v) : fmtPct(v);
+  const LBL = { publico: "Novo acesso", proporcional: "Redução da carência", custo: "Custo por pessoa" };
+  const NOTE = { publico: "Pessoas do público-alvo que passam a ter o serviço no raio, sem recontar quem já tinha.", proporcional: "Parte do público sem acesso da região que seria alcançada.", custo: "Custo de implantação ilustrativo ÷ pessoas com novo acesso. Menor é melhor." };
+  const items = state.scenarios.map(s => { const sim = simulate(s.sid, s.pt); const v = val(sim, crit); return { s, sim, v, ok: Number.isFinite(v) }; });
   items.sort((a, b) => (b.ok - a.ok) || (a.ok && b.ok ? (asc ? a.v - b.v : b.v - a.v) : 0));
   const valid = items.filter(i => i.ok), top = valid.length ? valid[0].v : NaN;
   const leaders = valid.filter(i => Math.abs(i.v - top) < 1e-9);
   const maxV = Math.max(1e-9, ...valid.map(i => i.v));
   const publicos = new Set(state.scenarios.map(s => svc(s.sid).publico_nome));
+  const others = Object.keys(LBL).filter(k => k !== crit);
   const cards = items.map((it, idx) => {
     const { s, sim } = it, S = sim.S, reg = m.regions.find(r => r.id === sim.host);
     const st = checkStatus(s), isL = leaders.includes(it) && valid.length > 1;
+    const pend = st.ni + st.pe;
     return `<div class="cmp ${s.id === state.activeScenario ? "active" : ""}" role="button" tabindex="0" data-scn="${esc(s.id)}" aria-pressed="${s.id === state.activeScenario}">
       <div class="cmp-head"><span class="cmp-rank">${it.ok ? idx + 1 + "º" : "—"}</span>${badge(S, true)}
-        <span class="cmp-name">${esc(S.nome)} ${isL ? `<span class="leader-badge">${crit === "publico" ? "Maior alcance" : crit === "custo" ? "Menor custo/pessoa" : "Maior redução"}</span>` : ""}<span>${esc(reg ? reg.nome : "—")} · cenário ${state.scenarios.indexOf(s) + 1}</span></span>
-        <span class="cmp-val">${it.ok ? (crit === "publico" ? "+≈ " + fmtInt(it.v) : crit === "custo" ? "R$ " + fmtInt(it.v) : fmtPct(it.v)) : "Dados insuficientes"}<span>${crit === "publico" ? esc(S.publico_nome) : crit === "custo" ? "por pessoa (ilustrativo)" : "da carência regional"}</span></span></div>
+        <span class="cmp-name">${esc(S.nome)}${isL ? ` <span class="leader-badge">Lidera</span>` : ""}<span>${esc(reg ? reg.nome : "—")}</span></span>
+        <span class="cmp-val">${it.ok ? fmtV(crit, it.v) : "Dados insuficientes"}<span>${crit === "publico" ? esc(S.publico_nome) : crit === "custo" ? "por pessoa" : "da carência local"}</span></span></div>
       <div class="cmp-bar" aria-hidden="true"><span style="width:${it.ok ? (asc ? (valid[0].v / it.v) : (it.v / maxV)) * 100 : 0}%"></span></div>
-      <div class="cmp-grid">
-        <div>Novo acesso<b>+≈ ${fmtInt(sim.newT)}</b></div>
-        <div>Na região<b>${fmtPct(sim.hostBefore)} → ${fmtPct(sim.hostAfter)}</b></div>
-        <div>Custo/pessoa<b>${Number.isFinite(sim.custoPessoa) ? "R$ " + fmtInt(sim.custoPessoa) : "—"}</b></div>
-      </div>
-      <div class="cmp-foot"><div class="pills">${pill(st.tone, st.label)}</div>
-        <div class="row"><button class="btn small" type="button" data-scn-open="${esc(s.id)}">${ICON.doc} Detalhes</button><button class="btn small ghost" type="button" data-scn-del="${esc(s.id)}" aria-label="Remover cenário">${ICON.trash}</button></div></div>
+      <div class="cmp-sub">${others.map(k => `<span>${LBL[k]}: <b>${fmtV(k, val(sim, k))}</b></span>`).join("")}</div>
+      <div class="cmp-act"><span class="st">${STATUS_ICON[pend ? (st.ni ? "nao_informado" : "pendente") : "verificado"]}${pend ? `${pend} verificação(ões) pendente(s)` : "Verificações registradas"}</span>
+        <span class="row" style="gap:4px"><button class="btn small ghost" type="button" data-scn-open="${esc(s.id)}">Detalhes</button><button class="btn small ghost" type="button" data-scn-del="${esc(s.id)}" aria-label="Remover cenário">${ICON.trash}</button></span></div>
     </div>`;
   }).join("");
   let result = "";
   if (state.scenarios.length >= 2) {
-    const names = leaders.map(i => `${svc(i.s.sid).nome} (${(m.regions.find(r => r.id === i.sim.host) || {}).nome || "—"})`).join(" e ");
-    result = !valid.length ? `<div class="result"><div class="k">Resultado</div><div class="v">Dados insuficientes para este critério.</div></div>` : `
-      <div class="result" role="status"><div class="k">Resultado preliminar</div>
-        <div class="v">${crit === "publico" ? "Maior alcance estimado neste cenário" : crit === "custo" ? "Menor custo de referência por pessoa com novo acesso" : "Maior redução proporcional da carência"}: ${esc(names)}.</div>
-        <p>${crit === "publico" ? "Apresenta a maior estimativa de pessoas do público-alvo com novo acesso, segundo os dados e premissas disponíveis." : crit === "custo" ? "Calculado com custos de referência ilustrativos e editáveis — não substitui orçamento nem análise de custeio." : "Reduz a maior fração do público-alvo sem acesso em sua região, segundo os dados e premissas disponíveis."}</p>
-        <div class="caveat">${ICON.warn}<span>Comparação preliminar — não constitui recomendação técnica aprovada. Maior alcance estimado não significa viabilidade confirmada.</span></div></div>
-      ${publicos.size > 1 && crit === "publico" ? `<div class="callout amber">${ICON.info}<div><b>Públicos diferentes.</b> Os cenários atendem grupos distintos (${esc([...publicos].join(", "))}). Números absolutos não são diretamente equivalentes — use também a redução proporcional e o contexto de cada região.</div></div>` : ""}`;
+    const names = leaders.map(i => `${svc(i.s.sid).nome} · ${(m.regions.find(r => r.id === i.sim.host) || {}).nome || "—"}`).join(" e ");
+    result = !valid.length ? `<div class="result"><div class="v">Dados insuficientes para este critério.</div></div>` : `
+      <div class="result" role="status"><div class="k">Resultado preliminar · ${LBL[crit]}</div>
+        <div class="v">${leaders.length > 1 ? "Empate: " : "Lidera: "}${esc(names)}</div>
+        <div class="caveat">${ICON.warn}<span>Comparação preliminar, não é recomendação aprovada. Confira as verificações antes de decidir.</span></div></div>
+      ${publicos.size > 1 && crit === "publico" ? `<p class="small muted" style="margin:0"><b>Públicos diferentes:</b> números absolutos não são diretamente equivalentes. Compare também pela redução da carência.</p>` : ""}`;
   }
   return `
-    <div><div class="eyebrow">3 · Comparar</div><h2 style="margin-top:6px">Comparar cenários</h2>
-      <p class="lead">Escolha um critério para ordenar os cenários.</p></div>
+    <div><h2>Comparar cenários</h2></div>
     ${state.scenarios.length ? `
-      <div class="seg" role="group" aria-label="Critério" style="grid-template-columns:repeat(3,1fr)"><button type="button" data-crit="publico" aria-pressed="${crit === "publico"}">Novo acesso</button><button type="button" data-crit="proporcional" aria-pressed="${crit === "proporcional"}">Redução da carência</button><button type="button" data-crit="custo" aria-pressed="${crit === "custo"}">Custo por pessoa</button></div>
-      <div class="def">${crit === "publico" ? "<b>Novo acesso:</b> público-alvo do serviço que hoje está fora do raio e passaria a estar dentro. Quem já tinha acesso não é recontado." : crit === "custo" ? "<b>Custo por pessoa:</b> custo de implantação de referência ÷ pessoas com novo acesso. Menor é melhor. Valores ilustrativos e editáveis." : "<b>Redução da carência:</b> público-alvo com novo acesso na região do local ÷ público-alvo sem acesso nessa região antes. Mostra quanto do problema local seria resolvido."}</div>
+      <div class="seg" role="group" aria-label="Critério" style="grid-template-columns:repeat(3,1fr)">${Object.entries(LBL).map(([k, l]) => `<button type="button" data-crit="${k}" aria-pressed="${crit === k}">${l}</button>`).join("")}</div>
+      <p class="crit-note">${NOTE[crit]}</p>
       <div class="cmp-list">${cards}</div>${result}
-      ${state.scenarios.length === 1 ? `<div class="callout">${ICON.info}<div>Adicione outro cenário para comparar.</div></div>` : ""}`
-    : `<div class="empty">${ICON.plus.replace('aria-hidden', 'style="width:28px;height:28px" aria-hidden')}<div><b>Nenhum cenário ainda</b><br><span class="small muted">Simule serviços na etapa 2 ou comece pelas sugestões calculadas.</span></div>
-        <div class="row wrap" style="justify-content:center">${sugs.length ? `<button class="btn accent" type="button" id="addTopSugs">${ICON.spark} Adicionar as ${Math.min(3, sugs.length)} principais sugestões</button>` : ""}<button class="btn" type="button" data-go="2">Ir para simulação</button></div></div>`}
-    <button class="btn primary block" type="button" id="genReport" ${state.scenarios.length ? "" : "disabled"}>${ICON.doc} Gerar justificativa</button>
-    <p class="closing">A Revano não decide pela Prefeitura. Ela mostra quem pode ser beneficiado, quais alternativas merecem atenção e o que ainda precisa ser verificado.</p>`;
+      ${state.scenarios.length === 1 ? `<p class="small muted" style="margin:0">Adicione outro cenário na etapa 2 para comparar.</p>` : ""}
+      <button class="btn primary block" type="button" id="genReport">${ICON.doc} Gerar justificativa</button>`
+    : `<div class="empty">${ICON.plus.replace('aria-hidden', 'style="width:28px;height:28px" aria-hidden')}<div><b>Nenhum cenário ainda</b><br><span class="small muted">Simule um serviço ou comece pelas sugestões.</span></div>
+        <div class="row wrap" style="justify-content:center">${sugs.length ? `<button class="btn accent" type="button" id="addTopSugs">${ICON.spark} Usar as ${Math.min(3, sugs.length)} principais sugestões</button>` : ""}<button class="btn" type="button" data-go="2">Ir para simulação</button></div></div>`}`;
 }
 function pill(status, text) { return `<span class="pill ${status}">${STATUS_ICON[status]}${esc(text)}</span>`; }
 function checkStatus(s) {
@@ -3832,7 +3889,7 @@ function startSim(sid, rid) {
   const b = bestSite(sid, rid || null);
   state.point = b ? makePoint(b.area.px, b.area.py) : null;
   goStep(2);
-  if (b) toast("Local calculado posicionado. Toque no mapa para testar outro ponto.");
+
 }
 function svgPoint(e) {
   const svg = $("#map"), pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
@@ -3914,6 +3971,8 @@ function bindEvents() {
   $("#restoreDemo").addEventListener("click", () => { loadDataset(validateDataset(DEMO_DATA).data, "demo", null); showImportResult("ok", "Dados de demonstração restaurados.", []); renderSources(); });
   $("#printReport").addEventListener("click", printReport);
   $("#openHelp").addEventListener("click", () => openDialog($("#welcomeDialog")));
+  $("#toggleEq").addEventListener("click", () => { state.showEq = !state.showEq; updateMap(); });
+  $("#indSel").addEventListener("change", e => { state.indicator = e.target.value; updateMap(); if (state.region) renderPanel(); });
   bindPresentation();
   $("#welcomeStart").addEventListener("click", () => {
     closeDialog($("#welcomeDialog"));
@@ -3938,7 +3997,7 @@ function bindPanel(host) {
   on("[data-svc]", "click", e => { const sid = e.currentTarget.dataset.svc; if (sid === state.service) return; state.service = sid; if (state.point) state.point = makePoint(state.point.px, state.point.py); renderPanel(); updateMap(); });
   on("#useBest", "click", () => { const rid = $("#bestReg", host).value || null; const b = bestSite(state.service, rid); if (!b || b.newT <= 0) { toast("Nenhum local nessa região ampliaria o acesso com as premissas atuais."); return; } state.point = makePoint(b.area.px, b.area.py); state.view = "depois"; renderPanel(); updateMap(); });
   on("#clearPoint", "click", () => { state.point = null; renderPanel(); updateMap(); });
-  on("#addScn", "click", () => { const added = addScenario(state.service, state.point); toast(added ? `Cenário adicionado (${state.scenarios.length} na comparação).` : "Este cenário já está na comparação."); renderPanel(); });
+  on("#addScn", "click", () => { const added = addScenario(state.service, state.point); toast(added ? `Adicionado à comparação (${state.scenarios.length}). Veja na etapa 3.` : "Este cenário já está na comparação."); renderPanel(); });
   on("#premBox", "toggle", e => { state._premOpen = e.currentTarget.open; });
   const premChange = () => {
     const r = parseFloat($("#premRaio", host).value), cRaw = $("#premCap", host).value.trim(), c = cRaw === "" ? null : parseFloat(cRaw);
@@ -3950,7 +4009,8 @@ function bindPanel(host) {
   };
   on("#premRaio", "change", premChange); on("#premCap", "change", premChange); on("#premCusto", "change", premChange);
   on("[data-cat]", "click", e => { state.svcCat = e.currentTarget.dataset.cat; renderPanel(); });
-  on("#toggleEq", "click", () => { state.showEq = !state.showEq; renderPanel(); updateMap(); });
+  on("[data-stab]", "click", e => { state.simTab = e.currentTarget.dataset.stab; renderPanel(); const b = $(`[data-stab="${state.simTab}"]`); if (b) b.focus(); });
+  on("[data-open-method]", "click", () => openDataDialog("fontes"));
   on("#premReset", "click", () => { delete state.premises[state.service]; invalidate(); renderPanel(); updateMap(); });
   on("[data-crit]", "click", e => { state.criterion = e.currentTarget.dataset.crit; renderPanel(); });
   on("[data-scn]", "click", e => { if (e.target.closest("button")) return; state.activeScenario = e.currentTarget.dataset.scn; renderPanel(); updateMap(); });
@@ -3996,6 +4056,8 @@ function renderSources() {
     ${noSrc ? `<div class="callout amber">${ICON.warn}<div>${noSrc} item(ns) sem fonte registrada.</div></div>` : ""}
     <h3>Premissas por serviço</h3>
     <table class="table"><thead><tr><th>Serviço</th><th>Público-alvo</th><th class="r">Raio</th><th class="r">Capacidade</th><th class="r">Custo ref.</th></tr></thead><tbody>${m.services.map(s0 => { const s = svc(s0.id); return `<tr><td>${esc(s.nome)}</td><td>${esc(s.publico_nome)}</td><td class="r">${fmtDist(s.raio)}</td><td class="r">${isNum(s.cap) ? fmtInt(s.cap) : "—"}</td><td class="r">${isNum(s.custo) ? "R$ " + fmtInt(s.custo) : "—"}</td></tr>`; }).join("")}</tbody></table>
+    <h3>Como as sugestões são geradas</h3>
+    <p class="small" style="margin:0">Um serviço é sugerido para uma região quando pelo menos ${m.rules.min_pct_sem_acesso}% do público-alvo está fora do raio de acesso e isso soma ≈ ${fmtInt(m.rules.min_pessoas_sem_acesso)} pessoas ou mais. “Alta”: ${m.rules.pct_necessidade_alta}% ou mais sem acesso. O melhor local é o setor da região que alcança mais pessoas sem acesso. Não há pontuação oculta; sugestões são pontos de partida para análise técnica.</p>
     <h3>Método</h3>
     <p class="small" style="margin:0">${esc(d.parametros.fonte_metodologica || "Acesso por distância em linha reta entre centroides e equipamentos.")} Distância ${m.sys === "geografico_wgs84" ? "de Haversine (lat/lon)" : "euclidiana (metros)"}. Público-alvo = população do setor × percentual do indicador correspondente.</p>
     <h3>Limitações</h3><ul class="msg-list" style="margin-top:0">${limitations().filter(Boolean).map(l => `<li>${esc(l)}</li>`).join("")}</ul>
@@ -4239,7 +4301,7 @@ function presGo(n) {
   $("#panel").scrollTop = 0;
 }
 function renderPresNav() {
-  $("#presSteps").innerHTML = PRES_STAGES.map((s, i) => `<li><button type="button" data-pstage="${i + 1}" ${PRES.stage === i + 1 ? 'aria-current="step"' : ""} class="${i + 1 < PRES.stage ? "done" : ""}" aria-label="Etapa ${i + 1}: ${esc(s.t)} (${s.tm})"><span class="tm">${i + 1} · ${s.tm}</span><span class="lb">${esc(s.t)}</span></button></li>`).join("");
+  $("#presSteps").innerHTML = PRES_STAGES.map((s, i) => `<li><button type="button" data-pstage="${i + 1}" ${PRES.stage === i + 1 ? 'aria-current="step"' : ""} class="${i + 1 < PRES.stage ? "done" : ""}" aria-label="Etapa ${i + 1}: ${esc(s.t)}"><span class="tm">Etapa ${i + 1}</span><span class="lb">${esc(s.t)}</span></button></li>`).join("");
   $("#presPrev").disabled = PRES.stage === 1;
   $("#presNext").disabled = PRES.stage === 6;
 }
@@ -4258,7 +4320,7 @@ function presDecorateMap() {
 }
 function presHead() {
   const s = PRES_STAGES[PRES.stage - 1];
-  return `<div><div class="pres-stage">Etapa ${PRES.stage} de 6 · ${s.tm}</div><h2 class="pres-h">${esc(s.t)}</h2></div>`;
+  return `<div><div class="pres-stage">Etapa ${PRES.stage} de 6</div><h2 class="pres-h">${esc(s.t)}</h2></div>`;
 }
 function presPanelHTML() {
   if (PRES.err) return `${presHead()}<div class="callout danger">${ICON.warn}<div><b>Não foi possível preparar a demonstração.</b> ${esc(PRES.err)}</div></div>`;
